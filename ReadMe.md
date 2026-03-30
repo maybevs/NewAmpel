@@ -69,7 +69,7 @@ Die Steuer-App sendet den aktuellen Zustand 10× pro Sekunde als JSON über RS48
 
 ```bash
 # Repository klonen
-git clone https://github.com/DEIN-USERNAME/bogensport-ampel.git
+git clone https://github.com/maybevs/bogensport-ampel.git
 cd bogensport-ampel
 
 # Bauen und starten
@@ -253,7 +253,7 @@ bogensport-ampel/
 - [x] WPF-Steuerungsapp (Core, UI, API)
 - [ ] Raspberry Pi Display-Software
 - [ ] Streamdeck-Plugin (nativ)
-- [ ] Beamer-Modus mit Split-Screen für Finals
+- [x] Beamer-Modus mit Split-Screen für Finals
 - [ ] Dark Mode
 - [ ] Wettkampf-Log (Export der Passenzeiten)
 
