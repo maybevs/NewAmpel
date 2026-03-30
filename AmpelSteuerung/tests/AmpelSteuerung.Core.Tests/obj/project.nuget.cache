@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "AVcpf7Mmeqc=",
+  "dgSpecHash": "QOUm8RE/mKw=",
   "success": true,
   "projectFilePath": "C:\\Users\\bernd_\\source\\repos\\NewAmpel\\AmpelSteuerung\\tests\\AmpelSteuerung.Core.Tests\\AmpelSteuerung.Core.Tests.csproj",
   "expectedPackageFiles": [
@@ -109,7 +109,8 @@
     "C:\\Users\\bernd_\\.nuget\\packages\\xunit.core\\2.5.3\\xunit.core.2.5.3.nupkg.sha512",
     "C:\\Users\\bernd_\\.nuget\\packages\\xunit.extensibility.core\\2.5.3\\xunit.extensibility.core.2.5.3.nupkg.sha512",
     "C:\\Users\\bernd_\\.nuget\\packages\\xunit.extensibility.execution\\2.5.3\\xunit.extensibility.execution.2.5.3.nupkg.sha512",
-    "C:\\Users\\bernd_\\.nuget\\packages\\xunit.runner.visualstudio\\2.5.3\\xunit.runner.visualstudio.2.5.3.nupkg.sha512"
+    "C:\\Users\\bernd_\\.nuget\\packages\\xunit.runner.visualstudio\\2.5.3\\xunit.runner.visualstudio.2.5.3.nupkg.sha512",
+    "C:\\Users\\bernd_\\.nuget\\packages\\yamldotnet\\16.1.3\\yamldotnet.16.1.3.nupkg.sha512"
   ],
   "logs": []
 }

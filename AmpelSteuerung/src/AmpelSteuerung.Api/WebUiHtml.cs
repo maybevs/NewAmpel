@@ -21,51 +21,68 @@ public static class WebUiHtml
             flex-direction: column;
             transition: background-color 0.5s;
         }}
-        .header {{
-            text-align: center;
-            padding: 20px;
-            transition: background-color 0.5s;
-            border-radius: 0 0 16px 16px;
+        .displays {{
+            display: flex;
+            gap: 8px;
+            padding: 12px;
         }}
-        .header.red {{ background: #cc0000; }}
-        .header.green {{ background: #00aa00; }}
-        .header.yellow {{ background: #ddaa00; }}
+        .display-panel {{
+            flex: 1;
+            text-align: center;
+            padding: 16px;
+            border-radius: 12px;
+            transition: background-color 0.5s;
+        }}
+        .display-panel.red {{ background: #cc0000; }}
+        .display-panel.green {{ background: #00aa00; }}
+        .display-panel.yellow {{ background: #ddaa00; }}
+        .display-label {{
+            font-size: 11px;
+            opacity: 0.7;
+            text-transform: uppercase;
+            font-weight: bold;
+        }}
         .timer {{
-            font-size: clamp(48px, 15vw, 120px);
+            font-size: clamp(32px, 12vw, 80px);
             font-weight: bold;
             font-family: 'Consolas', 'Courier New', monospace;
-            letter-spacing: 4px;
+            letter-spacing: 2px;
+        }}
+        .display-group {{
+            font-size: clamp(14px, 4vw, 24px);
+            font-weight: bold;
+            opacity: 0.9;
         }}
         .info-row {{
             display: flex;
             justify-content: space-around;
-            margin-top: 8px;
-            font-size: clamp(18px, 5vw, 32px);
-            font-weight: bold;
-            opacity: 0.9;
+            padding: 8px 16px;
+            font-size: 14px;
+            color: #aaa;
         }}
+        .info-row .phase {{ color: #e8a030; font-weight: bold; }}
         .controls {{
             flex: 1;
-            padding: 16px;
+            padding: 12px;
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 10px;
         }}
         .btn-row {{
             display: flex;
-            gap: 10px;
+            gap: 8px;
             justify-content: center;
             flex-wrap: wrap;
         }}
         .btn {{
             border: none;
-            border-radius: 12px;
-            padding: 16px 28px;
-            font-size: clamp(14px, 4vw, 20px);
+            border-radius: 10px;
+            padding: 14px 22px;
+            font-size: clamp(13px, 3.5vw, 18px);
             font-weight: bold;
             color: white;
             cursor: pointer;
-            min-width: 100px;
+            min-width: 80px;
             text-align: center;
             transition: transform 0.1s, opacity 0.2s;
             -webkit-tap-highlight-color: transparent;
@@ -77,45 +94,55 @@ public static class WebUiHtml
         .btn-resume {{ background: #2d6d9e; }}
         .btn-stop {{ background: #8b2222; }}
         .btn-reset {{ background: #3b3b5c; }}
-        .btn-group {{ background: #3d5a80; min-width: 80px; }}
-        .btn-color {{ min-width: 70px; }}
+        .btn-emergency {{ background: #cc0000; font-size: clamp(15px, 4vw, 20px); }}
+        .btn-skip {{ background: #6b4c9a; }}
+        .btn-group {{ background: #3d5a80; min-width: 70px; }}
+        .btn-color {{ min-width: 60px; }}
         .btn-color.red {{ background: #cc0000; }}
         .btn-color.green {{ background: #00aa00; }}
         .btn-color.yellow {{ background: #ddaa00; color: #333; }}
         .btn-nav {{ background: #3b3b5c; }}
+        .btn-side {{ background: #3d5a80; }}
         .section {{
             background: #2b2b40;
-            border-radius: 12px;
-            padding: 14px;
+            border-radius: 10px;
+            padding: 12px;
         }}
         .section-title {{
-            font-size: 12px;
+            font-size: 11px;
             text-transform: uppercase;
             color: #888;
             font-weight: bold;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }}
+        .final-section {{ display: none; }}
+        .final-section.active {{ display: block; }}
         .status {{
-            font-size: 12px;
+            font-size: 11px;
             color: #888;
             text-align: center;
-        }}
-        .status-text {{
-            text-align: center;
-            padding: 6px;
-            font-size: 14px;
-            color: #aaa;
+            padding: 4px;
         }}
     </style>
 </head>
 <body>
-    <div class=""header red"" id=""header"">
-        <div class=""timer"" id=""timer"">00:00</div>
-        <div class=""info-row"">
-            <span>Gruppe: <span id=""group"">--</span></span>
-            <span>Passe: <span id=""end"">--</span></span>
+    <div class=""displays"">
+        <div class=""display-panel red"" id=""d1Panel"">
+            <div class=""display-label"">Display 1</div>
+            <div class=""timer"" id=""d1Timer"">00:00</div>
+            <div class=""display-group"" id=""d1Group"">--</div>
         </div>
-        <div class=""status-text"" id=""statusText"">Gestoppt</div>
+        <div class=""display-panel red"" id=""d2Panel"">
+            <div class=""display-label"">Display 2</div>
+            <div class=""timer"" id=""d2Timer"">00:00</div>
+            <div class=""display-group"" id=""d2Group"">--</div>
+        </div>
+    </div>
+
+    <div class=""info-row"">
+        <span class=""phase"" id=""phaseText"">Bereit</span>
+        <span>Passe: <span id=""end"">--</span></span>
+        <span>Status: <span id=""statusText"">Gestoppt</span></span>
     </div>
 
     <div class=""controls"">
@@ -127,6 +154,10 @@ public static class WebUiHtml
                 <button class=""btn btn-resume"" onclick=""api('resume')"">&#9654; WEITER</button>
                 <button class=""btn btn-stop"" onclick=""api('stop')"">&#9209; STOP</button>
                 <button class=""btn btn-reset"" onclick=""api('reset')"">&#8634; RESET</button>
+            </div>
+            <div class=""btn-row"" style=""margin-top:8px"">
+                <button class=""btn btn-skip"" onclick=""api('skip')"">&#9193; SKIP</button>
+                <button class=""btn btn-emergency"" onclick=""api('emergency-stop')"">&#9888; NOTFALL-STOPP</button>
             </div>
         </div>
 
@@ -143,6 +174,18 @@ public static class WebUiHtml
             <div class=""btn-row"">
                 <button class=""btn btn-nav"" onclick=""api('prev-end')"">&#9664; Zurück</button>
                 <button class=""btn btn-nav"" onclick=""api('next-end')"">Vor &#9654;</button>
+            </div>
+        </div>
+
+        <div class=""section final-section"" id=""finalSection"">
+            <div class=""section-title"">Final-Modus</div>
+            <div class=""btn-row"">
+                <button class=""btn btn-side"" onclick=""api('start-side/left')"">&#9664; Links</button>
+                <button class=""btn btn-side"" onclick=""api('start-side/right')"">Rechts &#9654;</button>
+                <button class=""btn btn-skip"" onclick=""api('switch-side')"">&#8596; Seitenwechsel</button>
+            </div>
+            <div style=""text-align:center;margin-top:8px;font-size:13px;color:#aaa"">
+                Pfeile &#8212; L: <span id=""arrowL"">0</span> | R: <span id=""arrowR"">0</span>
             </div>
         </div>
 
@@ -177,22 +220,43 @@ public static class WebUiHtml
         }}
 
         function pad(n) {{ return n.toString().padStart(2, '0'); }}
+        function fmtTime(t) {{ return pad(Math.floor(t/60)) + ':' + pad(t%60); }}
+
+        const phaseMap = {{
+            'Idle': 'Bereit',
+            'PreparationGroup1': 'Vorbereitung',
+            'ShootingGroup1': 'Schießzeit',
+            'PreparationGroup2': 'Vorbereitung Gr.2',
+            'ShootingGroup2': 'Schießzeit Gr.2',
+            'EndCompleted': 'Passe beendet',
+            'EmergencyStopped': '\u26A0 NOTFALL-STOPP'
+        }};
 
         function updateState() {{
             fetch(BASE + '/api/state')
                 .then(r => r.json())
                 .then(s => {{
-                    const mins = Math.floor(s.timeRemaining / 60);
-                    const secs = s.timeRemaining % 60;
-                    document.getElementById('timer').textContent = pad(mins) + ':' + pad(secs);
-                    document.getElementById('group').textContent = s.group;
-                    document.getElementById('end').textContent = s.end;
+                    document.getElementById('d1Timer').textContent = fmtTime(s.display1.timeRemaining);
+                    document.getElementById('d1Group').textContent = s.display1.group;
+                    document.getElementById('d1Panel').className = 'display-panel ' + s.display1.color;
 
-                    const header = document.getElementById('header');
-                    header.className = 'header ' + s.color;
+                    document.getElementById('d2Timer').textContent = fmtTime(s.display2.timeRemaining);
+                    document.getElementById('d2Group').textContent = s.display2.group;
+                    document.getElementById('d2Panel').className = 'display-panel ' + s.display2.color;
+
+                    document.getElementById('end').textContent = s.currentEnd;
+                    document.getElementById('phaseText').textContent = phaseMap[s.phase] || s.phase;
 
                     const statusMap = {{ running: 'Läuft', paused: 'Pausiert', stopped: 'Gestoppt' }};
                     document.getElementById('statusText').textContent = statusMap[s.status] || s.status;
+
+                    // Final mode
+                    const isFinal = s.mode === 'final';
+                    document.getElementById('finalSection').className = 'section final-section' + (isFinal ? ' active' : '');
+                    if (isFinal) {{
+                        document.getElementById('arrowL').textContent = s.arrowCountLeft;
+                        document.getElementById('arrowR').textContent = s.arrowCountRight;
+                    }}
 
                     document.getElementById('connStatus').textContent = 'Verbunden';
                     document.getElementById('connStatus').style.color = '#888';

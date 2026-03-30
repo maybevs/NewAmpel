@@ -15,31 +15,37 @@ public class SoundService : ISoundService
         _logger = logger;
     }
 
-    public void PlayTimerStart()
-    {
-        if (!IsEnabled) return;
-        PlayBeeps(1);
-        _logger.LogDebug("Sound: Timer start (1 beep)");
-    }
-
-    public void PlayWarning()
+    public void PlayPreparation()
     {
         if (!IsEnabled) return;
         PlayBeeps(2);
-        _logger.LogDebug("Sound: Warning (2 beeps)");
+        _logger.LogDebug("Sound: Preparation (2 horn blasts)");
     }
 
-    public void PlayTimerEnd()
+    public void PlayShootingStart()
+    {
+        if (!IsEnabled) return;
+        PlayBeeps(1);
+        _logger.LogDebug("Sound: Shooting start (1 horn blast)");
+    }
+
+    public void PlayEndCompleted()
     {
         if (!IsEnabled) return;
         PlayBeeps(3);
-        _logger.LogDebug("Sound: Timer end (3 beeps)");
+        _logger.LogDebug("Sound: End completed (3 horn blasts)");
+    }
+
+    public void PlayEmergencyStop()
+    {
+        if (!IsEnabled) return;
+        PlayBeeps(5);
+        _logger.LogDebug("Sound: EMERGENCY STOP (5 horn blasts)");
     }
 
     private void PlayBeeps(int count)
     {
         if (!OperatingSystem.IsWindows()) return;
-        // Run on background thread to avoid blocking
         Task.Run(() =>
         {
             try
@@ -56,9 +62,9 @@ public class SoundService : ISoundService
     [SupportedOSPlatform("windows")]
     private static void PlayBeepsWindows(int count)
     {
-        var frequency = 1000;
-        var duration = 200;
-        var pause = 150;
+        const int frequency = 800;
+        const int duration = 400;
+        const int pause = 200;
 
         for (int i = 0; i < count; i++)
         {

@@ -1,6 +1,7 @@
-using System.Text.Json;
 using AmpelSteuerung.Core.Models;
 using Microsoft.Extensions.Logging;
+using YamlDotNet.Serialization;
+using YamlDotNet.Serialization.NamingConventions;
 
 namespace AmpelSteuerung.Core.Services;
 
@@ -8,12 +9,8 @@ public class PresetEngine
 {
     private readonly IAmpelStateService _stateService;
     private readonly ILogger<PresetEngine> _logger;
-    private CancellationTokenSource? _cts;
-    private Preset? _activePreset;
-    private bool _isRunning;
+    private readonly IDeserializer _yamlDeserializer;
 
-    public bool IsRunning => _isRunning;
-    public Preset? ActivePreset => _activePreset;
     public List<Preset> AvailablePresets { get; private set; } = new();
 
     public event EventHandler<string>? StatusChanged;
@@ -22,216 +19,134 @@ public class PresetEngine
     {
         _stateService = stateService;
         _logger = logger;
+        _yamlDeserializer = new DeserializerBuilder()
+            .WithNamingConvention(CamelCaseNamingConvention.Instance)
+            .IgnoreUnmatchedProperties()
+            .Build();
     }
 
-    public void LoadPresets(string filePath)
+    public void LoadPresets(string directory)
     {
+        AvailablePresets.Clear();
+
         try
         {
-            if (!File.Exists(filePath))
+            if (!Directory.Exists(directory))
             {
-                _logger.LogWarning("Presets file not found: {Path}. Creating defaults.", filePath);
-                CreateDefaultPresets(filePath);
+                _logger.LogWarning("Presets directory not found: {Dir}. Creating defaults.", directory);
+                Directory.CreateDirectory(directory);
+                CreateDefaultPresets(directory);
             }
 
-            var json = File.ReadAllText(filePath);
-            AvailablePresets = JsonSerializer.Deserialize<List<Preset>>(json) ?? new List<Preset>();
-            _logger.LogInformation("Loaded {Count} presets from {Path}", AvailablePresets.Count, filePath);
+            foreach (var file in Directory.GetFiles(directory, "*.yaml").Concat(Directory.GetFiles(directory, "*.yml")))
+            {
+                try
+                {
+                    var yaml = File.ReadAllText(file);
+                    var preset = _yamlDeserializer.Deserialize<Preset>(yaml);
+                    if (preset != null && !string.IsNullOrWhiteSpace(preset.Name))
+                    {
+                        AvailablePresets.Add(preset);
+                        _logger.LogInformation("Loaded preset: {Name} from {File}", preset.Name, Path.GetFileName(file));
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Error loading preset from {File}", file);
+                }
+            }
+
+            _logger.LogInformation("Loaded {Count} presets from {Dir}", AvailablePresets.Count, directory);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error loading presets from {Path}", filePath);
-            AvailablePresets = new List<Preset>();
+            _logger.LogError(ex, "Error loading presets directory {Dir}", directory);
         }
     }
 
-    public async Task StartPresetAsync(Preset preset)
+    public void ApplyPreset(Preset preset)
     {
-        StopPreset();
-
-        _activePreset = preset;
-        _cts = new CancellationTokenSource();
-        _isRunning = true;
-
-        _stateService.SetDuration(preset.TimerDuration);
-        _stateService.SetTotalEnds(preset.Ends);
-
-        _logger.LogInformation("Starting preset: {Name}", preset.Name);
-        StatusChanged?.Invoke(this, $"Preset gestartet: {preset.Name}");
-
-        try
-        {
-            await ExecuteSequenceAsync(preset, _cts.Token);
-        }
-        catch (OperationCanceledException)
-        {
-            _logger.LogInformation("Preset cancelled: {Name}", preset.Name);
-            StatusChanged?.Invoke(this, "Preset abgebrochen");
-        }
-        finally
-        {
-            _isRunning = false;
-        }
+        _stateService.ApplyPreset(preset);
+        StatusChanged?.Invoke(this, $"Preset aktiv: {preset.Name}");
+        _logger.LogInformation("Applied preset: {Name}", preset.Name);
     }
 
-    public void StopPreset()
+    private void CreateDefaultPresets(string directory)
     {
-        _cts?.Cancel();
-        _cts?.Dispose();
-        _cts = null;
-        _isRunning = false;
-    }
+        var serializer = new SerializerBuilder()
+            .WithNamingConvention(CamelCaseNamingConvention.Instance)
+            .Build();
 
-    private async Task ExecuteSequenceAsync(Preset preset, CancellationToken ct)
-    {
-        var endCount = 0;
-
-        while (!ct.IsCancellationRequested)
+        var presets = new Dictionary<string, Preset>
         {
-            foreach (var action in preset.Sequence)
+            ["wa720.yaml"] = new()
             {
-                ct.ThrowIfCancellationRequested();
-
-                switch (action.Action)
-                {
-                    case "setGroup":
-                        if (action.Value != null)
-                            _stateService.SetGroup(action.Value);
-                        StatusChanged?.Invoke(this, $"Gruppe: {action.Value}");
-                        break;
-
-                    case "startTimer":
-                        _stateService.Start();
-                        StatusChanged?.Invoke(this, "Timer gestartet");
-                        break;
-
-                    case "waitForTimerEnd":
-                        await WaitForTimerEndAsync(ct);
-                        break;
-
-                    case "pauseBetweenGroups":
-                        var pauseDuration = action.Duration ?? 30;
-                        StatusChanged?.Invoke(this, $"Pause: {pauseDuration}s");
-                        await Task.Delay(TimeSpan.FromSeconds(pauseDuration), ct);
-                        break;
-
-                    case "nextEnd":
-                        _stateService.NextEnd();
-                        endCount++;
-                        StatusChanged?.Invoke(this, $"Passe {_stateService.Config.CurrentEnd}/{preset.Ends}");
-
-                        if (endCount >= preset.Ends * preset.Groups.Length)
-                        {
-                            StatusChanged?.Invoke(this, "Preset abgeschlossen");
-                            return;
-                        }
-                        break;
-
-                    case "repeat":
-                        // Continue the while loop
-                        break;
-
-                    default:
-                        _logger.LogWarning("Unknown preset action: {Action}", action.Action);
-                        break;
-                }
-            }
-        }
-    }
-
-    private async Task WaitForTimerEndAsync(CancellationToken ct)
-    {
-        var tcs = new TaskCompletionSource();
-
-        void OnStateChanged(object? sender, AmpelState state)
-        {
-            if (state.Status == TimerStatus.Stopped && state.TimeRemaining == 0)
-                tcs.TrySetResult();
-        }
-
-        _stateService.StateChanged += OnStateChanged;
-
-        try
-        {
-            using var registration = ct.Register(() => tcs.TrySetCanceled());
-            await tcs.Task;
-        }
-        finally
-        {
-            _stateService.StateChanged -= OnStateChanged;
-        }
-    }
-
-    private void CreateDefaultPresets(string filePath)
-    {
-        var defaults = new List<Preset>
-        {
-            new()
-            {
-                Name = "Wettkampf 70m Outdoor",
-                Ends = 12,
-                ArrowsPerEnd = 6,
-                Groups = ["AB", "CD"],
-                TimerDuration = 240,
-                WarningTime = 30,
-                Sequence =
-                [
-                    new PresetAction { Action = "setGroup", Value = "AB" },
-                    new PresetAction { Action = "startTimer" },
-                    new PresetAction { Action = "waitForTimerEnd" },
-                    new PresetAction { Action = "pauseBetweenGroups", Duration = 30 },
-                    new PresetAction { Action = "setGroup", Value = "CD" },
-                    new PresetAction { Action = "startTimer" },
-                    new PresetAction { Action = "waitForTimerEnd" },
-                    new PresetAction { Action = "nextEnd" },
-                    new PresetAction { Action = "repeat" }
-                ]
+                Name = "WA 720 (70m Outdoor)",
+                Description = "6 Pfeile pro Passe, 240 Sekunden Schießzeit, AB/CD Wechsel",
+                Type = "standard",
+                Timer = new PresetTimerSettings { ShootingTime = 240, PreparationTime = 10, WarningTime = 30 },
+                Groups = new PresetGroupSettings { Mode = "alternating", Names = ["AB", "CD"], AlternateStartOrder = true },
+                Match = new PresetMatchSettings { TotalEnds = 12, ArrowsPerEnd = 6 },
+                Options = new PresetOptions { GroupSwitchEnabled = true, SkipEnabled = true }
             },
-            new()
+            ["wa_indoor.yaml"] = new()
             {
-                Name = "Halle 18m",
-                Ends = 10,
-                ArrowsPerEnd = 3,
-                Groups = ["AB", "CD"],
-                TimerDuration = 120,
-                WarningTime = 30,
-                Sequence =
-                [
-                    new PresetAction { Action = "setGroup", Value = "AB" },
-                    new PresetAction { Action = "startTimer" },
-                    new PresetAction { Action = "waitForTimerEnd" },
-                    new PresetAction { Action = "pauseBetweenGroups", Duration = 20 },
-                    new PresetAction { Action = "setGroup", Value = "CD" },
-                    new PresetAction { Action = "startTimer" },
-                    new PresetAction { Action = "waitForTimerEnd" },
-                    new PresetAction { Action = "nextEnd" },
-                    new PresetAction { Action = "repeat" }
-                ]
+                Name = "WA Indoor (18m)",
+                Description = "3 Pfeile pro Passe, 120 Sekunden Schießzeit",
+                Type = "standard",
+                Timer = new PresetTimerSettings { ShootingTime = 120, PreparationTime = 10, WarningTime = 30 },
+                Groups = new PresetGroupSettings { Mode = "alternating", Names = ["AB", "CD"], AlternateStartOrder = true },
+                Match = new PresetMatchSettings { TotalEnds = 10, ArrowsPerEnd = 3 },
+                Options = new PresetOptions { GroupSwitchEnabled = true, SkipEnabled = true }
             },
-            new()
+            ["training.yaml"] = new()
             {
                 Name = "Training",
-                Ends = 20,
-                ArrowsPerEnd = 3,
-                Groups = ["AB"],
-                TimerDuration = 120,
-                WarningTime = 30,
-                Sequence =
-                [
-                    new PresetAction { Action = "setGroup", Value = "AB" },
-                    new PresetAction { Action = "startTimer" },
-                    new PresetAction { Action = "waitForTimerEnd" },
-                    new PresetAction { Action = "pauseBetweenGroups", Duration = 60 },
-                    new PresetAction { Action = "nextEnd" },
-                    new PresetAction { Action = "repeat" }
-                ]
+                Description = "Freies Training, eine Gruppe, 120 Sekunden",
+                Type = "standard",
+                Timer = new PresetTimerSettings { ShootingTime = 120, PreparationTime = 10, WarningTime = 30 },
+                Groups = new PresetGroupSettings { Mode = "single", Names = ["AB"], AlternateStartOrder = false },
+                Match = new PresetMatchSettings { TotalEnds = 20, ArrowsPerEnd = 3 },
+                Options = new PresetOptions { GroupSwitchEnabled = false, SkipEnabled = true }
+            },
+            ["final_individual.yaml"] = new()
+            {
+                Name = "Einzelfinale",
+                Description = "Alternierend, 1 Pfeil pro Seite, 20 Sekunden",
+                Type = "final",
+                Timer = new PresetTimerSettings { ShootingTime = 20, PreparationTime = 10, WarningTime = 5 },
+                Groups = new PresetGroupSettings { Mode = "alternating", Names = ["1", "2"] },
+                Match = new PresetMatchSettings { TotalEnds = 5, ArrowsPerEnd = 3 },
+                Final = new PresetFinalSettings { ArrowsPerSide = 1, TotalArrowsPerEnd = 3, Sides = ["1", "2"], StartSide = "manual", SkipEnabled = true }
+            },
+            ["final_mixed_team.yaml"] = new()
+            {
+                Name = "Mixed Team Finale",
+                Description = "2 Schützen pro Seite, je 1 Pfeil = 20 Sek. pro Team",
+                Type = "final",
+                Timer = new PresetTimerSettings { ShootingTime = 20, PreparationTime = 10, WarningTime = 5 },
+                Groups = new PresetGroupSettings { Mode = "alternating", Names = ["1", "2"] },
+                Match = new PresetMatchSettings { TotalEnds = 4, ArrowsPerEnd = 4 },
+                Final = new PresetFinalSettings { ArrowsPerSide = 2, TotalArrowsPerEnd = 4, Sides = ["1", "2"], StartSide = "manual", SkipEnabled = true }
+            },
+            ["final_team.yaml"] = new()
+            {
+                Name = "Team Finale (3er Mannschaft)",
+                Description = "3 Schützen pro Seite, je 1 Pfeil = 30 Sek. pro Team",
+                Type = "final",
+                Timer = new PresetTimerSettings { ShootingTime = 30, PreparationTime = 10, WarningTime = 5 },
+                Groups = new PresetGroupSettings { Mode = "alternating", Names = ["1", "2"] },
+                Match = new PresetMatchSettings { TotalEnds = 4, ArrowsPerEnd = 6 },
+                Final = new PresetFinalSettings { ArrowsPerSide = 3, TotalArrowsPerEnd = 6, Sides = ["1", "2"], StartSide = "manual", SkipEnabled = true }
             }
         };
 
-        var json = JsonSerializer.Serialize(defaults, new JsonSerializerOptions { WriteIndented = true });
-        var dir = Path.GetDirectoryName(filePath);
-        if (dir != null && !Directory.Exists(dir))
-            Directory.CreateDirectory(dir);
-        File.WriteAllText(filePath, json);
+        foreach (var (filename, preset) in presets)
+        {
+            var yaml = serializer.Serialize(preset);
+            File.WriteAllText(Path.Combine(directory, filename), yaml);
+        }
+
+        _logger.LogInformation("Created {Count} default preset files in {Dir}", presets.Count, directory);
     }
 }

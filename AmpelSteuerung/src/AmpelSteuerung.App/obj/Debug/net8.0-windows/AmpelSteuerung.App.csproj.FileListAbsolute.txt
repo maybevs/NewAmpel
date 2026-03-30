@@ -59,3 +59,6 @@ C:\Users\bernd_\source\repos\NewAmpel\AmpelSteuerung\src\AmpelSteuerung.App\obj\
 C:\Users\bernd_\source\repos\NewAmpel\AmpelSteuerung\src\AmpelSteuerung.App\obj\Debug\net8.0-windows\AmpelSteuerung.App.pdb
 C:\Users\bernd_\source\repos\NewAmpel\AmpelSteuerung\src\AmpelSteuerung.App\obj\Debug\net8.0-windows\AmpelSteuerung.App.genruntimeconfig.cache
 C:\Users\bernd_\source\repos\NewAmpel\AmpelSteuerung\src\AmpelSteuerung.App\obj\Debug\net8.0-windows\ref\AmpelSteuerung.App.dll
+C:\Users\bernd_\source\repos\NewAmpel\AmpelSteuerung\src\AmpelSteuerung.App\bin\Debug\net8.0-windows\YamlDotNet.dll
+C:\Users\bernd_\source\repos\NewAmpel\AmpelSteuerung\src\AmpelSteuerung.App\obj\Debug\net8.0-windows\BeamerWindow.g.cs
+C:\Users\bernd_\source\repos\NewAmpel\AmpelSteuerung\src\AmpelSteuerung.App\obj\Debug\net8.0-windows\BeamerWindow.baml

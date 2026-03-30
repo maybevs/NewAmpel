@@ -29,7 +29,11 @@ public class BoolToVisibilityConverter : IValueConverter
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
         if (value is bool b)
+        {
+            if (parameter is string s && s.Equals("invert", StringComparison.OrdinalIgnoreCase))
+                b = !b;
             return b ? System.Windows.Visibility.Visible : System.Windows.Visibility.Collapsed;
+        }
         return System.Windows.Visibility.Collapsed;
     }
 

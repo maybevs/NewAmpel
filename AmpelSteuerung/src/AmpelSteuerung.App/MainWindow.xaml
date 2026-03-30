@@ -6,8 +6,8 @@
         xmlns:converters="clr-namespace:AmpelSteuerung.App.Converters"
         mc:Ignorable="d"
         Title="Bogensport Ampelsteuerung"
-        Height="700" Width="950"
-        MinHeight="600" MinWidth="800"
+        Height="800" Width="1200"
+        MinHeight="600" MinWidth="900"
         Background="#1E1E2E"
         Foreground="White"
         KeyDown="Window_KeyDown"
@@ -64,6 +64,12 @@
             <Setter Property="Padding" Value="12,6"/>
         </Style>
 
+        <Style x:Key="EmergencyButton" TargetType="Button" BasedOn="{StaticResource BigButton}">
+            <Setter Property="Background" Value="#CC0000"/>
+            <Setter Property="FontSize" Value="18"/>
+            <Setter Property="Padding" Value="24,12"/>
+        </Style>
+
         <Style TargetType="TextBlock">
             <Setter Property="Foreground" Value="#CCCCCC"/>
         </Style>
@@ -71,52 +77,98 @@
 
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" MinHeight="200"/>
+            <RowDefinition Height="Auto" MinHeight="180"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <!-- TOP: Timer Display -->
-        <Border Grid.Row="0"
-                Background="{Binding ColorBrush, Converter={StaticResource HexToBrush}}"
-                CornerRadius="12"
-                Margin="12,12,12,6"
-                Padding="20">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
+        <!-- TOP: Dual Display Preview -->
+        <Grid Grid.Row="0" Margin="12,12,12,6">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
 
-                <!-- Group -->
-                <StackPanel Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Left">
-                    <TextBlock Text="GRUPPE" FontSize="14" Foreground="White" Opacity="0.8" FontWeight="SemiBold"/>
-                    <TextBlock Text="{Binding CurrentGroup}" FontSize="48" FontWeight="Bold" Foreground="White"/>
-                </StackPanel>
+            <!-- Display 1 -->
+            <Border Grid.Column="0"
+                    Background="{Binding Display1ColorBrush, Converter={StaticResource HexToBrush}}"
+                    CornerRadius="12"
+                    Padding="16"
+                    Margin="0,0,4,0">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Grid.Row="0" FontSize="12" Foreground="White" Opacity="0.7" FontWeight="SemiBold">
+                        <Run Text="LINKS ("/>
+                        <Run Text="{Binding Display1SideLabel, Mode=OneWay}"/>
+                        <Run Text=")"/>
+                    </TextBlock>
+                    <StackPanel Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center">
+                        <TextBlock Text="{Binding Display1Time}"
+                                   FontSize="64"
+                                   FontWeight="Bold"
+                                   Foreground="White"
+                                   HorizontalAlignment="Center"
+                                   FontFamily="Consolas"/>
+                        <TextBlock Text="{Binding Display1Group}" FontSize="22" FontWeight="Bold" Foreground="White"
+                                   HorizontalAlignment="Center" Opacity="0.9"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
 
-                <!-- Timer -->
-                <StackPanel Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center">
-                    <TextBlock Text="{Binding TimeDisplay}"
-                               FontSize="96"
-                               FontWeight="Bold"
-                               Foreground="White"
-                               HorizontalAlignment="Center"
-                               FontFamily="Consolas"/>
-                    <TextBlock Text="{Binding TimerStatus}"
-                               FontSize="16"
-                               Foreground="White"
-                               Opacity="0.7"
-                               HorizontalAlignment="Center"/>
+            <!-- Center Info -->
+            <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="8,0" Width="120">
+                <TextBlock Text="{Binding PhaseText}" FontSize="14" FontWeight="Bold" Foreground="#AAAAAA"
+                           HorizontalAlignment="Center" TextAlignment="Center" TextWrapping="Wrap" Margin="0,0,0,8"/>
+                <TextBlock Text="PASSE" FontSize="11" Foreground="#888" HorizontalAlignment="Center"/>
+                <TextBlock Text="{Binding CurrentEnd}" FontSize="28" FontWeight="Bold" Foreground="White"
+                           HorizontalAlignment="Center"/>
+                <TextBlock Text="{Binding TimerStatus}" FontSize="12" Foreground="#AAAAAA"
+                           HorizontalAlignment="Center" Margin="0,4,0,0"/>
+                <!-- Final mode arrow counts -->
+                <StackPanel Visibility="{Binding IsFinalMode, Converter={StaticResource BoolToVis}}" Margin="0,8,0,0">
+                    <TextBlock FontSize="11" Foreground="#888" HorizontalAlignment="Center" Text="Pfeile"/>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <TextBlock Text="L:" FontSize="12" Foreground="#AAAAAA"/>
+                        <TextBlock Text="{Binding ArrowCountLeftText}" FontSize="14" FontWeight="Bold" Foreground="White" Margin="2,0,8,0"/>
+                        <TextBlock Text="R:" FontSize="12" Foreground="#AAAAAA"/>
+                        <TextBlock Text="{Binding ArrowCountRightText}" FontSize="14" FontWeight="Bold" Foreground="White" Margin="2,0,0,0"/>
+                    </StackPanel>
                 </StackPanel>
+            </StackPanel>
 
-                <!-- End -->
-                <StackPanel Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Right">
-                    <TextBlock Text="PASSE" FontSize="14" Foreground="White" Opacity="0.8" FontWeight="SemiBold"/>
-                    <TextBlock Text="{Binding CurrentEnd}" FontSize="48" FontWeight="Bold" Foreground="White"/>
-                </StackPanel>
-            </Grid>
-        </Border>
+            <!-- Display 2 -->
+            <Border Grid.Column="2"
+                    Background="{Binding Display2ColorBrush, Converter={StaticResource HexToBrush}}"
+                    CornerRadius="12"
+                    Padding="16"
+                    Margin="4,0,0,0">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Grid.Row="0" FontSize="12" Foreground="White" Opacity="0.7" FontWeight="SemiBold">
+                        <Run Text="RECHTS ("/>
+                        <Run Text="{Binding Display2SideLabel, Mode=OneWay}"/>
+                        <Run Text=")"/>
+                    </TextBlock>
+                    <StackPanel Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center">
+                        <TextBlock Text="{Binding Display2Time}"
+                                   FontSize="64"
+                                   FontWeight="Bold"
+                                   Foreground="White"
+                                   HorizontalAlignment="Center"
+                                   FontFamily="Consolas"/>
+                        <TextBlock Text="{Binding Display2Group}" FontSize="22" FontWeight="Bold" Foreground="White"
+                                   HorizontalAlignment="Center" Opacity="0.9"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+        </Grid>
 
         <!-- MIDDLE: Controls -->
         <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Margin="12,6">
@@ -129,21 +181,30 @@
                             <Button Content="▶ START" Style="{StaticResource BigButton}"
                                     Command="{Binding StartTimerCommand}"
                                     IsEnabled="{Binding IsStartEnabled}"
-                                    Background="#2D7D2D" Width="140"/>
+                                    Background="#2D7D2D" Width="130"/>
                             <Button Content="⏸ PAUSE" Style="{StaticResource BigButton}"
                                     Command="{Binding PauseTimerCommand}"
                                     IsEnabled="{Binding IsPauseEnabled}"
-                                    Background="#B8860B" Width="140"/>
+                                    Background="#B8860B" Width="130"/>
                             <Button Content="▶ WEITER" Style="{StaticResource BigButton}"
                                     Command="{Binding ResumeTimerCommand}"
                                     IsEnabled="{Binding IsResumeEnabled}"
-                                    Background="#2D6D9E" Width="140"/>
+                                    Background="#2D6D9E" Width="130"/>
                             <Button Content="⏹ STOP" Style="{StaticResource BigButton}"
                                     Command="{Binding StopTimerCommand}"
-                                    Background="#8B2222" Width="140"/>
+                                    Background="#8B2222" Width="130"/>
                             <Button Content="↺ RESET" Style="{StaticResource BigButton}"
                                     Command="{Binding ResetTimerCommand}"
-                                    Width="140"/>
+                                    Width="130"/>
+                            <Button Content="⏩ SKIP" Style="{StaticResource BigButton}"
+                                    Command="{Binding SkipTimerCommand}"
+                                    IsEnabled="{Binding IsSkipEnabled}"
+                                    Background="#6B4C9A" Width="130"/>
+                        </WrapPanel>
+                        <!-- Emergency Stop -->
+                        <WrapPanel HorizontalAlignment="Center" Margin="0,8,0,0">
+                            <Button Content="⚠ NOTFALL-STOPP (F5)" Style="{StaticResource EmergencyButton}"
+                                    Command="{Binding EmergencyStopCommand}" Width="240"/>
                         </WrapPanel>
                     </StackPanel>
                 </Border>
@@ -159,31 +220,46 @@
                     <!-- Group selection -->
                     <Border Grid.Column="0" Background="#2B2B40" CornerRadius="8" Padding="16" Margin="0,0,4,8">
                         <StackPanel>
-                            <TextBlock Text="GRUPPE" FontSize="13" FontWeight="Bold" Foreground="#888" Margin="0,0,0,10"/>
+                            <TextBlock Text="GRUPPE / STARTGRUPPE" FontSize="13" FontWeight="Bold" Foreground="#888" Margin="0,0,0,10"/>
                             <WrapPanel HorizontalAlignment="Center">
                                 <Button Content="AB" Style="{StaticResource BigButton}" Width="80"
                                         Command="{Binding SetGroupABCommand}" Background="#3D5A80"/>
                                 <Button Content="CD" Style="{StaticResource BigButton}" Width="80"
                                         Command="{Binding SetGroupCDCommand}" Background="#3D5A80"/>
                             </WrapPanel>
+                            <TextBlock Text="Startgruppe:" FontSize="11" Foreground="#888" HorizontalAlignment="Center" Margin="0,8,0,2"/>
+                            <WrapPanel HorizontalAlignment="Center">
+                                <Button Content="AB zuerst" Style="{StaticResource SmallButton}"
+                                        Command="{Binding SetStartGroupABCommand}" Background="#2B4570"/>
+                                <Button Content="CD zuerst" Style="{StaticResource SmallButton}"
+                                        Command="{Binding SetStartGroupCDCommand}" Background="#2B4570"/>
+                            </WrapPanel>
                         </StackPanel>
                     </Border>
 
-                    <!-- Timer duration -->
+                    <!-- Timer durations -->
                     <Border Grid.Column="1" Background="#2B2B40" CornerRadius="8" Padding="16" Margin="4,0,4,8">
                         <StackPanel>
-                            <TextBlock Text="TIMER-DAUER (Sek)" FontSize="13" FontWeight="Bold" Foreground="#888" Margin="0,0,0,10"/>
+                            <TextBlock Text="ZEITEN" FontSize="13" FontWeight="Bold" Foreground="#888" Margin="0,0,0,10"/>
+                            <TextBlock Text="Schießzeit (s):" FontSize="11" Foreground="#888" Margin="0,0,0,2"/>
                             <WrapPanel HorizontalAlignment="Center">
                                 <Button Content="60" Style="{StaticResource SmallButton}" Click="SetDuration_Click" Tag="60"/>
                                 <Button Content="90" Style="{StaticResource SmallButton}" Click="SetDuration_Click" Tag="90"/>
                                 <Button Content="120" Style="{StaticResource SmallButton}" Click="SetDuration_Click" Tag="120"/>
                                 <Button Content="240" Style="{StaticResource SmallButton}" Click="SetDuration_Click" Tag="240"/>
                             </WrapPanel>
-                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,8,0,0">
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,4,0,0">
                                 <TextBox Text="{Binding TimerDuration, UpdateSourceTrigger=PropertyChanged}"
-                                         Width="70" FontSize="16" Background="#1E1E2E" Foreground="White"
+                                         Width="60" FontSize="14" Background="#1E1E2E" Foreground="White"
                                          BorderBrush="#555" Padding="4" HorizontalContentAlignment="Center"/>
-                                <TextBlock Text="s" FontSize="16" VerticalAlignment="Center" Margin="4,0,0,0"/>
+                                <TextBlock Text="s" FontSize="14" VerticalAlignment="Center" Margin="4,0,0,0"/>
+                            </StackPanel>
+                            <TextBlock Text="Vorbereitungszeit (s):" FontSize="11" Foreground="#888" Margin="0,8,0,2"/>
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                <TextBox Text="{Binding PreparationTime, UpdateSourceTrigger=PropertyChanged}"
+                                         Width="60" FontSize="14" Background="#1E1E2E" Foreground="White"
+                                         BorderBrush="#555" Padding="4" HorizontalContentAlignment="Center"/>
+                                <TextBlock Text="s" FontSize="14" VerticalAlignment="Center" Margin="4,0,0,0"/>
                             </StackPanel>
                         </StackPanel>
                     </Border>
@@ -210,6 +286,54 @@
                     </Border>
                 </Grid>
 
+                <!-- Final Mode: Side Selection -->
+                <Border Background="#2B2B40" CornerRadius="8" Padding="16" Margin="0,0,0,8"
+                        Visibility="{Binding IsFinalMode, Converter={StaticResource BoolToVis}}">
+                    <StackPanel>
+                        <TextBlock Text="FINAL-MODUS: SEITE" FontSize="13" FontWeight="Bold" Foreground="#E8A030" Margin="0,0,0,10"/>
+                        <WrapPanel HorizontalAlignment="Center">
+                            <Button Command="{Binding SetStartSideLeftCommand}" Width="180">
+                                <Button.Content>
+                                    <TextBlock Text="◀ Links starten (L)"/>
+                                </Button.Content>
+                                <Button.Style>
+                                    <Style TargetType="Button" BasedOn="{StaticResource BigButton}">
+                                        <Setter Property="Background" Value="#3D5A80"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsStartSideLeft}" Value="True">
+                                                <Setter Property="Background" Value="#2D7D2D"/>
+                                                <Setter Property="BorderBrush" Value="#44DD44"/>
+                                                <Setter Property="BorderThickness" Value="3"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
+                            <Button Command="{Binding SetStartSideRightCommand}" Width="180">
+                                <Button.Content>
+                                    <TextBlock Text="Rechts starten (R) ▶"/>
+                                </Button.Content>
+                                <Button.Style>
+                                    <Style TargetType="Button" BasedOn="{StaticResource BigButton}">
+                                        <Setter Property="Background" Value="#3D5A80"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsStartSideRight}" Value="True">
+                                                <Setter Property="Background" Value="#2D7D2D"/>
+                                                <Setter Property="BorderBrush" Value="#44DD44"/>
+                                                <Setter Property="BorderThickness" Value="3"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
+                            <Button Content="↔ Seitenwechsel" Style="{StaticResource BigButton}"
+                                    Command="{Binding SwitchSideCommand}" Background="#6B4C9A" Width="180"/>
+                            <Button Content="⇄ Display tauschen" Style="{StaticResource SmallButton}"
+                                    Command="{Binding SwapDisplaySidesCommand}" Background="#555"/>
+                        </WrapPanel>
+                    </StackPanel>
+                </Border>
+
                 <!-- Manual Color Override -->
                 <Border Background="#2B2B40" CornerRadius="8" Padding="16" Margin="0,0,0,8">
                     <StackPanel>
@@ -233,19 +357,14 @@
                             <ComboBox ItemsSource="{Binding Presets}"
                                       SelectedItem="{Binding SelectedPreset}"
                                       DisplayMemberPath="Name"
-                                      Width="250"
+                                      Width="280"
                                       FontSize="14"
                                       Background="#1E1E2E"
                                       Foreground="Black"
                                       Margin="0,0,8,0"/>
-                            <Button Content="▶ Preset starten" Style="{StaticResource SmallButton}"
-                                    Command="{Binding StartPresetCommand}"
-                                    IsEnabled="{Binding IsPresetRunning, Converter={StaticResource InverseBool}}"
+                            <Button Content="▶ Preset anwenden" Style="{StaticResource SmallButton}"
+                                    Command="{Binding ApplyPresetCommand}"
                                     Background="#2D7D2D"/>
-                            <Button Content="⏹ Abbrechen" Style="{StaticResource SmallButton}"
-                                    Command="{Binding StopPresetCommand}"
-                                    IsEnabled="{Binding IsPresetRunning}"
-                                    Background="#8B2222"/>
                         </StackPanel>
                         <TextBlock Text="{Binding PresetStatus}" FontSize="12" Margin="0,6,0,0"
                                    HorizontalAlignment="Center" Foreground="#AAAAAA"/>
@@ -283,9 +402,6 @@
                 <!-- Connection Status -->
                 <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
                     <Ellipse Width="12" Height="12" Margin="0,0,6,0">
-                        <Ellipse.Fill>
-                            <SolidColorBrush Color="{Binding IsSerialConnected, Converter={StaticResource HexToBrush}, ConverterParameter='#00AA00|#CC0000'}"/>
-                        </Ellipse.Fill>
                         <Ellipse.Style>
                             <Style TargetType="Ellipse">
                                 <Style.Triggers>
@@ -302,10 +418,17 @@
                     <TextBlock Text="{Binding ConnectionStatusText}" FontSize="13" VerticalAlignment="Center" Foreground="#AAAAAA"/>
                 </StackPanel>
 
-                <!-- Sound toggle -->
+                <!-- Sound toggle + Beamer -->
                 <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
-                    <TextBlock Text="🔊 Sound:" FontSize="13" VerticalAlignment="Center" Margin="0,0,6,0" Foreground="#AAAAAA"/>
+                    <TextBlock Text="Sound:" FontSize="13" VerticalAlignment="Center" Margin="0,0,6,0" Foreground="#AAAAAA"/>
                     <CheckBox IsChecked="{Binding SoundEnabled}" VerticalAlignment="Center"/>
+                    <ComboBox ItemsSource="{Binding AvailableScreens}"
+                              SelectedIndex="{Binding SelectedScreenIndex}"
+                              Width="200" FontSize="12"
+                              Background="#1E1E2E" Foreground="Black"
+                              Margin="12,0,4,0"/>
+                    <Button Content="Beamer (F11)" Style="{StaticResource SmallButton}"
+                            Command="{Binding ToggleBeamerCommand}"/>
                     <TextBlock Text="{Binding SerialError}" FontSize="11" Foreground="#FF6666"
                                Margin="16,0,0,0" VerticalAlignment="Center" MaxWidth="200" TextTrimming="CharacterEllipsis"/>
                 </StackPanel>

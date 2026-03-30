@@ -1,0 +1,20 @@
+name: Training
+description: Freies Training, eine Gruppe, 120 Sekunden
+type: standard
+timer:
+  shootingTime: 120
+  preparationTime: 10
+  warningTime: 30
+groups:
+  mode: single
+  names:
+  - AB
+  alternateStartOrder: false
+match:
+  totalEnds: 20
+  arrowsPerEnd: 3
+options:
+  groupSwitchEnabled: false
+  skipEnabled: true
+final: 
+isFinalMode: false

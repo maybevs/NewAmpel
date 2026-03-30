@@ -407,6 +407,14 @@
           }
         }
       },
+      "YamlDotNet/16.1.3": {
+        "runtime": {
+          "lib/net8.0/YamlDotNet.dll": {
+            "assemblyVersion": "16.0.0.0",
+            "fileVersion": "16.1.3.0"
+          }
+        }
+      },
       "AmpelSteuerung.Api/1.0.0": {
         "dependencies": {
           "AmpelSteuerung.Core": "1.0.0",
@@ -424,7 +432,8 @@
           "CommunityToolkit.Mvvm": "8.2.2",
           "Microsoft.Extensions.Hosting.Abstractions": "8.0.1",
           "Microsoft.Extensions.Logging.Abstractions": "8.0.2",
-          "System.IO.Ports": "8.0.0"
+          "System.IO.Ports": "8.0.0",
+          "YamlDotNet": "16.1.3"
         },
         "runtime": {
           "AmpelSteuerung.Core.dll": {
@@ -664,6 +673,13 @@
       "sha512": "sha512-MaiPbx2/QXZc62gm/DrajRrGPG1lU4m08GWMoWiymPYM+ba4kfACp2PbiYpqJ4QiFGhHD00zX3RoVDTucjWe9g==",
       "path": "system.io.ports/8.0.0",
       "hashPath": "system.io.ports.8.0.0.nupkg.sha512"
+    },
+    "YamlDotNet/16.1.3": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-gtHGiDvU9VTtWte8f0thIM38cL1oowOjStKpeAEKKfA+Rc4AvekJzqFDZiiPcc4kw00ZiwR4OTJS56L16q98DQ==",
+      "path": "yamldotnet/16.1.3",
+      "hashPath": "yamldotnet.16.1.3.nupkg.sha512"
     },
     "AmpelSteuerung.Api/1.0.0": {
       "type": "project",

@@ -9,24 +9,37 @@ public class PresetTests
     {
         var preset = new Preset();
         Assert.Equal(string.Empty, preset.Name);
-        Assert.Equal(10, preset.Ends);
-        Assert.Equal(3, preset.ArrowsPerEnd);
-        Assert.Equal(120, preset.TimerDuration);
-        Assert.Equal(30, preset.WarningTime);
+        Assert.Equal("standard", preset.Type);
+        Assert.False(preset.IsFinalMode);
+        Assert.Equal(120, preset.Timer.ShootingTime);
+        Assert.Equal(10, preset.Timer.PreparationTime);
+        Assert.Equal(30, preset.Timer.WarningTime);
+        Assert.Equal(10, preset.Match.TotalEnds);
+        Assert.Equal(3, preset.Match.ArrowsPerEnd);
     }
 
     [Fact]
-    public void PresetAction_JsonProperties()
+    public void Preset_IsFinalMode_WhenTypeFinal()
     {
-        var action = new PresetAction
-        {
-            Action = "setGroup",
-            Value = "AB",
-            Duration = null
-        };
+        var preset = new Preset { Type = "final" };
+        Assert.True(preset.IsFinalMode);
+    }
 
-        Assert.Equal("setGroup", action.Action);
-        Assert.Equal("AB", action.Value);
-        Assert.Null(action.Duration);
+    [Fact]
+    public void PresetFinalSettings_Defaults()
+    {
+        var final = new PresetFinalSettings();
+        Assert.Equal(1, final.ArrowsPerSide);
+        Assert.Equal(3, final.TotalArrowsPerEnd);
+        Assert.Equal(2, final.Sides.Length);
+    }
+
+    [Fact]
+    public void PresetGroupSettings_Defaults()
+    {
+        var groups = new PresetGroupSettings();
+        Assert.Equal("alternating", groups.Mode);
+        Assert.Equal(2, groups.Names.Length);
+        Assert.True(groups.AlternateStartOrder);
     }
 }

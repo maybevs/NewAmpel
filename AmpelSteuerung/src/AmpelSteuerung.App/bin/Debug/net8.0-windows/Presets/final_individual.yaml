@@ -1,0 +1,28 @@
+name: Einzelfinale
+description: Alternierend, 1 Pfeil pro Seite, 20 Sekunden
+type: final
+timer:
+  shootingTime: 20
+  preparationTime: 10
+  warningTime: 5
+groups:
+  mode: alternating
+  names:
+  - Links
+  - Rechts
+  alternateStartOrder: true
+match:
+  totalEnds: 5
+  arrowsPerEnd: 3
+options:
+  groupSwitchEnabled: true
+  skipEnabled: true
+final:
+  arrowsPerSide: 1
+  totalArrowsPerEnd: 3
+  sides:
+  - Links
+  - Rechts
+  startSide: manual
+  skipEnabled: true
+isFinalMode: true

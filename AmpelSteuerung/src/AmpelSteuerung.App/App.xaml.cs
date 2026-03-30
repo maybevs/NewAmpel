@@ -77,6 +77,8 @@ public partial class App : Application
         {
             // Save configuration
             var config = _host.Services.GetRequiredService<AmpelConfiguration>();
+            var viewModel = _host.Services.GetRequiredService<MainViewModel>();
+            viewModel.SaveConfiguration();
             var mainWindow = _host.Services.GetRequiredService<MainWindow>();
             config.WindowLeft = mainWindow.Left;
             config.WindowTop = mainWindow.Top;

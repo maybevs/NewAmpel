@@ -1,0 +1,487 @@
+2026-03-30 15:23:36.764 +02:00 [INF] REST API starting on http://0.0.0.0:5000
+2026-03-30 15:23:36.883 +02:00 [ERR] Failed to start REST API
+System.InvalidOperationException: Unable to resolve service for type 'Microsoft.AspNetCore.Cors.Infrastructure.ICorsService' while attempting to activate 'Microsoft.AspNetCore.Cors.Infrastructure.CorsMiddleware'.
+   at Microsoft.Extensions.Internal.ActivatorUtilities.ConstructorMatcher.CreateInstance(IServiceProvider provider)
+   at Microsoft.Extensions.Internal.ActivatorUtilities.CreateInstance(IServiceProvider provider, Type instanceType, Object[] parameters)
+   at Microsoft.AspNetCore.Builder.UseMiddlewareExtensions.ReflectionMiddlewareBinder.CreateMiddleware(RequestDelegate next)
+   at Microsoft.AspNetCore.Builder.ApplicationBuilder.Build()
+   at Microsoft.AspNetCore.Builder.ApplicationBuilder.Build()
+   at Microsoft.AspNetCore.Hosting.GenericWebHostService.StartAsync(CancellationToken cancellationToken)
+   at Microsoft.Extensions.Hosting.Internal.Host.<StartAsync>b__15_1(IHostedService service, CancellationToken token)
+   at Microsoft.Extensions.Hosting.Internal.Host.ForeachService[T](IEnumerable`1 services, CancellationToken token, Boolean concurrent, Boolean abortOnFirstException, List`1 exceptions, Func`3 operation)
+   at Microsoft.Extensions.Hosting.Internal.Host.StartAsync(CancellationToken cancellationToken)
+   at AmpelSteuerung.Api.AmpelApiService.StartAsync(CancellationToken cancellationToken) in c:\Users\bernd_\source\repos\NewAmpel\AmpelSteuerung\src\AmpelSteuerung.Api\AmpelApiService.cs:line 56
+2026-03-30 15:23:36.892 +02:00 [INF] Application started. Press Ctrl+C to shut down.
+2026-03-30 15:23:36.892 +02:00 [INF] Hosting environment: Production
+2026-03-30 15:23:36.892 +02:00 [INF] Content root path: C:\Users\bernd_\source\repos\NewAmpel\AmpelSteuerung\src\AmpelSteuerung.App\bin\Debug\net8.0-windows
+2026-03-30 15:23:37.176 +02:00 [WRN] Presets file not found: presets.json. Creating defaults.
+2026-03-30 15:23:37.231 +02:00 [ERR] Error loading presets from presets.json
+System.ArgumentException: The value cannot be an empty string. (Parameter 'path')
+   at System.ArgumentException.ThrowNullOrEmptyException(String argument, String paramName)
+   at System.IO.Directory.CreateDirectory(String path)
+   at AmpelSteuerung.Core.Services.PresetEngine.CreateDefaultPresets(String filePath) in c:\Users\bernd_\source\repos\NewAmpel\AmpelSteuerung\src\AmpelSteuerung.Core\Services\PresetEngine.cs:line 234
+   at AmpelSteuerung.Core.Services.PresetEngine.LoadPresets(String filePath) in c:\Users\bernd_\source\repos\NewAmpel\AmpelSteuerung\src\AmpelSteuerung.Core\Services\PresetEngine.cs:line 34
+2026-03-30 15:23:41.214 +02:00 [INF] Timer started. Duration: 120s, Group: AB
+2026-03-30 15:23:51.616 +02:00 [INF] Timer stopped
+2026-03-30 15:23:55.592 +02:00 [INF] Timer started. Duration: 120s, Group: AB
+2026-03-30 15:24:04.684 +02:00 [INF] Timer stopped
+2026-03-30 17:05:00.154 +02:00 [INF] RS485 broadcast stopped
+2026-03-30 17:05:00.159 +02:00 [INF] Application is shutting down...
+2026-03-30 17:05:00.165 +02:00 [INF] REST API stopped
+2026-03-30 17:05:00.165 +02:00 [INF] RS485 broadcast stopped
+2026-03-30 21:32:31.789 +02:00 [INF] REST API starting on http://0.0.0.0:5000
+2026-03-30 21:32:31.869 +02:00 [ERR] Failed to start REST API
+System.InvalidOperationException: Unable to resolve service for type 'Microsoft.AspNetCore.Cors.Infrastructure.ICorsService' while attempting to activate 'Microsoft.AspNetCore.Cors.Infrastructure.CorsMiddleware'.
+   at Microsoft.Extensions.Internal.ActivatorUtilities.ConstructorMatcher.CreateInstance(IServiceProvider provider)
+   at Microsoft.Extensions.Internal.ActivatorUtilities.CreateInstance(IServiceProvider provider, Type instanceType, Object[] parameters)
+   at Microsoft.AspNetCore.Builder.UseMiddlewareExtensions.ReflectionMiddlewareBinder.CreateMiddleware(RequestDelegate next)
+   at Microsoft.AspNetCore.Builder.ApplicationBuilder.Build()
+   at Microsoft.AspNetCore.Builder.ApplicationBuilder.Build()
+   at Microsoft.AspNetCore.Hosting.GenericWebHostService.StartAsync(CancellationToken cancellationToken)
+   at Microsoft.Extensions.Hosting.Internal.Host.<StartAsync>b__15_1(IHostedService service, CancellationToken token)
+   at Microsoft.Extensions.Hosting.Internal.Host.ForeachService[T](IEnumerable`1 services, CancellationToken token, Boolean concurrent, Boolean abortOnFirstException, List`1 exceptions, Func`3 operation)
+   at Microsoft.Extensions.Hosting.Internal.Host.StartAsync(CancellationToken cancellationToken)
+   at AmpelSteuerung.Api.AmpelApiService.StartAsync(CancellationToken cancellationToken) in c:\Users\bernd_\source\repos\NewAmpel\AmpelSteuerung\src\AmpelSteuerung.Api\AmpelApiService.cs:line 56
+2026-03-30 21:32:31.877 +02:00 [INF] Application started. Press Ctrl+C to shut down.
+2026-03-30 21:32:31.877 +02:00 [INF] Hosting environment: Production
+2026-03-30 21:32:31.877 +02:00 [INF] Content root path: C:\Users\bernd_\source\repos\NewAmpel\AmpelSteuerung\src\AmpelSteuerung.App\bin\Debug\net8.0-windows
+2026-03-30 21:32:32.130 +02:00 [WRN] Presets file not found: presets.json. Creating defaults.
+2026-03-30 21:32:32.155 +02:00 [ERR] Error loading presets from presets.json
+System.ArgumentException: The value cannot be an empty string. (Parameter 'path')
+   at System.ArgumentException.ThrowNullOrEmptyException(String argument, String paramName)
+   at System.IO.Directory.CreateDirectory(String path)
+   at AmpelSteuerung.Core.Services.PresetEngine.CreateDefaultPresets(String filePath) in c:\Users\bernd_\source\repos\NewAmpel\AmpelSteuerung\src\AmpelSteuerung.Core\Services\PresetEngine.cs:line 234
+   at AmpelSteuerung.Core.Services.PresetEngine.LoadPresets(String filePath) in c:\Users\bernd_\source\repos\NewAmpel\AmpelSteuerung\src\AmpelSteuerung.Core\Services\PresetEngine.cs:line 34
+2026-03-30 21:32:38.676 +02:00 [INF] Timer started. Duration: 120s, Group: AB
+2026-03-30 21:32:39.224 +02:00 [INF] Timer paused at 120s
+2026-03-30 21:32:43.597 +02:00 [INF] Timer resumed at 120s
+2026-03-30 21:32:58.471 +02:00 [INF] Timer stopped
+2026-03-30 21:33:11.589 +02:00 [INF] RS485 broadcast stopped
+2026-03-30 21:33:11.594 +02:00 [INF] Application is shutting down...
+2026-03-30 21:33:11.599 +02:00 [INF] REST API stopped
+2026-03-30 21:33:11.600 +02:00 [INF] RS485 broadcast stopped
+2026-03-30 21:42:22.263 +02:00 [INF] REST API starting on http://0.0.0.0:5000
+2026-03-30 21:42:22.330 +02:00 [ERR] Failed to start REST API
+System.InvalidOperationException: Unable to resolve service for type 'Microsoft.AspNetCore.Cors.Infrastructure.ICorsService' while attempting to activate 'Microsoft.AspNetCore.Cors.Infrastructure.CorsMiddleware'.
+   at Microsoft.Extensions.Internal.ActivatorUtilities.ConstructorMatcher.CreateInstance(IServiceProvider provider)
+   at Microsoft.Extensions.Internal.ActivatorUtilities.CreateInstance(IServiceProvider provider, Type instanceType, Object[] parameters)
+   at Microsoft.AspNetCore.Builder.UseMiddlewareExtensions.ReflectionMiddlewareBinder.CreateMiddleware(RequestDelegate next)
+   at Microsoft.AspNetCore.Builder.ApplicationBuilder.Build()
+   at Microsoft.AspNetCore.Builder.ApplicationBuilder.Build()
+   at Microsoft.AspNetCore.Hosting.GenericWebHostService.StartAsync(CancellationToken cancellationToken)
+   at Microsoft.Extensions.Hosting.Internal.Host.<StartAsync>b__15_1(IHostedService service, CancellationToken token)
+   at Microsoft.Extensions.Hosting.Internal.Host.ForeachService[T](IEnumerable`1 services, CancellationToken token, Boolean concurrent, Boolean abortOnFirstException, List`1 exceptions, Func`3 operation)
+   at Microsoft.Extensions.Hosting.Internal.Host.StartAsync(CancellationToken cancellationToken)
+   at AmpelSteuerung.Api.AmpelApiService.StartAsync(CancellationToken cancellationToken) in c:\Users\bernd_\source\repos\NewAmpel\AmpelSteuerung\src\AmpelSteuerung.Api\AmpelApiService.cs:line 56
+2026-03-30 21:42:22.337 +02:00 [INF] Application started. Press Ctrl+C to shut down.
+2026-03-30 21:42:22.337 +02:00 [INF] Hosting environment: Production
+2026-03-30 21:42:22.337 +02:00 [INF] Content root path: C:\Users\bernd_\source\repos\NewAmpel\AmpelSteuerung\src\AmpelSteuerung.App\bin\Debug\net8.0-windows
+2026-03-30 21:42:22.611 +02:00 [WRN] Presets file not found: presets.json. Creating defaults.
+2026-03-30 21:42:22.635 +02:00 [ERR] Error loading presets from presets.json
+System.ArgumentException: The value cannot be an empty string. (Parameter 'path')
+   at System.ArgumentException.ThrowNullOrEmptyException(String argument, String paramName)
+   at System.IO.Directory.CreateDirectory(String path)
+   at AmpelSteuerung.Core.Services.PresetEngine.CreateDefaultPresets(String filePath) in c:\Users\bernd_\source\repos\NewAmpel\AmpelSteuerung\src\AmpelSteuerung.Core\Services\PresetEngine.cs:line 234
+   at AmpelSteuerung.Core.Services.PresetEngine.LoadPresets(String filePath) in c:\Users\bernd_\source\repos\NewAmpel\AmpelSteuerung\src\AmpelSteuerung.Core\Services\PresetEngine.cs:line 34
+2026-03-30 21:42:31.718 +02:00 [INF] Timer started. Duration: 120s, Group: AB
+2026-03-30 21:42:36.744 +02:00 [INF] Timer stopped
+2026-03-30 21:42:45.293 +02:00 [INF] Next end: 2/10
+2026-03-30 21:42:46.386 +02:00 [INF] Previous end: 1/10
+2026-03-30 21:42:47.129 +02:00 [INF] Next end: 2/10
+2026-03-30 21:42:47.593 +02:00 [INF] Previous end: 1/10
+2026-03-30 21:42:48.498 +02:00 [INF] Timer started. Duration: 120s, Group: AB
+2026-03-30 21:42:53.153 +02:00 [INF] Timer stopped
+2026-03-30 21:42:53.516 +02:00 [INF] Timer stopped
+2026-03-30 21:42:55.697 +02:00 [INF] Timer started. Duration: 120s, Group: AB
+2026-03-30 21:42:56.674 +02:00 [INF] Timer paused at 120s
+2026-03-30 21:42:56.987 +02:00 [INF] Timer resumed at 120s
+2026-03-30 21:42:57.429 +02:00 [INF] Timer paused at 120s
+2026-03-30 21:42:58.379 +02:00 [INF] Timer stopped
+2026-03-30 21:43:00.110 +02:00 [INF] RS485 broadcast stopped
+2026-03-30 21:43:00.111 +02:00 [INF] Application is shutting down...
+2026-03-30 21:43:00.118 +02:00 [INF] REST API stopped
+2026-03-30 21:43:00.119 +02:00 [INF] RS485 broadcast stopped
+2026-03-30 22:18:22.540 +02:00 [INF] REST API starting on http://0.0.0.0:5000
+2026-03-30 22:18:22.619 +02:00 [ERR] Failed to start REST API
+System.InvalidOperationException: Unable to resolve service for type 'Microsoft.AspNetCore.Cors.Infrastructure.ICorsService' while attempting to activate 'Microsoft.AspNetCore.Cors.Infrastructure.CorsMiddleware'.
+   at Microsoft.Extensions.Internal.ActivatorUtilities.ConstructorMatcher.CreateInstance(IServiceProvider provider)
+   at Microsoft.Extensions.Internal.ActivatorUtilities.CreateInstance(IServiceProvider provider, Type instanceType, Object[] parameters)
+   at Microsoft.AspNetCore.Builder.UseMiddlewareExtensions.ReflectionMiddlewareBinder.CreateMiddleware(RequestDelegate next)
+   at Microsoft.AspNetCore.Builder.ApplicationBuilder.Build()
+   at Microsoft.AspNetCore.Builder.ApplicationBuilder.Build()
+   at Microsoft.AspNetCore.Hosting.GenericWebHostService.StartAsync(CancellationToken cancellationToken)
+   at Microsoft.Extensions.Hosting.Internal.Host.<StartAsync>b__15_1(IHostedService service, CancellationToken token)
+   at Microsoft.Extensions.Hosting.Internal.Host.ForeachService[T](IEnumerable`1 services, CancellationToken token, Boolean concurrent, Boolean abortOnFirstException, List`1 exceptions, Func`3 operation)
+   at Microsoft.Extensions.Hosting.Internal.Host.StartAsync(CancellationToken cancellationToken)
+   at AmpelSteuerung.Api.AmpelApiService.StartAsync(CancellationToken cancellationToken) in c:\Users\bernd_\source\repos\NewAmpel\AmpelSteuerung\src\AmpelSteuerung.Api\AmpelApiService.cs:line 56
+2026-03-30 22:18:22.627 +02:00 [INF] Application started. Press Ctrl+C to shut down.
+2026-03-30 22:18:22.627 +02:00 [INF] Hosting environment: Production
+2026-03-30 22:18:22.627 +02:00 [INF] Content root path: C:\Users\bernd_\source\repos\NewAmpel\AmpelSteuerung\src\AmpelSteuerung.App\bin\Debug\net8.0-windows
+2026-03-30 22:18:22.957 +02:00 [WRN] Presets directory not found: ./Presets. Creating defaults.
+2026-03-30 22:18:23.018 +02:00 [INF] Created 6 default preset files in ./Presets
+2026-03-30 22:18:23.040 +02:00 [INF] Loaded preset: Einzelfinale from final_individual.yaml
+2026-03-30 22:18:23.042 +02:00 [INF] Loaded preset: Mixed Team Finale from final_mixed_team.yaml
+2026-03-30 22:18:23.043 +02:00 [INF] Loaded preset: Team Finale (3er Mannschaft) from final_team.yaml
+2026-03-30 22:18:23.044 +02:00 [INF] Loaded preset: Training from training.yaml
+2026-03-30 22:18:23.044 +02:00 [INF] Loaded preset: WA 720 (70m Outdoor) from wa720.yaml
+2026-03-30 22:18:23.044 +02:00 [INF] Loaded preset: WA Indoor (18m) from wa_indoor.yaml
+2026-03-30 22:18:23.045 +02:00 [INF] Loaded 6 presets from ./Presets
+2026-03-30 22:18:28.606 +02:00 [INF] Standard end started. Group 1: AB, Prep: 10s, Shooting: 120s
+2026-03-30 22:18:38.608 +02:00 [INF] Shooting started. Phase: "ShootingGroup1", Group: AB
+2026-03-30 22:18:55.173 +02:00 [INF] Skip triggered during "ShootingGroup1"
+2026-03-30 22:18:55.174 +02:00 [INF] Preparation for group 2: CD
+2026-03-30 22:19:05.179 +02:00 [INF] Shooting started. Phase: "ShootingGroup2", Group: CD
+2026-03-30 22:19:08.676 +02:00 [INF] Skip triggered during "ShootingGroup2"
+2026-03-30 22:19:08.676 +02:00 [INF] End 1/10 completed
+2026-03-30 22:19:12.598 +02:00 [INF] Next end: 2/10
+2026-03-30 22:19:12.598 +02:00 [INF] Standard end started. Group 1: AB, Prep: 10s, Shooting: 120s
+2026-03-30 22:19:22.613 +02:00 [INF] Shooting started. Phase: "ShootingGroup1", Group: AB
+2026-03-30 22:19:28.025 +02:00 [INF] Timer stopped
+2026-03-30 22:19:33.816 +02:00 [INF] Standard end started. Group 1: AB, Prep: 10s, Shooting: 120s
+2026-03-30 22:19:43.824 +02:00 [INF] Shooting started. Phase: "ShootingGroup1", Group: AB
+2026-03-30 22:19:44.932 +02:00 [INF] Skip triggered during "ShootingGroup1"
+2026-03-30 22:19:44.932 +02:00 [INF] Preparation for group 2: CD
+2026-03-30 22:19:54.934 +02:00 [INF] Shooting started. Phase: "ShootingGroup2", Group: CD
+2026-03-30 22:19:57.941 +02:00 [INF] Skip triggered during "ShootingGroup2"
+2026-03-30 22:19:57.942 +02:00 [INF] End 2/10 completed
+2026-03-30 22:20:01.135 +02:00 [INF] Next end: 3/10
+2026-03-30 22:20:01.135 +02:00 [INF] Standard end started. Group 1: AB, Prep: 10s, Shooting: 120s
+2026-03-30 22:23:01.186 +02:00 [INF] REST API starting on http://0.0.0.0:5000
+2026-03-30 22:23:01.264 +02:00 [ERR] Failed to start REST API
+System.InvalidOperationException: Unable to resolve service for type 'Microsoft.AspNetCore.Cors.Infrastructure.ICorsService' while attempting to activate 'Microsoft.AspNetCore.Cors.Infrastructure.CorsMiddleware'.
+   at Microsoft.Extensions.Internal.ActivatorUtilities.ConstructorMatcher.CreateInstance(IServiceProvider provider)
+   at Microsoft.Extensions.Internal.ActivatorUtilities.CreateInstance(IServiceProvider provider, Type instanceType, Object[] parameters)
+   at Microsoft.AspNetCore.Builder.UseMiddlewareExtensions.ReflectionMiddlewareBinder.CreateMiddleware(RequestDelegate next)
+   at Microsoft.AspNetCore.Builder.ApplicationBuilder.Build()
+   at Microsoft.AspNetCore.Builder.ApplicationBuilder.Build()
+   at Microsoft.AspNetCore.Hosting.GenericWebHostService.StartAsync(CancellationToken cancellationToken)
+   at Microsoft.Extensions.Hosting.Internal.Host.<StartAsync>b__15_1(IHostedService service, CancellationToken token)
+   at Microsoft.Extensions.Hosting.Internal.Host.ForeachService[T](IEnumerable`1 services, CancellationToken token, Boolean concurrent, Boolean abortOnFirstException, List`1 exceptions, Func`3 operation)
+   at Microsoft.Extensions.Hosting.Internal.Host.StartAsync(CancellationToken cancellationToken)
+   at AmpelSteuerung.Api.AmpelApiService.StartAsync(CancellationToken cancellationToken) in c:\Users\bernd_\source\repos\NewAmpel\AmpelSteuerung\src\AmpelSteuerung.Api\AmpelApiService.cs:line 56
+2026-03-30 22:23:01.271 +02:00 [INF] Application started. Press Ctrl+C to shut down.
+2026-03-30 22:23:01.272 +02:00 [INF] Hosting environment: Production
+2026-03-30 22:23:01.272 +02:00 [INF] Content root path: C:\Users\bernd_\source\repos\NewAmpel\AmpelSteuerung\src\AmpelSteuerung.App\bin\Debug\net8.0-windows
+2026-03-30 22:23:01.641 +02:00 [INF] Loaded preset: Einzelfinale from final_individual.yaml
+2026-03-30 22:23:01.649 +02:00 [INF] Loaded preset: Mixed Team Finale from final_mixed_team.yaml
+2026-03-30 22:23:01.656 +02:00 [INF] Loaded preset: Team Finale (3er Mannschaft) from final_team.yaml
+2026-03-30 22:23:01.662 +02:00 [INF] Loaded preset: Training from training.yaml
+2026-03-30 22:23:01.668 +02:00 [INF] Loaded preset: WA 720 (70m Outdoor) from wa720.yaml
+2026-03-30 22:23:01.674 +02:00 [INF] Loaded preset: WA Indoor (18m) from wa_indoor.yaml
+2026-03-30 22:23:01.674 +02:00 [INF] Loaded 6 presets from ./Presets
+2026-03-30 22:23:04.723 +02:00 [INF] Standard end started. Group 1: AB, Prep: 10s, Shooting: 120s
+2026-03-30 22:23:14.719 +02:00 [INF] Shooting started. Phase: "ShootingGroup1", Group: AB
+2026-03-30 22:23:17.864 +02:00 [INF] Skip triggered during "ShootingGroup1"
+2026-03-30 22:23:17.864 +02:00 [INF] Preparation for group 2: CD
+2026-03-30 22:23:27.873 +02:00 [INF] Shooting started. Phase: "ShootingGroup2", Group: CD
+2026-03-30 22:23:29.666 +02:00 [INF] Skip triggered during "ShootingGroup2"
+2026-03-30 22:23:29.667 +02:00 [INF] End 1/10 completed. Next starting group: CD
+2026-03-30 22:23:34.288 +02:00 [INF] Next end: 2/10
+2026-03-30 22:23:34.289 +02:00 [INF] Standard end started. Group 1: CD, Prep: 10s, Shooting: 120s
+2026-03-30 22:23:44.294 +02:00 [INF] Shooting started. Phase: "ShootingGroup1", Group: CD
+2026-03-30 22:23:47.150 +02:00 [INF] Skip triggered during "ShootingGroup1"
+2026-03-30 22:23:47.151 +02:00 [INF] Preparation for group 2: AB
+2026-03-30 22:23:57.157 +02:00 [INF] Shooting started. Phase: "ShootingGroup2", Group: AB
+2026-03-30 22:23:59.112 +02:00 [INF] Skip triggered during "ShootingGroup2"
+2026-03-30 22:23:59.112 +02:00 [INF] End 2/10 completed. Next starting group: AB
+2026-03-30 22:25:41.989 +02:00 [INF] Preset applied: Einzelfinale (Mode: "Final")
+2026-03-30 22:25:41.989 +02:00 [INF] Applied preset: Einzelfinale
+2026-03-30 22:25:41.990 +02:00 [INF] Shooting duration set to 20s
+2026-03-30 22:25:41.992 +02:00 [INF] Total ends set to 5
+2026-03-30 22:26:03.141 +02:00 [INF] Final end started. Starting side: left, Prep: 10s
+2026-03-30 22:26:09.062 +02:00 [INF] Timer stopped
+2026-03-30 22:26:10.460 +02:00 [INF] Starting side set to left
+2026-03-30 22:26:11.424 +02:00 [INF] Starting side set to left
+2026-03-30 22:26:11.950 +02:00 [INF] Starting side set to right
+2026-03-30 22:26:12.681 +02:00 [INF] Starting side set to left
+2026-03-30 22:26:13.563 +02:00 [INF] Final end started. Starting side: left, Prep: 10s
+2026-03-30 22:26:23.573 +02:00 [INF] Final shooting started. Side: left, Round: 1
+2026-03-30 22:26:41.703 +02:00 [INF] Side switch triggered
+2026-03-30 22:26:41.704 +02:00 [INF] Final side switch to right, round 2
+2026-03-30 22:26:48.586 +02:00 [INF] Side switch triggered
+2026-03-30 22:26:48.587 +02:00 [INF] Final side switch to left, round 3
+2026-03-30 22:26:51.490 +02:00 [INF] Side switch triggered
+2026-03-30 22:26:51.491 +02:00 [INF] Final side switch to right, round 4
+2026-03-30 22:26:53.396 +02:00 [INF] Side switch triggered
+2026-03-30 22:26:53.396 +02:00 [INF] Final side switch to left, round 5
+2026-03-30 22:26:53.957 +02:00 [INF] Side switch triggered
+2026-03-30 22:26:53.957 +02:00 [INF] Final side switch to right, round 6
+2026-03-30 22:27:13.971 +02:00 [INF] Final end 1/5 completed. Left: 3, Right: 3
+2026-03-30 22:27:21.519 +02:00 [INF] RS485 broadcast stopped
+2026-03-30 22:27:21.520 +02:00 [INF] Application is shutting down...
+2026-03-30 22:27:21.526 +02:00 [INF] REST API stopped
+2026-03-30 22:27:21.526 +02:00 [INF] RS485 broadcast stopped
+2026-03-30 22:31:40.819 +02:00 [INF] REST API starting on http://0.0.0.0:5000
+2026-03-30 22:31:40.889 +02:00 [ERR] Failed to start REST API
+System.InvalidOperationException: Unable to resolve service for type 'Microsoft.AspNetCore.Cors.Infrastructure.ICorsService' while attempting to activate 'Microsoft.AspNetCore.Cors.Infrastructure.CorsMiddleware'.
+   at Microsoft.Extensions.Internal.ActivatorUtilities.ConstructorMatcher.CreateInstance(IServiceProvider provider)
+   at Microsoft.Extensions.Internal.ActivatorUtilities.CreateInstance(IServiceProvider provider, Type instanceType, Object[] parameters)
+   at Microsoft.AspNetCore.Builder.UseMiddlewareExtensions.ReflectionMiddlewareBinder.CreateMiddleware(RequestDelegate next)
+   at Microsoft.AspNetCore.Builder.ApplicationBuilder.Build()
+   at Microsoft.AspNetCore.Builder.ApplicationBuilder.Build()
+   at Microsoft.AspNetCore.Hosting.GenericWebHostService.StartAsync(CancellationToken cancellationToken)
+   at Microsoft.Extensions.Hosting.Internal.Host.<StartAsync>b__15_1(IHostedService service, CancellationToken token)
+   at Microsoft.Extensions.Hosting.Internal.Host.ForeachService[T](IEnumerable`1 services, CancellationToken token, Boolean concurrent, Boolean abortOnFirstException, List`1 exceptions, Func`3 operation)
+   at Microsoft.Extensions.Hosting.Internal.Host.StartAsync(CancellationToken cancellationToken)
+   at AmpelSteuerung.Api.AmpelApiService.StartAsync(CancellationToken cancellationToken) in c:\Users\bernd_\source\repos\NewAmpel\AmpelSteuerung\src\AmpelSteuerung.Api\AmpelApiService.cs:line 56
+2026-03-30 22:31:40.896 +02:00 [INF] Application started. Press Ctrl+C to shut down.
+2026-03-30 22:31:40.896 +02:00 [INF] Hosting environment: Production
+2026-03-30 22:31:40.896 +02:00 [INF] Content root path: C:\Users\bernd_\source\repos\NewAmpel\AmpelSteuerung\src\AmpelSteuerung.App\bin\Debug\net8.0-windows
+2026-03-30 22:31:41.248 +02:00 [INF] Loaded preset: Einzelfinale from final_individual.yaml
+2026-03-30 22:31:41.249 +02:00 [INF] Loaded preset: Mixed Team Finale from final_mixed_team.yaml
+2026-03-30 22:31:41.250 +02:00 [INF] Loaded preset: Team Finale (3er Mannschaft) from final_team.yaml
+2026-03-30 22:31:41.251 +02:00 [INF] Loaded preset: Training from training.yaml
+2026-03-30 22:31:41.251 +02:00 [INF] Loaded preset: WA 720 (70m Outdoor) from wa720.yaml
+2026-03-30 22:31:41.251 +02:00 [INF] Loaded preset: WA Indoor (18m) from wa_indoor.yaml
+2026-03-30 22:31:41.251 +02:00 [INF] Loaded 6 presets from ./Presets
+2026-03-30 22:32:13.250 +02:00 [INF] Timer stopped
+2026-03-30 22:34:42.175 +02:00 [INF] REST API starting on http://0.0.0.0:5000
+2026-03-30 22:34:42.242 +02:00 [ERR] Failed to start REST API
+System.InvalidOperationException: Unable to resolve service for type 'Microsoft.AspNetCore.Cors.Infrastructure.ICorsService' while attempting to activate 'Microsoft.AspNetCore.Cors.Infrastructure.CorsMiddleware'.
+   at Microsoft.Extensions.Internal.ActivatorUtilities.ConstructorMatcher.CreateInstance(IServiceProvider provider)
+   at Microsoft.Extensions.Internal.ActivatorUtilities.CreateInstance(IServiceProvider provider, Type instanceType, Object[] parameters)
+   at Microsoft.AspNetCore.Builder.UseMiddlewareExtensions.ReflectionMiddlewareBinder.CreateMiddleware(RequestDelegate next)
+   at Microsoft.AspNetCore.Builder.ApplicationBuilder.Build()
+   at Microsoft.AspNetCore.Builder.ApplicationBuilder.Build()
+   at Microsoft.AspNetCore.Hosting.GenericWebHostService.StartAsync(CancellationToken cancellationToken)
+   at Microsoft.Extensions.Hosting.Internal.Host.<StartAsync>b__15_1(IHostedService service, CancellationToken token)
+   at Microsoft.Extensions.Hosting.Internal.Host.ForeachService[T](IEnumerable`1 services, CancellationToken token, Boolean concurrent, Boolean abortOnFirstException, List`1 exceptions, Func`3 operation)
+   at Microsoft.Extensions.Hosting.Internal.Host.StartAsync(CancellationToken cancellationToken)
+   at AmpelSteuerung.Api.AmpelApiService.StartAsync(CancellationToken cancellationToken) in c:\Users\bernd_\source\repos\NewAmpel\AmpelSteuerung\src\AmpelSteuerung.Api\AmpelApiService.cs:line 56
+2026-03-30 22:34:42.248 +02:00 [INF] Application started. Press Ctrl+C to shut down.
+2026-03-30 22:34:42.248 +02:00 [INF] Hosting environment: Production
+2026-03-30 22:34:42.248 +02:00 [INF] Content root path: C:\Users\bernd_\source\repos\NewAmpel\AmpelSteuerung\src\AmpelSteuerung.App\bin\Debug\net8.0-windows
+2026-03-30 22:34:42.584 +02:00 [INF] Loaded preset: Einzelfinale from final_individual.yaml
+2026-03-30 22:34:42.586 +02:00 [INF] Loaded preset: Mixed Team Finale from final_mixed_team.yaml
+2026-03-30 22:34:42.587 +02:00 [INF] Loaded preset: Team Finale (3er Mannschaft) from final_team.yaml
+2026-03-30 22:34:42.587 +02:00 [INF] Loaded preset: Training from training.yaml
+2026-03-30 22:34:42.588 +02:00 [INF] Loaded preset: WA 720 (70m Outdoor) from wa720.yaml
+2026-03-30 22:34:42.588 +02:00 [INF] Loaded preset: WA Indoor (18m) from wa_indoor.yaml
+2026-03-30 22:34:42.588 +02:00 [INF] Loaded 6 presets from ./Presets
+2026-03-30 22:35:06.810 +02:00 [INF] Standard end started. Group 1: AB, Prep: 10s, Shooting: 20s
+2026-03-30 22:35:16.821 +02:00 [INF] Shooting started. Phase: "ShootingGroup1", Group: AB
+2026-03-30 22:35:36.832 +02:00 [INF] Preparation for group 2: CD
+2026-03-30 22:35:46.839 +02:00 [INF] Shooting started. Phase: "ShootingGroup2", Group: CD
+2026-03-30 22:35:58.653 +02:00 [INF] Preset applied: WA Indoor (18m) (Mode: "Standard")
+2026-03-30 22:35:58.653 +02:00 [INF] Applied preset: WA Indoor (18m)
+2026-03-30 22:35:58.654 +02:00 [INF] Shooting duration set to 120s
+2026-03-30 22:35:58.656 +02:00 [INF] Total ends set to 10
+2026-03-30 22:35:59.704 +02:00 [INF] Standard end started. Group 1: AB, Prep: 10s, Shooting: 120s
+2026-03-30 22:36:09.742 +02:00 [INF] Shooting started. Phase: "ShootingGroup1", Group: AB
+2026-03-30 22:37:43.135 +02:00 [INF] Timer stopped
+2026-03-30 22:37:44.221 +02:00 [WRN] EMERGENCY STOP at 0s
+2026-03-30 22:40:04.851 +02:00 [INF] REST API starting on http://0.0.0.0:5000
+2026-03-30 22:40:04.918 +02:00 [ERR] Failed to start REST API
+System.InvalidOperationException: Unable to resolve service for type 'Microsoft.AspNetCore.Cors.Infrastructure.ICorsService' while attempting to activate 'Microsoft.AspNetCore.Cors.Infrastructure.CorsMiddleware'.
+   at Microsoft.Extensions.Internal.ActivatorUtilities.ConstructorMatcher.CreateInstance(IServiceProvider provider)
+   at Microsoft.Extensions.Internal.ActivatorUtilities.CreateInstance(IServiceProvider provider, Type instanceType, Object[] parameters)
+   at Microsoft.AspNetCore.Builder.UseMiddlewareExtensions.ReflectionMiddlewareBinder.CreateMiddleware(RequestDelegate next)
+   at Microsoft.AspNetCore.Builder.ApplicationBuilder.Build()
+   at Microsoft.AspNetCore.Builder.ApplicationBuilder.Build()
+   at Microsoft.AspNetCore.Hosting.GenericWebHostService.StartAsync(CancellationToken cancellationToken)
+   at Microsoft.Extensions.Hosting.Internal.Host.<StartAsync>b__15_1(IHostedService service, CancellationToken token)
+   at Microsoft.Extensions.Hosting.Internal.Host.ForeachService[T](IEnumerable`1 services, CancellationToken token, Boolean concurrent, Boolean abortOnFirstException, List`1 exceptions, Func`3 operation)
+   at Microsoft.Extensions.Hosting.Internal.Host.StartAsync(CancellationToken cancellationToken)
+   at AmpelSteuerung.Api.AmpelApiService.StartAsync(CancellationToken cancellationToken) in c:\Users\bernd_\source\repos\NewAmpel\AmpelSteuerung\src\AmpelSteuerung.Api\AmpelApiService.cs:line 56
+2026-03-30 22:40:04.925 +02:00 [INF] Application started. Press Ctrl+C to shut down.
+2026-03-30 22:40:04.925 +02:00 [INF] Hosting environment: Production
+2026-03-30 22:40:04.925 +02:00 [INF] Content root path: C:\Users\bernd_\source\repos\NewAmpel\AmpelSteuerung\src\AmpelSteuerung.App\bin\Debug\net8.0-windows
+2026-03-30 22:40:05.266 +02:00 [INF] Loaded preset: Einzelfinale from final_individual.yaml
+2026-03-30 22:40:05.267 +02:00 [INF] Loaded preset: Mixed Team Finale from final_mixed_team.yaml
+2026-03-30 22:40:05.269 +02:00 [INF] Loaded preset: Team Finale (3er Mannschaft) from final_team.yaml
+2026-03-30 22:40:05.269 +02:00 [INF] Loaded preset: Training from training.yaml
+2026-03-30 22:40:05.269 +02:00 [INF] Loaded preset: WA 720 (70m Outdoor) from wa720.yaml
+2026-03-30 22:40:05.270 +02:00 [INF] Loaded preset: WA Indoor (18m) from wa_indoor.yaml
+2026-03-30 22:40:05.270 +02:00 [INF] Loaded 6 presets from ./Presets
+2026-03-30 22:40:20.977 +02:00 [INF] RS485 broadcast stopped
+2026-03-30 22:40:20.991 +02:00 [INF] Application is shutting down...
+2026-03-30 22:40:20.999 +02:00 [INF] REST API stopped
+2026-03-30 22:40:21.000 +02:00 [INF] RS485 broadcast stopped
+2026-03-30 22:41:24.437 +02:00 [INF] REST API starting on http://0.0.0.0:5000
+2026-03-30 22:41:24.505 +02:00 [ERR] Failed to start REST API
+System.InvalidOperationException: Unable to resolve service for type 'Microsoft.AspNetCore.Cors.Infrastructure.ICorsService' while attempting to activate 'Microsoft.AspNetCore.Cors.Infrastructure.CorsMiddleware'.
+   at Microsoft.Extensions.Internal.ActivatorUtilities.ConstructorMatcher.CreateInstance(IServiceProvider provider)
+   at Microsoft.Extensions.Internal.ActivatorUtilities.CreateInstance(IServiceProvider provider, Type instanceType, Object[] parameters)
+   at Microsoft.AspNetCore.Builder.UseMiddlewareExtensions.ReflectionMiddlewareBinder.CreateMiddleware(RequestDelegate next)
+   at Microsoft.AspNetCore.Builder.ApplicationBuilder.Build()
+   at Microsoft.AspNetCore.Builder.ApplicationBuilder.Build()
+   at Microsoft.AspNetCore.Hosting.GenericWebHostService.StartAsync(CancellationToken cancellationToken)
+   at Microsoft.Extensions.Hosting.Internal.Host.<StartAsync>b__15_1(IHostedService service, CancellationToken token)
+   at Microsoft.Extensions.Hosting.Internal.Host.ForeachService[T](IEnumerable`1 services, CancellationToken token, Boolean concurrent, Boolean abortOnFirstException, List`1 exceptions, Func`3 operation)
+   at Microsoft.Extensions.Hosting.Internal.Host.StartAsync(CancellationToken cancellationToken)
+   at AmpelSteuerung.Api.AmpelApiService.StartAsync(CancellationToken cancellationToken) in c:\Users\bernd_\source\repos\NewAmpel\AmpelSteuerung\src\AmpelSteuerung.Api\AmpelApiService.cs:line 56
+2026-03-30 22:41:24.512 +02:00 [INF] Application started. Press Ctrl+C to shut down.
+2026-03-30 22:41:24.512 +02:00 [INF] Hosting environment: Production
+2026-03-30 22:41:24.512 +02:00 [INF] Content root path: C:\Users\bernd_\source\repos\NewAmpel\AmpelSteuerung\src\AmpelSteuerung.App\bin\Debug\net8.0-windows
+2026-03-30 22:41:24.862 +02:00 [INF] Loaded preset: Einzelfinale from final_individual.yaml
+2026-03-30 22:41:24.864 +02:00 [INF] Loaded preset: Mixed Team Finale from final_mixed_team.yaml
+2026-03-30 22:41:24.865 +02:00 [INF] Loaded preset: Team Finale (3er Mannschaft) from final_team.yaml
+2026-03-30 22:41:24.865 +02:00 [INF] Loaded preset: Training from training.yaml
+2026-03-30 22:41:24.866 +02:00 [INF] Loaded preset: WA 720 (70m Outdoor) from wa720.yaml
+2026-03-30 22:41:24.866 +02:00 [INF] Loaded preset: WA Indoor (18m) from wa_indoor.yaml
+2026-03-30 22:41:24.866 +02:00 [INF] Loaded 6 presets from ./Presets
+2026-03-30 22:42:20.201 +02:00 [INF] Timer stopped
+2026-03-30 22:42:22.888 +02:00 [INF] RS485 broadcast stopped
+2026-03-30 22:42:22.901 +02:00 [INF] Application is shutting down...
+2026-03-30 22:42:22.910 +02:00 [INF] REST API stopped
+2026-03-30 22:42:22.910 +02:00 [INF] RS485 broadcast stopped
+2026-03-30 22:46:40.613 +02:00 [INF] REST API starting on http://0.0.0.0:5000
+2026-03-30 22:46:40.679 +02:00 [ERR] Failed to start REST API
+System.InvalidOperationException: Unable to resolve service for type 'Microsoft.AspNetCore.Cors.Infrastructure.ICorsService' while attempting to activate 'Microsoft.AspNetCore.Cors.Infrastructure.CorsMiddleware'.
+   at Microsoft.Extensions.Internal.ActivatorUtilities.ConstructorMatcher.CreateInstance(IServiceProvider provider)
+   at Microsoft.Extensions.Internal.ActivatorUtilities.CreateInstance(IServiceProvider provider, Type instanceType, Object[] parameters)
+   at Microsoft.AspNetCore.Builder.UseMiddlewareExtensions.ReflectionMiddlewareBinder.CreateMiddleware(RequestDelegate next)
+   at Microsoft.AspNetCore.Builder.ApplicationBuilder.Build()
+   at Microsoft.AspNetCore.Builder.ApplicationBuilder.Build()
+   at Microsoft.AspNetCore.Hosting.GenericWebHostService.StartAsync(CancellationToken cancellationToken)
+   at Microsoft.Extensions.Hosting.Internal.Host.<StartAsync>b__15_1(IHostedService service, CancellationToken token)
+   at Microsoft.Extensions.Hosting.Internal.Host.ForeachService[T](IEnumerable`1 services, CancellationToken token, Boolean concurrent, Boolean abortOnFirstException, List`1 exceptions, Func`3 operation)
+   at Microsoft.Extensions.Hosting.Internal.Host.StartAsync(CancellationToken cancellationToken)
+   at AmpelSteuerung.Api.AmpelApiService.StartAsync(CancellationToken cancellationToken) in c:\Users\bernd_\source\repos\NewAmpel\AmpelSteuerung\src\AmpelSteuerung.Api\AmpelApiService.cs:line 56
+2026-03-30 22:46:40.685 +02:00 [INF] Application started. Press Ctrl+C to shut down.
+2026-03-30 22:46:40.685 +02:00 [INF] Hosting environment: Production
+2026-03-30 22:46:40.685 +02:00 [INF] Content root path: C:\Users\bernd_\source\repos\NewAmpel\AmpelSteuerung\src\AmpelSteuerung.App\bin\Debug\net8.0-windows
+2026-03-30 22:46:41.038 +02:00 [INF] Loaded preset: Einzelfinale from final_individual.yaml
+2026-03-30 22:46:41.039 +02:00 [INF] Loaded preset: Mixed Team Finale from final_mixed_team.yaml
+2026-03-30 22:46:41.041 +02:00 [INF] Loaded preset: Team Finale (3er Mannschaft) from final_team.yaml
+2026-03-30 22:46:41.041 +02:00 [INF] Loaded preset: Training from training.yaml
+2026-03-30 22:46:41.042 +02:00 [INF] Loaded preset: WA 720 (70m Outdoor) from wa720.yaml
+2026-03-30 22:46:41.042 +02:00 [INF] Loaded preset: WA Indoor (18m) from wa_indoor.yaml
+2026-03-30 22:46:41.042 +02:00 [INF] Loaded 6 presets from ./Presets
+2026-03-30 22:47:19.582 +02:00 [INF] Standard end started. Group 1: AB, Prep: 10s, Shooting: 20s
+2026-03-30 22:47:23.254 +02:00 [INF] Timer stopped
+2026-03-30 22:47:25.559 +02:00 [INF] Preset applied: Einzelfinale (Mode: "Final")
+2026-03-30 22:47:25.559 +02:00 [INF] Applied preset: Einzelfinale
+2026-03-30 22:47:37.765 +02:00 [INF] Starting side set to left
+2026-03-30 22:47:38.833 +02:00 [INF] Starting side set to right
+2026-03-30 22:47:39.699 +02:00 [INF] Starting side set to left
+2026-03-30 22:47:40.152 +02:00 [INF] Starting side set to right
+2026-03-30 22:47:40.514 +02:00 [INF] Starting side set to left
+2026-03-30 22:47:40.897 +02:00 [INF] Starting side set to right
+2026-03-30 22:47:41.773 +02:00 [INF] Starting side set to right
+2026-03-30 22:47:41.978 +02:00 [INF] Starting side set to right
+2026-03-30 22:47:42.149 +02:00 [INF] Starting side set to right
+2026-03-30 22:47:42.830 +02:00 [INF] Final end started. Starting side: right, Prep: 10s
+2026-03-30 22:47:52.839 +02:00 [INF] Final shooting started. Side: right, Round: 1
+2026-03-30 22:48:12.850 +02:00 [INF] Final side switch to left, round 2
+2026-03-30 22:48:25.702 +02:00 [INF] Skip triggered during "ShootingGroup1"
+2026-03-30 22:48:25.702 +02:00 [INF] Final side switch to right, round 3
+2026-03-30 22:48:43.987 +02:00 [INF] Skip triggered during "ShootingGroup1"
+2026-03-30 22:48:43.987 +02:00 [INF] Final side switch to left, round 4
+2026-03-30 22:49:03.952 +02:00 [INF] Side switch triggered
+2026-03-30 22:49:03.953 +02:00 [INF] Final side switch to right, round 5
+2026-03-30 22:49:07.503 +02:00 [INF] Side switch triggered
+2026-03-30 22:49:07.503 +02:00 [INF] Final side switch to left, round 6
+2026-03-30 22:49:08.343 +02:00 [INF] Side switch triggered
+2026-03-30 22:49:08.343 +02:00 [INF] Final end 1/5 completed. Left: 3, Right: 3
+2026-03-30 22:49:14.212 +02:00 [INF] Starting side set to left
+2026-03-30 22:49:30.240 +02:00 [INF] RS485 broadcast stopped
+2026-03-30 22:49:30.249 +02:00 [INF] Application is shutting down...
+2026-03-30 22:49:30.254 +02:00 [INF] REST API stopped
+2026-03-30 22:49:30.255 +02:00 [INF] RS485 broadcast stopped
+2026-03-30 22:55:15.430 +02:00 [INF] REST API starting on http://0.0.0.0:5000
+2026-03-30 22:55:15.497 +02:00 [ERR] Failed to start REST API
+System.InvalidOperationException: Unable to resolve service for type 'Microsoft.AspNetCore.Cors.Infrastructure.ICorsService' while attempting to activate 'Microsoft.AspNetCore.Cors.Infrastructure.CorsMiddleware'.
+   at Microsoft.Extensions.Internal.ActivatorUtilities.ConstructorMatcher.CreateInstance(IServiceProvider provider)
+   at Microsoft.Extensions.Internal.ActivatorUtilities.CreateInstance(IServiceProvider provider, Type instanceType, Object[] parameters)
+   at Microsoft.AspNetCore.Builder.UseMiddlewareExtensions.ReflectionMiddlewareBinder.CreateMiddleware(RequestDelegate next)
+   at Microsoft.AspNetCore.Builder.ApplicationBuilder.Build()
+   at Microsoft.AspNetCore.Builder.ApplicationBuilder.Build()
+   at Microsoft.AspNetCore.Hosting.GenericWebHostService.StartAsync(CancellationToken cancellationToken)
+   at Microsoft.Extensions.Hosting.Internal.Host.<StartAsync>b__15_1(IHostedService service, CancellationToken token)
+   at Microsoft.Extensions.Hosting.Internal.Host.ForeachService[T](IEnumerable`1 services, CancellationToken token, Boolean concurrent, Boolean abortOnFirstException, List`1 exceptions, Func`3 operation)
+   at Microsoft.Extensions.Hosting.Internal.Host.StartAsync(CancellationToken cancellationToken)
+   at AmpelSteuerung.Api.AmpelApiService.StartAsync(CancellationToken cancellationToken) in c:\Users\bernd_\source\repos\NewAmpel\AmpelSteuerung\src\AmpelSteuerung.Api\AmpelApiService.cs:line 56
+2026-03-30 22:55:15.503 +02:00 [INF] Application started. Press Ctrl+C to shut down.
+2026-03-30 22:55:15.504 +02:00 [INF] Hosting environment: Production
+2026-03-30 22:55:15.504 +02:00 [INF] Content root path: C:\Users\bernd_\source\repos\NewAmpel\AmpelSteuerung\src\AmpelSteuerung.App\bin\Debug\net8.0-windows
+2026-03-30 22:55:15.856 +02:00 [INF] Loaded preset: Einzelfinale from final_individual.yaml
+2026-03-30 22:55:15.864 +02:00 [INF] Loaded preset: Mixed Team Finale from final_mixed_team.yaml
+2026-03-30 22:55:15.871 +02:00 [INF] Loaded preset: Team Finale (3er Mannschaft) from final_team.yaml
+2026-03-30 22:55:15.877 +02:00 [INF] Loaded preset: Training from training.yaml
+2026-03-30 22:55:15.882 +02:00 [INF] Loaded preset: WA 720 (70m Outdoor) from wa720.yaml
+2026-03-30 22:55:15.887 +02:00 [INF] Loaded preset: WA Indoor (18m) from wa_indoor.yaml
+2026-03-30 22:55:15.888 +02:00 [INF] Loaded 6 presets from ./Presets
+2026-03-30 22:55:26.270 +02:00 [INF] Preset applied: Einzelfinale (Mode: "Final")
+2026-03-30 22:55:26.271 +02:00 [INF] Applied preset: Einzelfinale
+2026-03-30 22:55:30.394 +02:00 [INF] Starting side set to right
+2026-03-30 22:55:31.842 +02:00 [INF] Starting side set to left
+2026-03-30 22:55:32.751 +02:00 [INF] Starting side set to right
+2026-03-30 22:55:33.280 +02:00 [INF] Starting side set to left
+2026-03-30 22:55:33.726 +02:00 [INF] Starting side set to right
+2026-03-30 22:55:44.138 +02:00 [INF] Starting side set to left
+2026-03-30 22:55:45.133 +02:00 [INF] Starting side set to right
+2026-03-30 22:55:51.230 +02:00 [INF] Final end started. Starting side: right, Prep: 10s
+2026-03-30 22:56:01.235 +02:00 [INF] Final shooting started. Side: right, Round: 1
+2026-03-30 22:56:21.250 +02:00 [INF] Final side switch to left, round 2
+2026-03-30 22:56:33.355 +02:00 [INF] RS485 broadcast stopped
+2026-03-30 22:56:33.356 +02:00 [INF] Application is shutting down...
+2026-03-30 22:56:33.364 +02:00 [INF] REST API stopped
+2026-03-30 22:56:33.364 +02:00 [INF] RS485 broadcast stopped
+2026-03-30 22:58:43.379 +02:00 [INF] REST API starting on http://0.0.0.0:5000
+2026-03-30 22:58:43.445 +02:00 [ERR] Failed to start REST API
+System.InvalidOperationException: Unable to resolve service for type 'Microsoft.AspNetCore.Cors.Infrastructure.ICorsService' while attempting to activate 'Microsoft.AspNetCore.Cors.Infrastructure.CorsMiddleware'.
+   at Microsoft.Extensions.Internal.ActivatorUtilities.ConstructorMatcher.CreateInstance(IServiceProvider provider)
+   at Microsoft.Extensions.Internal.ActivatorUtilities.CreateInstance(IServiceProvider provider, Type instanceType, Object[] parameters)
+   at Microsoft.AspNetCore.Builder.UseMiddlewareExtensions.ReflectionMiddlewareBinder.CreateMiddleware(RequestDelegate next)
+   at Microsoft.AspNetCore.Builder.ApplicationBuilder.Build()
+   at Microsoft.AspNetCore.Builder.ApplicationBuilder.Build()
+   at Microsoft.AspNetCore.Hosting.GenericWebHostService.StartAsync(CancellationToken cancellationToken)
+   at Microsoft.Extensions.Hosting.Internal.Host.<StartAsync>b__15_1(IHostedService service, CancellationToken token)
+   at Microsoft.Extensions.Hosting.Internal.Host.ForeachService[T](IEnumerable`1 services, CancellationToken token, Boolean concurrent, Boolean abortOnFirstException, List`1 exceptions, Func`3 operation)
+   at Microsoft.Extensions.Hosting.Internal.Host.StartAsync(CancellationToken cancellationToken)
+   at AmpelSteuerung.Api.AmpelApiService.StartAsync(CancellationToken cancellationToken) in c:\Users\bernd_\source\repos\NewAmpel\AmpelSteuerung\src\AmpelSteuerung.Api\AmpelApiService.cs:line 56
+2026-03-30 22:58:43.451 +02:00 [INF] Application started. Press Ctrl+C to shut down.
+2026-03-30 22:58:43.451 +02:00 [INF] Hosting environment: Production
+2026-03-30 22:58:43.451 +02:00 [INF] Content root path: C:\Users\bernd_\source\repos\NewAmpel\AmpelSteuerung\src\AmpelSteuerung.App\bin\Debug\net8.0-windows
+2026-03-30 22:58:43.730 +02:00 [INF] Loaded preset: Einzelfinale from final_individual.yaml
+2026-03-30 22:58:43.732 +02:00 [INF] Loaded preset: Mixed Team Finale from final_mixed_team.yaml
+2026-03-30 22:58:43.733 +02:00 [INF] Loaded preset: Team Finale (3er Mannschaft) from final_team.yaml
+2026-03-30 22:58:43.733 +02:00 [INF] Loaded preset: Training from training.yaml
+2026-03-30 22:58:43.734 +02:00 [INF] Loaded preset: WA 720 (70m Outdoor) from wa720.yaml
+2026-03-30 22:58:43.734 +02:00 [INF] Loaded preset: WA Indoor (18m) from wa_indoor.yaml
+2026-03-30 22:58:43.734 +02:00 [INF] Loaded 6 presets from ./Presets
+2026-03-30 22:58:47.552 +02:00 [INF] Preset applied: Einzelfinale (Mode: "Final")
+2026-03-30 22:58:47.553 +02:00 [INF] Applied preset: Einzelfinale
+2026-03-30 22:58:58.061 +02:00 [INF] Starting side set to left
+2026-03-30 22:58:59.247 +02:00 [INF] Final end started. Starting side: left, Prep: 10s
+2026-03-30 22:59:09.248 +02:00 [INF] Final shooting started. Side: left, Round: 1
+2026-03-30 22:59:29.253 +02:00 [INF] Final side switch to right, round 2
+2026-03-30 22:59:36.442 +02:00 [INF] Timer stopped
+2026-03-30 22:59:42.861 +02:00 [INF] Starting side set to left
+2026-03-30 22:59:44.348 +02:00 [INF] Final end started. Starting side: left, Prep: 10s
+2026-03-30 22:59:54.360 +02:00 [INF] Final shooting started. Side: left, Round: 1
+2026-03-30 23:00:11.057 +02:00 [INF] Timer stopped
+2026-03-30 23:06:19.733 +02:00 [INF] REST API starting on http://0.0.0.0:5000
+2026-03-30 23:06:19.805 +02:00 [ERR] Failed to start REST API
+System.InvalidOperationException: Unable to resolve service for type 'Microsoft.AspNetCore.Cors.Infrastructure.ICorsService' while attempting to activate 'Microsoft.AspNetCore.Cors.Infrastructure.CorsMiddleware'.
+   at Microsoft.Extensions.Internal.ActivatorUtilities.ConstructorMatcher.CreateInstance(IServiceProvider provider)
+   at Microsoft.Extensions.Internal.ActivatorUtilities.CreateInstance(IServiceProvider provider, Type instanceType, Object[] parameters)
+   at Microsoft.AspNetCore.Builder.UseMiddlewareExtensions.ReflectionMiddlewareBinder.CreateMiddleware(RequestDelegate next)
+   at Microsoft.AspNetCore.Builder.ApplicationBuilder.Build()
+   at Microsoft.AspNetCore.Builder.ApplicationBuilder.Build()
+   at Microsoft.AspNetCore.Hosting.GenericWebHostService.StartAsync(CancellationToken cancellationToken)
+   at Microsoft.Extensions.Hosting.Internal.Host.<StartAsync>b__15_1(IHostedService service, CancellationToken token)
+   at Microsoft.Extensions.Hosting.Internal.Host.ForeachService[T](IEnumerable`1 services, CancellationToken token, Boolean concurrent, Boolean abortOnFirstException, List`1 exceptions, Func`3 operation)
+   at Microsoft.Extensions.Hosting.Internal.Host.StartAsync(CancellationToken cancellationToken)
+   at AmpelSteuerung.Api.AmpelApiService.StartAsync(CancellationToken cancellationToken) in c:\Users\bernd_\source\repos\NewAmpel\AmpelSteuerung\src\AmpelSteuerung.Api\AmpelApiService.cs:line 56
+2026-03-30 23:06:19.812 +02:00 [INF] Application started. Press Ctrl+C to shut down.
+2026-03-30 23:06:19.812 +02:00 [INF] Hosting environment: Production
+2026-03-30 23:06:19.812 +02:00 [INF] Content root path: C:\Users\bernd_\source\repos\NewAmpel\AmpelSteuerung\src\AmpelSteuerung.App\bin\Debug\net8.0-windows
+2026-03-30 23:06:20.164 +02:00 [INF] Loaded preset: Einzelfinale from final_individual.yaml
+2026-03-30 23:06:20.172 +02:00 [INF] Loaded preset: Mixed Team Finale from final_mixed_team.yaml
+2026-03-30 23:06:20.179 +02:00 [INF] Loaded preset: Team Finale (3er Mannschaft) from final_team.yaml
+2026-03-30 23:06:20.184 +02:00 [INF] Loaded preset: Training from training.yaml
+2026-03-30 23:06:20.189 +02:00 [INF] Loaded preset: WA 720 (70m Outdoor) from wa720.yaml
+2026-03-30 23:06:20.195 +02:00 [INF] Loaded preset: WA Indoor (18m) from wa_indoor.yaml
+2026-03-30 23:06:20.195 +02:00 [INF] Loaded 6 presets from ./Presets
+2026-03-30 23:06:25.026 +02:00 [INF] Preset applied: Einzelfinale (Mode: "Final")
+2026-03-30 23:06:25.026 +02:00 [INF] Applied preset: Einzelfinale
+2026-03-30 23:06:45.046 +02:00 [INF] Starting side set to right
+2026-03-30 23:06:46.242 +02:00 [INF] Final end started. Starting side: right, Prep: 10s
+2026-03-30 23:06:56.254 +02:00 [INF] Final shooting started. Side: right, Round: 1
+2026-03-30 23:07:09.928 +02:00 [INF] Timer stopped
+2026-03-30 23:07:10.970 +02:00 [INF] RS485 broadcast stopped
+2026-03-30 23:07:10.972 +02:00 [INF] Application is shutting down...
+2026-03-30 23:07:10.977 +02:00 [INF] REST API stopped
+2026-03-30 23:07:10.978 +02:00 [INF] RS485 broadcast stopped

@@ -1,0 +1,107 @@
+<Window x:Class="AmpelSteuerung.App.BeamerWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:converters="clr-namespace:AmpelSteuerung.App.Converters"
+        Title="Ampel Beamer"
+        WindowStyle="None"
+        WindowState="Normal"
+        Background="Black"
+        KeyDown="Window_KeyDown">
+
+    <Window.Resources>
+        <converters:HexToBrushConverter x:Key="HexToBrush"/>
+        <converters:BoolToVisibilityConverter x:Key="BoolToVis"/>
+    </Window.Resources>
+
+    <Grid>
+        <!-- Standard mode: single display filling the whole screen -->
+        <Border Background="{Binding Display1ColorBrush, Converter={StaticResource HexToBrush}}"
+                Visibility="{Binding IsFinalMode, Converter={StaticResource BoolToVis}, ConverterParameter=invert}">
+            <Viewbox Stretch="Uniform" Margin="40">
+                <StackPanel HorizontalAlignment="Center">
+                    <TextBlock Text="{Binding Display1Group}"
+                               FontSize="120"
+                               FontWeight="Bold"
+                               Foreground="White"
+                               HorizontalAlignment="Center"
+                               Opacity="0.85"/>
+                    <TextBlock Text="{Binding Display1Time}"
+                               FontSize="500"
+                               FontWeight="Bold"
+                               Foreground="White"
+                               HorizontalAlignment="Center"
+                               FontFamily="Consolas"/>
+                    <TextBlock Text="{Binding CurrentEnd}"
+                               FontSize="100"
+                               FontWeight="Bold"
+                               Foreground="White"
+                               HorizontalAlignment="Center"
+                               Opacity="0.7"/>
+                </StackPanel>
+            </Viewbox>
+        </Border>
+
+        <!-- Final mode: dual side-by-side displays -->
+        <Grid Visibility="{Binding IsFinalMode, Converter={StaticResource BoolToVis}}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="4"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <Border Grid.Column="0"
+                    Background="{Binding Display1ColorBrush, Converter={StaticResource HexToBrush}}">
+                <Viewbox Stretch="Uniform" Margin="20">
+                    <StackPanel HorizontalAlignment="Center">
+                        <TextBlock Text="{Binding Display1Group}"
+                                   FontSize="100"
+                                   FontWeight="Bold"
+                                   Foreground="White"
+                                   HorizontalAlignment="Center"
+                                   Opacity="0.85"/>
+                        <TextBlock Text="{Binding Display1Time}"
+                                   FontSize="400"
+                                   FontWeight="Bold"
+                                   Foreground="White"
+                                   HorizontalAlignment="Center"
+                                   FontFamily="Consolas"/>
+                        <TextBlock Text="{Binding CurrentEnd}"
+                                   FontSize="80"
+                                   FontWeight="Bold"
+                                   Foreground="White"
+                                   HorizontalAlignment="Center"
+                                   Opacity="0.7"/>
+                    </StackPanel>
+                </Viewbox>
+            </Border>
+
+            <Rectangle Grid.Column="1" Fill="Black"/>
+
+            <Border Grid.Column="2"
+                    Background="{Binding Display2ColorBrush, Converter={StaticResource HexToBrush}}">
+                <Viewbox Stretch="Uniform" Margin="20">
+                    <StackPanel HorizontalAlignment="Center">
+                        <TextBlock Text="{Binding Display2Group}"
+                                   FontSize="100"
+                                   FontWeight="Bold"
+                                   Foreground="White"
+                                   HorizontalAlignment="Center"
+                                   Opacity="0.85"/>
+                        <TextBlock Text="{Binding Display2Time}"
+                                   FontSize="400"
+                                   FontWeight="Bold"
+                                   Foreground="White"
+                                   HorizontalAlignment="Center"
+                                   FontFamily="Consolas"/>
+                        <TextBlock Text="{Binding CurrentEnd}"
+                                   FontSize="80"
+                                   FontWeight="Bold"
+                                   Foreground="White"
+                                   HorizontalAlignment="Center"
+                                   Opacity="0.7"/>
+                    </StackPanel>
+                </Viewbox>
+            </Border>
+        </Grid>
+    </Grid>
+</Window>

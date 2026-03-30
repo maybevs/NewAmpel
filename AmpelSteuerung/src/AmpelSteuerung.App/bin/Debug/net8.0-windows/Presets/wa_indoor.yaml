@@ -1,0 +1,21 @@
+name: WA Indoor (18m)
+description: 3 Pfeile pro Passe, 120 Sekunden Schießzeit
+type: standard
+timer:
+  shootingTime: 120
+  preparationTime: 10
+  warningTime: 30
+groups:
+  mode: alternating
+  names:
+  - AB
+  - CD
+  alternateStartOrder: true
+match:
+  totalEnds: 10
+  arrowsPerEnd: 3
+options:
+  groupSwitchEnabled: true
+  skipEnabled: true
+final: 
+isFinalMode: false

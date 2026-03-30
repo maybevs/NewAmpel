@@ -1,0 +1,28 @@
+name: Team Finale (3er Mannschaft)
+description: 3 Schützen pro Seite, je 1 Pfeil = 30 Sek. pro Team
+type: final
+timer:
+  shootingTime: 30
+  preparationTime: 10
+  warningTime: 5
+groups:
+  mode: alternating
+  names:
+  - Links
+  - Rechts
+  alternateStartOrder: true
+match:
+  totalEnds: 4
+  arrowsPerEnd: 6
+options:
+  groupSwitchEnabled: true
+  skipEnabled: true
+final:
+  arrowsPerSide: 3
+  totalArrowsPerEnd: 6
+  sides:
+  - Links
+  - Rechts
+  startSide: manual
+  skipEnabled: true
+isFinalMode: true

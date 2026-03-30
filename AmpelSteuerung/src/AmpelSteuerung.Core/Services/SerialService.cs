@@ -132,7 +132,10 @@ public class SerialService : ISerialService
             try
             {
                 var state = _stateService.CurrentState;
-                var json = state.ToSerialJson() + "\n";
+                // Apply display swap for RS485 output only
+                var d1 = _stateService.Display1Side == "left" ? state.Display1 : state.Display2;
+                var d2 = _stateService.Display1Side == "left" ? state.Display2 : state.Display1;
+                var json = $"{{\"d1\":{d1.ToSerialJson()},\"d2\":{d2.ToSerialJson()}}}\n";
                 _serialPort.Write(json);
             }
             catch (Exception ex)
