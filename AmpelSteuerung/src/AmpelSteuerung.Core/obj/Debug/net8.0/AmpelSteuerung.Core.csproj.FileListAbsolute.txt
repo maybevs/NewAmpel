@@ -1,0 +1,12 @@
+C:\Users\bernd_\source\repos\NewAmpel\AmpelSteuerung\src\AmpelSteuerung.Core\bin\Debug\net8.0\AmpelSteuerung.Core.deps.json
+C:\Users\bernd_\source\repos\NewAmpel\AmpelSteuerung\src\AmpelSteuerung.Core\bin\Debug\net8.0\AmpelSteuerung.Core.dll
+C:\Users\bernd_\source\repos\NewAmpel\AmpelSteuerung\src\AmpelSteuerung.Core\bin\Debug\net8.0\AmpelSteuerung.Core.pdb
+C:\Users\bernd_\source\repos\NewAmpel\AmpelSteuerung\src\AmpelSteuerung.Core\obj\Debug\net8.0\AmpelSteuerung.Core.csproj.AssemblyReference.cache
+C:\Users\bernd_\source\repos\NewAmpel\AmpelSteuerung\src\AmpelSteuerung.Core\obj\Debug\net8.0\AmpelSteuerung.Core.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\bernd_\source\repos\NewAmpel\AmpelSteuerung\src\AmpelSteuerung.Core\obj\Debug\net8.0\AmpelSteuerung.Core.AssemblyInfoInputs.cache
+C:\Users\bernd_\source\repos\NewAmpel\AmpelSteuerung\src\AmpelSteuerung.Core\obj\Debug\net8.0\AmpelSteuerung.Core.AssemblyInfo.cs
+C:\Users\bernd_\source\repos\NewAmpel\AmpelSteuerung\src\AmpelSteuerung.Core\obj\Debug\net8.0\AmpelSteuerung.Core.csproj.CoreCompileInputs.cache
+C:\Users\bernd_\source\repos\NewAmpel\AmpelSteuerung\src\AmpelSteuerung.Core\obj\Debug\net8.0\AmpelSteuerung.Core.dll
+C:\Users\bernd_\source\repos\NewAmpel\AmpelSteuerung\src\AmpelSteuerung.Core\obj\Debug\net8.0\refint\AmpelSteuerung.Core.dll
+C:\Users\bernd_\source\repos\NewAmpel\AmpelSteuerung\src\AmpelSteuerung.Core\obj\Debug\net8.0\AmpelSteuerung.Core.pdb
+C:\Users\bernd_\source\repos\NewAmpel\AmpelSteuerung\src\AmpelSteuerung.Core\obj\Debug\net8.0\ref\AmpelSteuerung.Core.dll
