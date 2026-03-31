@@ -1,5 +1,20 @@
 namespace AmpelSteuerung.Core.Configuration;
 
+public class IdleConfiguration
+{
+    public string DefaultMode { get; set; } = "clock";
+    public List<string> QuickMessages { get; set; } =
+    [
+        "Mittagspause",
+        "Wettkampf beginnt in Kürze",
+        "Wertung läuft",
+        "Bitte Pfeile holen"
+    ];
+    public int ScrollSpeedMs { get; set; } = 50;
+    public string ClockFormat { get; set; } = "HH:mm";
+    public int MaxStaticChars { get; set; } = 10;
+}
+
 public class AmpelConfiguration
 {
     // Serial / RS485
@@ -39,4 +54,7 @@ public class AmpelConfiguration
     public double WindowWidth { get; set; } = 1200;
     public double WindowHeight { get; set; } = 800;
     public int BeamerMonitor { get; set; } = 1;
+
+    // Idle display
+    public IdleConfiguration Idle { get; set; } = new();
 }

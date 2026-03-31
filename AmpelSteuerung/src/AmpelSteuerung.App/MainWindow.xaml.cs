@@ -116,6 +116,10 @@ public partial class MainWindow : Window
     {
         if (_viewModel == null) return;
 
+        // Don't intercept keys when a TextBox has focus (let the user type freely)
+        if (e.OriginalSource is System.Windows.Controls.TextBox)
+            return;
+
         switch (e.Key)
         {
             case Key.Space:
@@ -166,6 +170,18 @@ public partial class MainWindow : Window
                 break;
             case Key.F11:
                 _viewModel.ToggleBeamerCommand.Execute(null);
+                e.Handled = true;
+                break;
+            case Key.M:
+                if (Keyboard.Modifiers == ModifierKeys.Control)
+                {
+                    // Ctrl+M: Focus the idle message textbox
+                    IdleMessageTextBox?.Focus();
+                }
+                else if (Keyboard.Modifiers == ModifierKeys.None)
+                {
+                    _viewModel.CycleIdleModeCommand.Execute(null);
+                }
                 e.Handled = true;
                 break;
         }

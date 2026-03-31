@@ -1,4 +1,5 @@
 using System.IO.Ports;
+using AmpelSteuerung.Core.Configuration;
 using AmpelSteuerung.Core.Models;
 using Microsoft.Extensions.Logging;
 
@@ -8,6 +9,7 @@ public class SerialService : ISerialService
 {
     private readonly IAmpelStateService _stateService;
     private readonly ILogger<SerialService> _logger;
+    private readonly string _clockFormat;
     private SerialPort? _serialPort;
     private System.Timers.Timer? _broadcastTimer;
     private readonly object _lock = new();
@@ -33,10 +35,11 @@ public class SerialService : ISerialService
 
     public event EventHandler<bool>? ConnectionChanged;
 
-    public SerialService(IAmpelStateService stateService, ILogger<SerialService> logger)
+    public SerialService(IAmpelStateService stateService, AmpelConfiguration config, ILogger<SerialService> logger)
     {
         _stateService = stateService;
         _logger = logger;
+        _clockFormat = config.Idle.ClockFormat;
     }
 
     public string[] GetAvailablePorts()
@@ -132,10 +135,23 @@ public class SerialService : ISerialService
             try
             {
                 var state = _stateService.CurrentState;
-                // Apply display swap for RS485 output only
-                var d1 = _stateService.Display1Side == "left" ? state.Display1 : state.Display2;
-                var d2 = _stateService.Display1Side == "left" ? state.Display2 : state.Display1;
-                var json = $"{{\"d1\":{d1.ToSerialJson()},\"d2\":{d2.ToSerialJson()}}}\n";
+                string json;
+
+                if (state.Status == TimerStatus.Stopped && state.IdleMode != IdleDisplayMode.Off)
+                {
+                    // Idle mode: send message/clock JSON
+                    var clock = DateTime.Now.ToString(_clockFormat);
+                    var idleJson = AmpelState.ToIdleSerialJson(state.IdleMode, state.IdleMessage, state.IdleMessageScroll, clock);
+                    json = $"{{\"d1\":{idleJson},\"d2\":{idleJson}}}\n";
+                }
+                else
+                {
+                    // Normal mode: apply display swap for RS485 output
+                    var d1 = _stateService.Display1Side == "left" ? state.Display1 : state.Display2;
+                    var d2 = _stateService.Display1Side == "left" ? state.Display2 : state.Display1;
+                    json = $"{{\"d1\":{d1.ToSerialJson()},\"d2\":{d2.ToSerialJson()}}}\n";
+                }
+
                 _serialPort.Write(json);
             }
             catch (Exception ex)

@@ -595,6 +595,71 @@
                     </StackPanel>
                 </Border>
 
+                <!-- ── IDLE DISPLAY (visible when stopped) ──────────────── -->
+                <Border Style="{StaticResource CardBorder}" Margin="0,0,0,10"
+                        Visibility="{Binding IsStopped, Converter={StaticResource BoolToVis}}"
+                        BorderBrush="#2A2A55">
+                    <StackPanel>
+                        <TextBlock Text="ANZEIGE IM LEERLAUF (M)" FontSize="11" FontWeight="SemiBold"
+                                   Foreground="{StaticResource AccentBlueBrush}" Margin="0,0,0,12"/>
+
+                        <!-- Mode selection -->
+                        <WrapPanel HorizontalAlignment="Center" Margin="0,0,0,10">
+                            <RadioButton GroupName="IdleMode" Content="🕐 Uhrzeit"
+                                         IsChecked="{Binding IsIdleModeClock}"
+                                         Command="{Binding SetIdleModeClockCommand}"
+                                         Foreground="{StaticResource TextPrimaryBrush}" Margin="0,0,14,0"/>
+                            <RadioButton GroupName="IdleMode" Content="💬 Nachricht"
+                                         IsChecked="{Binding IsIdleModeMessage}"
+                                         Command="{Binding SetIdleModeMessageCommand}"
+                                         Foreground="{StaticResource TextPrimaryBrush}" Margin="0,0,14,0"/>
+                            <RadioButton GroupName="IdleMode" Content="🕐+💬 Beides"
+                                         IsChecked="{Binding IsIdleModeBoth}"
+                                         Command="{Binding SetIdleModeBothCommand}"
+                                         Foreground="{StaticResource TextPrimaryBrush}" Margin="0,0,14,0"/>
+                            <RadioButton GroupName="IdleMode" Content="✕ Aus"
+                                         IsChecked="{Binding IsIdleModeOff}"
+                                         Command="{Binding SetIdleModeOffCommand}"
+                                         Foreground="{StaticResource TextPrimaryBrush}"/>
+                        </WrapPanel>
+
+                        <!-- Message input -->
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,4">
+                            <TextBlock Text="Nachricht:" FontSize="12" VerticalAlignment="Center" Margin="0,0,8,0"
+                                       Foreground="{StaticResource TextSecondaryBrush}"/>
+                            <TextBox x:Name="IdleMessageTextBox"
+                                     Text="{Binding IdleMessage, UpdateSourceTrigger=PropertyChanged}"
+                                     Width="340" MaxLength="200"
+                                     HorizontalContentAlignment="Left"/>
+                            <Button Content="✕" Style="{StaticResource SmallButton}"
+                                    Command="{Binding ClearIdleMessageCommand}"
+                                    Padding="8,6" Margin="4,0,0,0"/>
+                        </StackPanel>
+
+                        <!-- Scroll indicator -->
+                        <TextBlock Text="{Binding IdleScrollText}" FontSize="11" HorizontalAlignment="Center"
+                                   Foreground="{StaticResource TextMutedBrush}" Margin="0,2,0,8"/>
+
+                        <!-- Quick messages -->
+                        <TextBlock Text="Schnellnachrichten:" FontSize="11" Foreground="{StaticResource TextMutedBrush}" Margin="0,0,0,6"/>
+                        <ItemsControl ItemsSource="{Binding QuickMessages}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel HorizontalAlignment="Center"/>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Button Content="{Binding}" Style="{StaticResource SmallButton}"
+                                            Command="{Binding DataContext.SetQuickMessageCommand, RelativeSource={RelativeSource AncestorType=Border}}"
+                                            CommandParameter="{Binding}"
+                                            FontSize="11" Padding="10,6"/>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </Border>
+
                 <!-- ── PRESETS ───────────────────────────────────────── -->
                 <Border Style="{StaticResource CardBorder}" Margin="0,0,0,10">
                     <StackPanel>

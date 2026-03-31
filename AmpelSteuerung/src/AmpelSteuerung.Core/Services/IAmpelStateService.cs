@@ -39,6 +39,11 @@ public interface IAmpelStateService
     void ApplyPreset(Preset preset);
     void SetMode(OperatingMode mode);
 
+    // Idle display
+    void SetIdleMode(IdleDisplayMode mode);
+    void SetIdleMessage(string message);
+    void ClearIdleMessage();
+
     // Display mapping
     string Display1Side { get; set; }
     string Display2Side { get; set; }

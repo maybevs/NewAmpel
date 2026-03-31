@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Timer-Anzeige Einstellungen</title>
+    <link rel="stylesheet" href="https://developer.elgato.com/documentation/stream-deck/css/sdpi.css">
+    <style>
+        .sdpi-wrapper { margin: 0 8px; }
+        .sdpi-heading { font-size: 11px; margin-top: 12px; color: #999; }
+    </style>
+</head>
+<body>
+    <div class="sdpi-wrapper">
+        <div class="sdpi-heading">ANZEIGE-EINSTELLUNGEN</div>
+        
+        <div type="select" class="sdpi-item">
+            <div class="sdpi-item-label">Display</div>
+            <select class="sdpi-item-value" id="display">
+                <option value="1">Display 1 (Standard)</option>
+                <option value="2">Display 2</option>
+            </select>
+        </div>
+
+        <div class="sdpi-heading" style="margin-top: 24px;">VERBINDUNG</div>
+        <div type="textarea" class="sdpi-item">
+            <div class="sdpi-item-label">API URL</div>
+            <input class="sdpi-item-value" id="apiUrl" type="text" placeholder="http://localhost:5000" />
+        </div>
+        <div class="sdpi-item">
+            <div class="sdpi-item-label">Status</div>
+            <div class="sdpi-item-value" id="connectionStatus" style="color: #999; font-size: 11px;">Prüfe...</div>
+        </div>
+    </div>
+
+    <script>
+        let websocket = null;
+        let uuid = null;
+        let actionInfo = null;
+        let settings = {};
+
+        function connectElgatoStreamDeckSocket(port, propertyInspectorUUID, registerEvent, info, actionInfoStr) {
+            uuid = propertyInspectorUUID;
+            actionInfo = JSON.parse(actionInfoStr);
+            settings = actionInfo.payload?.settings || {};
+
+            // Apply saved settings
+            if (settings.display) document.getElementById('display').value = settings.display;
+            if (settings.apiUrl) document.getElementById('apiUrl').value = settings.apiUrl;
+
+            websocket = new WebSocket('ws://localhost:' + port);
+            websocket.onopen = function() {
+                websocket.send(JSON.stringify({ event: registerEvent, uuid: propertyInspectorUUID }));
+            };
+            websocket.onmessage = function(evt) {
+                var data = JSON.parse(evt.data);
+                if (data.event === 'didReceiveSettings') {
+                    settings = data.payload?.settings || {};
+                    if (settings.display) document.getElementById('display').value = settings.display;
+                    if (settings.apiUrl) document.getElementById('apiUrl').value = settings.apiUrl;
+                }
+            };
+
+            // Check connection
+            checkConnection();
+        }
+
+        function saveSettings() {
+            settings.display = document.getElementById('display').value;
+            var apiUrlVal = document.getElementById('apiUrl').value.trim();
+            if (apiUrlVal) settings.apiUrl = apiUrlVal;
+
+            if (websocket && websocket.readyState === 1) {
+                websocket.send(JSON.stringify({
+                    event: 'setSettings',
+                    context: uuid,
+                    payload: settings
+                }));
+            }
+        }
+
+        async function checkConnection() {
+            var statusEl = document.getElementById('connectionStatus');
+            var apiUrl = document.getElementById('apiUrl').value.trim() || 'http://localhost:5000';
+            try {
+                var resp = await fetch(apiUrl + '/api/state');
+                if (resp.ok) {
+                    statusEl.textContent = 'Verbunden';
+                    statusEl.style.color = '#2ECC71';
+                } else {
+                    statusEl.textContent = 'Fehler: ' + resp.status;
+                    statusEl.style.color = '#E74C3C';
+                }
+            } catch {
+                statusEl.textContent = 'Nicht erreichbar';
+                statusEl.style.color = '#E74C3C';
+            }
+        }
+
+        document.getElementById('display').addEventListener('change', saveSettings);
+        document.getElementById('apiUrl').addEventListener('change', function() {
+            saveSettings();
+            checkConnection();
+        });
+    </script>
+</body>
+</html>

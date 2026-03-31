@@ -117,6 +117,20 @@ public static class WebUiHtml
         }}
         .final-section {{ display: none; }}
         .final-section.active {{ display: block; }}
+        .idle-section {{ display: none; }}
+        .idle-section.active {{ display: block; }}
+        .idle-modes {{ display: flex; gap: 6px; justify-content: center; flex-wrap: wrap; }}
+        .idle-modes label {{ background: #2b2b40; padding: 8px 14px; border-radius: 8px; cursor: pointer; font-size: 13px; }}
+        .idle-modes input[type=radio] {{ display: none; }}
+        .idle-modes input[type=radio]:checked + span {{ color: #5B6BF5; font-weight: bold; }}
+        .idle-input {{ display: flex; gap: 6px; margin-top: 8px; }}
+        .idle-input input {{ flex: 1; background: #1e1e30; border: 1px solid #3a3a58; border-radius: 8px; padding: 10px; color: white; font-size: 14px; }}
+        .idle-input input::placeholder {{ color: #555; }}
+        .btn-clear {{ background: #3b3b5c; min-width: 44px; border-radius: 8px; font-size: 18px; }}
+        .quick-msgs {{ display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; margin-top: 8px; }}
+        .btn-quick {{ background: #252545; border: 1px solid #3a3a58; border-radius: 8px; padding: 8px 14px; font-size: 12px; color: #aaa; cursor: pointer; }}
+        .btn-quick:active {{ background: #3a3a58; }}
+        .idle-scroll-info {{ font-size: 11px; color: #888; margin-top: 4px; text-align: center; }}
         .status {{
             font-size: 11px;
             color: #888;
@@ -189,6 +203,22 @@ public static class WebUiHtml
             </div>
         </div>
 
+        <div class=""section idle-section"" id=""idleSection"">
+            <div class=""section-title"">Anzeige im Leerlauf</div>
+            <div class=""idle-modes"">
+                <label><input type=""radio"" name=""idleMode"" value=""clock"" onchange=""setIdleMode('clock')""><span>&#128339; Uhrzeit</span></label>
+                <label><input type=""radio"" name=""idleMode"" value=""message"" onchange=""setIdleMode('message')""><span>&#128172; Nachricht</span></label>
+                <label><input type=""radio"" name=""idleMode"" value=""both"" onchange=""setIdleMode('both')""><span>&#128339;+&#128172; Beides</span></label>
+                <label><input type=""radio"" name=""idleMode"" value=""off"" onchange=""setIdleMode('off')""><span>&#10006; Aus</span></label>
+            </div>
+            <div class=""idle-input"">
+                <input type=""text"" id=""idleMsg"" placeholder=""Nachricht eingeben..."" oninput=""sendIdleMsg(this.value)"" maxlength=""200""/>
+                <button class=""btn btn-clear"" onclick=""clearIdleMsg()"">&#10005;</button>
+            </div>
+            <div class=""idle-scroll-info"" id=""idleScrollInfo""></div>
+            <div class=""quick-msgs"" id=""quickMsgs""></div>
+        </div>
+
         <div class=""section"">
             <div class=""section-title"">Farbe (manuell)</div>
             <div class=""btn-row"">
@@ -213,10 +243,48 @@ public static class WebUiHtml
 
     <script>
         const BASE = window.location.origin;
+        let idleMsgTimer = null;
 
         function api(endpoint) {{
             fetch(BASE + '/api/' + endpoint, {{ method: 'POST' }})
                 .catch(e => console.error('API error:', e));
+        }}
+
+        function setIdleMode(mode) {{
+            fetch(BASE + '/api/idle/mode/' + mode, {{ method: 'POST' }});
+        }}
+
+        function sendIdleMsg(text) {{
+            clearTimeout(idleMsgTimer);
+            idleMsgTimer = setTimeout(() => {{
+                fetch(BASE + '/api/idle/message', {{ method: 'POST', body: text }});
+            }}, 300);
+        }}
+
+        function clearIdleMsg() {{
+            document.getElementById('idleMsg').value = '';
+            fetch(BASE + '/api/idle/message', {{ method: 'DELETE' }});
+        }}
+
+        function setQuickMsg(text) {{
+            document.getElementById('idleMsg').value = text;
+            fetch(BASE + '/api/idle/message', {{ method: 'POST', body: text }});
+        }}
+
+        function loadQuickMessages() {{
+            fetch(BASE + '/api/idle')
+                .then(r => r.json())
+                .then(data => {{
+                    const container = document.getElementById('quickMsgs');
+                    container.innerHTML = '';
+                    (data.quickMessages || []).forEach(msg => {{
+                        const btn = document.createElement('button');
+                        btn.className = 'btn-quick';
+                        btn.textContent = msg;
+                        btn.onclick = () => setQuickMsg(msg);
+                        container.appendChild(btn);
+                    }});
+                }});
         }}
 
         function pad(n) {{ return n.toString().padStart(2, '0'); }}
@@ -258,6 +326,22 @@ public static class WebUiHtml
                         document.getElementById('arrowR').textContent = s.arrowCountRight;
                     }}
 
+                    // Idle section — show when stopped
+                    const isStopped = s.status === 'stopped';
+                    document.getElementById('idleSection').className = 'section idle-section' + (isStopped ? ' active' : '');
+                    if (isStopped && s.idle) {{
+                        const radios = document.querySelectorAll('input[name=idleMode]');
+                        radios.forEach(r => {{ r.checked = r.value === s.idle.mode; }});
+                        // Only update msg input if not focused
+                        const msgEl = document.getElementById('idleMsg');
+                        if (document.activeElement !== msgEl) {{
+                            msgEl.value = s.idle.message || '';
+                        }}
+                        document.getElementById('idleScrollInfo').textContent = s.idle.message
+                            ? (s.idle.scroll ? '\u2190 Scrollend' : 'Statisch')
+                            : '';
+                    }}
+
                     document.getElementById('connStatus').textContent = 'Verbunden';
                     document.getElementById('connStatus').style.color = '#888';
                 }})
@@ -269,6 +353,7 @@ public static class WebUiHtml
 
         setInterval(updateState, 1000);
         updateState();
+        loadQuickMessages();
     </script>
 </body>
 </html>";

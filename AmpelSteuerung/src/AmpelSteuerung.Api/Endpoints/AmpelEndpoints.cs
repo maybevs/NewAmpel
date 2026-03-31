@@ -1,3 +1,4 @@
+using AmpelSteuerung.Core.Configuration;
 using AmpelSteuerung.Core.Models;
 using AmpelSteuerung.Core.Services;
 using Microsoft.AspNetCore.Builder;
@@ -8,7 +9,7 @@ namespace AmpelSteuerung.Api.Endpoints;
 
 public static class AmpelEndpoints
 {
-    public static void MapAmpelEndpoints(this IEndpointRouteBuilder app, IAmpelStateService stateService)
+    public static void MapAmpelEndpoints(this IEndpointRouteBuilder app, IAmpelStateService stateService, AmpelConfiguration config, PresetEngine? presetEngine = null)
     {
         app.MapGet("/api/state", () =>
         {
@@ -35,7 +36,13 @@ public static class AmpelEndpoints
                 currentEnd = state.End,
                 currentSide = state.CurrentSide,
                 arrowCountLeft = state.ArrowCountLeft,
-                arrowCountRight = state.ArrowCountRight
+                arrowCountRight = state.ArrowCountRight,
+                idle = new
+                {
+                    mode = state.IdleMode.ToString().ToLower(),
+                    message = state.IdleMessage,
+                    scroll = state.IdleMessageScroll
+                }
             });
         });
 
@@ -141,5 +148,76 @@ public static class AmpelEndpoints
             stateService.SwitchSide();
             return Results.Ok(new { success = true });
         });
+
+        // Idle endpoints
+        app.MapGet("/api/idle", () =>
+        {
+            var state = stateService.CurrentState;
+            return Results.Ok(new
+            {
+                mode = state.IdleMode.ToString().ToLower(),
+                message = state.IdleMessage,
+                scroll = state.IdleMessageScroll,
+                quickMessages = config.Idle.QuickMessages
+            });
+        });
+
+        app.MapPost("/api/idle/mode/{mode}", (string mode) =>
+        {
+            var idleMode = mode.ToLowerInvariant() switch
+            {
+                "clock" => IdleDisplayMode.Clock,
+                "message" => IdleDisplayMode.Message,
+                "both" => IdleDisplayMode.Both,
+                "off" => IdleDisplayMode.Off,
+                _ => (IdleDisplayMode?)null
+            };
+
+            if (idleMode == null) return Results.BadRequest("Invalid mode. Use: clock, message, both, off");
+
+            stateService.SetIdleMode(idleMode.Value);
+            return Results.Ok(new { success = true, mode });
+        });
+
+        app.MapPost("/api/idle/message", async (HttpRequest request) =>
+        {
+            using var reader = new StreamReader(request.Body);
+            var message = await reader.ReadToEndAsync();
+            if (message.Length > 200) return Results.BadRequest("Message too long (max 200 chars)");
+            stateService.SetIdleMessage(message);
+            return Results.Ok(new { success = true, message });
+        });
+
+        app.MapDelete("/api/idle/message", () =>
+        {
+            stateService.ClearIdleMessage();
+            return Results.Ok(new { success = true });
+        });
+
+        // Preset endpoints
+        if (presetEngine != null)
+        {
+            app.MapGet("/api/presets", () =>
+            {
+                return Results.Ok(presetEngine.AvailablePresets.Select(p => new
+                {
+                    name = p.Name,
+                    description = p.Description,
+                    type = p.Type,
+                    shootingTime = p.Timer.ShootingTime,
+                    preparationTime = p.Timer.PreparationTime,
+                    totalEnds = p.Match.TotalEnds
+                }));
+            });
+
+            app.MapPost("/api/preset/{name}", (string name) =>
+            {
+                var preset = presetEngine.AvailablePresets
+                    .FirstOrDefault(p => p.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+                if (preset == null) return Results.NotFound(new { error = $"Preset '{name}' not found" });
+                presetEngine.ApplyPreset(preset);
+                return Results.Ok(new { success = true, preset = name });
+            });
+        }
     }
 }

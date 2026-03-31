@@ -1,0 +1,220 @@
+{
+  "Name": "Ampel Steuerung",
+  "Version": "1.0.0",
+  "Author": "AmpelSteuerung",
+  "Description": "Steuere dein Bogensport-Ampelsystem direkt vom Stream Deck. Timer-Anzeige, Start/Pause, Notfall-Stopp, Gruppen, Passen und Presets.",
+  "Icon": "imgs/plugin-icon",
+  "CategoryIcon": "imgs/category-icon",
+  "Category": "Ampel Steuerung",
+  "CodePath": "AmpelSteuerung.StreamDeck.exe",
+  "SDKVersion": 2,
+  "Software": {
+    "MinimumVersion": "6.0"
+  },
+  "OS": [
+    {
+      "Platform": "windows",
+      "MinimumVersion": "10"
+    }
+  ],
+  "Actions": [
+    {
+      "UUID": "com.ampelsteuerung.timer-display",
+      "Name": "Timer-Anzeige",
+      "Tooltip": "Zeigt den aktuellen Timer mit Farbe, Gruppe und Passe an. Tippen: Start/Pause.",
+      "Icon": "imgs/actions/timer-display",
+      "States": [
+        {
+          "Image": "imgs/actions/timer-display-key",
+          "TitleAlignment": "middle",
+          "ShowTitle": false
+        }
+      ],
+      "SupportedInMultiActions": false,
+      "PropertyInspectorPath": "property-inspector/timer-display-pi.html"
+    },
+    {
+      "UUID": "com.ampelsteuerung.start-pause",
+      "Name": "Start / Pause",
+      "Tooltip": "Start, Pause oder Weiter – passt sich automatisch dem aktuellen Status an.",
+      "Icon": "imgs/actions/start-pause",
+      "States": [
+        {
+          "Image": "imgs/actions/start-pause-key",
+          "TitleAlignment": "bottom",
+          "ShowTitle": false
+        }
+      ],
+      "SupportedInMultiActions": true
+    },
+    {
+      "UUID": "com.ampelsteuerung.stop",
+      "Name": "Stop",
+      "Tooltip": "Stoppt den Timer.",
+      "Icon": "imgs/actions/stop",
+      "States": [
+        {
+          "Image": "imgs/actions/stop-key",
+          "TitleAlignment": "bottom",
+          "ShowTitle": false
+        }
+      ],
+      "SupportedInMultiActions": true
+    },
+    {
+      "UUID": "com.ampelsteuerung.reset",
+      "Name": "Reset",
+      "Tooltip": "Setzt den Timer und alle Einstellungen zurück.",
+      "Icon": "imgs/actions/reset",
+      "States": [
+        {
+          "Image": "imgs/actions/reset-key",
+          "TitleAlignment": "bottom",
+          "ShowTitle": false
+        }
+      ],
+      "SupportedInMultiActions": true
+    },
+    {
+      "UUID": "com.ampelsteuerung.skip",
+      "Name": "Skip",
+      "Tooltip": "Überspringt die aktuelle Phase (nur in Schießzeit aktiv).",
+      "Icon": "imgs/actions/skip",
+      "States": [
+        {
+          "Image": "imgs/actions/skip-key",
+          "TitleAlignment": "bottom",
+          "ShowTitle": false
+        }
+      ],
+      "SupportedInMultiActions": true
+    },
+    {
+      "UUID": "com.ampelsteuerung.emergency-stop",
+      "Name": "Notfall-Stopp",
+      "Tooltip": "Sofort-Stopp! Friert den Timer ein und zeigt Rot.",
+      "Icon": "imgs/actions/emergency-stop",
+      "States": [
+        {
+          "Image": "imgs/actions/emergency-stop-key",
+          "TitleAlignment": "bottom",
+          "ShowTitle": false
+        }
+      ],
+      "SupportedInMultiActions": true
+    },
+    {
+      "UUID": "com.ampelsteuerung.next-end",
+      "Name": "Nächste Passe",
+      "Tooltip": "Springt zur nächsten Passe.",
+      "Icon": "imgs/actions/next-end",
+      "States": [
+        {
+          "Image": "imgs/actions/next-end-key",
+          "TitleAlignment": "bottom",
+          "ShowTitle": false
+        }
+      ],
+      "SupportedInMultiActions": true
+    },
+    {
+      "UUID": "com.ampelsteuerung.prev-end",
+      "Name": "Vorherige Passe",
+      "Tooltip": "Springt zur vorherigen Passe.",
+      "Icon": "imgs/actions/prev-end",
+      "States": [
+        {
+          "Image": "imgs/actions/prev-end-key",
+          "TitleAlignment": "bottom",
+          "ShowTitle": false
+        }
+      ],
+      "SupportedInMultiActions": true
+    },
+    {
+      "UUID": "com.ampelsteuerung.group-ab",
+      "Name": "Gruppe AB",
+      "Tooltip": "Wählt Gruppe AB aus. Leuchtet auf wenn AB aktiv ist.",
+      "Icon": "imgs/actions/group-ab",
+      "States": [
+        {
+          "Image": "imgs/actions/group-ab-key",
+          "TitleAlignment": "bottom",
+          "ShowTitle": false
+        }
+      ],
+      "SupportedInMultiActions": true
+    },
+    {
+      "UUID": "com.ampelsteuerung.group-cd",
+      "Name": "Gruppe CD",
+      "Tooltip": "Wählt Gruppe CD aus. Leuchtet auf wenn CD aktiv ist.",
+      "Icon": "imgs/actions/group-cd",
+      "States": [
+        {
+          "Image": "imgs/actions/group-cd-key",
+          "TitleAlignment": "bottom",
+          "ShowTitle": false
+        }
+      ],
+      "SupportedInMultiActions": true
+    },
+    {
+      "UUID": "com.ampelsteuerung.preset",
+      "Name": "Preset laden",
+      "Tooltip": "Lädt ein konfiguriertes Preset (z.B. WA 720, Indoor, Final).",
+      "Icon": "imgs/actions/preset",
+      "States": [
+        {
+          "Image": "imgs/actions/preset-key",
+          "TitleAlignment": "bottom",
+          "ShowTitle": false
+        }
+      ],
+      "SupportedInMultiActions": true,
+      "PropertyInspectorPath": "property-inspector/preset-pi.html"
+    },
+    {
+      "UUID": "com.ampelsteuerung.start-side-left",
+      "Name": "Links starten",
+      "Tooltip": "Setzt die Startseite auf Links (Final-Modus). Leuchtet wenn Links aktiv ist.",
+      "Icon": "imgs/actions/start-side-left",
+      "States": [
+        {
+          "Image": "imgs/actions/start-side-left-key",
+          "TitleAlignment": "bottom",
+          "ShowTitle": false
+        }
+      ],
+      "SupportedInMultiActions": true
+    },
+    {
+      "UUID": "com.ampelsteuerung.start-side-right",
+      "Name": "Rechts starten",
+      "Tooltip": "Setzt die Startseite auf Rechts (Final-Modus). Leuchtet wenn Rechts aktiv ist.",
+      "Icon": "imgs/actions/start-side-right",
+      "States": [
+        {
+          "Image": "imgs/actions/start-side-right-key",
+          "TitleAlignment": "bottom",
+          "ShowTitle": false
+        }
+      ],
+      "SupportedInMultiActions": true
+    },
+    {
+      "UUID": "com.ampelsteuerung.switch-side",
+      "Name": "Seite wechseln",
+      "Tooltip": "Wechselt die aktive Seite im Final-Modus (Links ↔ Rechts).",
+      "Icon": "imgs/actions/switch-side",
+      "States": [
+        {
+          "Image": "imgs/actions/switch-side-key",
+          "TitleAlignment": "bottom",
+          "ShowTitle": false
+        }
+      ],
+      "SupportedInMultiActions": true
+    }
+  ]
+}

@@ -17,6 +17,16 @@
         <!-- Standard mode: single display filling the whole screen -->
         <Border Background="{Binding Display1ColorBrush, Converter={StaticResource HexToBrush}}"
                 Visibility="{Binding IsFinalMode, Converter={StaticResource BoolToVis}, ConverterParameter=invert}">
+            <!-- Hidden when idle overlay is active -->
+            <Border.Style>
+                <Style TargetType="Border">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding ShowIdleOnBeamer}" Value="True">
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Border.Style>
             <Viewbox Stretch="Uniform" Margin="40">
                 <StackPanel HorizontalAlignment="Center">
                     <TextBlock Text="{Binding Display1Group}"
@@ -45,6 +55,16 @@
 
         <!-- Final mode: dual side-by-side displays -->
         <Grid Visibility="{Binding IsFinalMode, Converter={StaticResource BoolToVis}}">
+            <!-- Hidden when idle overlay is active -->
+            <Grid.Style>
+                <Style TargetType="Grid">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding ShowIdleOnBeamer}" Value="True">
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Grid.Style>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="3"/>
@@ -109,5 +129,35 @@
                 </Viewbox>
             </Border>
         </Grid>
+
+        <!-- Idle overlay: shown when timer stopped and idle mode active -->
+        <Border Background="Black"
+                Visibility="{Binding ShowIdleOnBeamer, Converter={StaticResource BoolToVis}}">
+            <Viewbox Stretch="Uniform" Margin="60">
+                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" MinWidth="800">
+                    <!-- Idle message (top area) -->
+                    <TextBlock Text="{Binding IdleMessage}"
+                               Visibility="{Binding ShowIdleMessage, Converter={StaticResource BoolToVis}}"
+                               FontSize="200"
+                               FontWeight="SemiBold"
+                               Foreground="#FFCC00"
+                               HorizontalAlignment="Center"
+                               TextAlignment="Center"
+                               TextWrapping="Wrap"
+                               TextTrimming="CharacterEllipsis"
+                               MaxWidth="1600"
+                               FontFamily="Segoe UI, sans-serif"
+                               Margin="0,0,0,40"/>
+                    <!-- Clock (bottom area or full) -->
+                    <TextBlock Text="{Binding CurrentClock}"
+                               Visibility="{Binding ShowIdleClock, Converter={StaticResource BoolToVis}}"
+                               FontSize="500"
+                               FontWeight="Bold"
+                               Foreground="White"
+                               HorizontalAlignment="Center"
+                               FontFamily="Cascadia Mono, Consolas, monospace"/>
+                </StackPanel>
+            </Viewbox>
+        </Border>
     </Grid>
 </Window>

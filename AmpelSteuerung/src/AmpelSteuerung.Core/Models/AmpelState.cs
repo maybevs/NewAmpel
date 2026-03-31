@@ -38,6 +38,17 @@ public enum OperatingMode
 }
 
 /// <summary>
+/// What to show on displays when the timer is stopped (idle).
+/// </summary>
+public enum IdleDisplayMode
+{
+    Off,        // Displays blank/red when timer stopped
+    Clock,      // Show current time
+    Message,    // Show scrolling/static message
+    Both        // Message on top, clock on bottom
+}
+
+/// <summary>
 /// State for a single display unit.
 /// </summary>
 public class DisplayState
@@ -96,6 +107,11 @@ public class AmpelState
     public int CurrentEnd { get; set; } = 1;
     public int TotalEnds { get; set; } = 10;
 
+    // Idle mode
+    public IdleDisplayMode IdleMode { get; set; } = IdleDisplayMode.Clock;
+    public string IdleMessage { get; set; } = "";
+    public bool IdleMessageScroll { get; set; } = true;
+
     public AmpelState Clone() => new()
     {
         Display1 = Display1.Clone(),
@@ -109,7 +125,10 @@ public class AmpelState
         ArrowCountRight = ArrowCountRight,
         StartingSide = StartingSide,
         CurrentEnd = CurrentEnd,
-        TotalEnds = TotalEnds
+        TotalEnds = TotalEnds,
+        IdleMode = IdleMode,
+        IdleMessage = IdleMessage,
+        IdleMessageScroll = IdleMessageScroll
     };
 
     /// <summary>
@@ -119,6 +138,26 @@ public class AmpelState
     {
         return $"{{\"d1\":{Display1.ToSerialJson()},\"d2\":{Display2.ToSerialJson()}}}";
     }
+
+    /// <summary>
+    /// Build idle-mode JSON for a single display.
+    /// </summary>
+    public static string ToIdleSerialJson(IdleDisplayMode mode, string message, bool scroll, string clock)
+    {
+        return mode switch
+        {
+            IdleDisplayMode.Clock =>
+                $"{{\"c\":\"I\",\"idle\":{{\"mode\":\"clock\",\"text\":\"{EscapeJson(clock)}\"}}}}",
+            IdleDisplayMode.Message =>
+                $"{{\"c\":\"I\",\"idle\":{{\"mode\":\"message\",\"text\":\"{EscapeJson(message)}\",\"scroll\":{(scroll ? "true" : "false")}}}}}",
+            IdleDisplayMode.Both =>
+                $"{{\"c\":\"I\",\"idle\":{{\"mode\":\"both\",\"text\":\"{EscapeJson(message)}\",\"scroll\":{(scroll ? "true" : "false")},\"clock\":\"{EscapeJson(clock)}\"}}}}",
+            _ => "{\"c\":\"I\",\"idle\":{\"mode\":\"clock\",\"text\":\"\"}}"
+        };
+    }
+
+    private static string EscapeJson(string s) =>
+        s.Replace("\\", "\\\\").Replace("\"", "\\\"");
 
     /// <summary>
     /// Set both displays to the same values (standard mode).

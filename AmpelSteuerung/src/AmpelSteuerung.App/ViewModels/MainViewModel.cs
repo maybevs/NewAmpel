@@ -76,6 +76,26 @@ public partial class MainViewModel : ObservableObject, IDisposable
     [ObservableProperty] private bool _isSkipEnabled;
     [ObservableProperty] private bool _isEmergencyStopped;
     [ObservableProperty] private bool _isBeamerOpen;
+    [ObservableProperty] private bool _isStopped = true;
+
+    // Idle display
+    [ObservableProperty] private IdleDisplayMode _idleMode = IdleDisplayMode.Clock;
+    [ObservableProperty] private string _idleMessage = "";
+    [ObservableProperty] private bool _idleMessageScroll;
+    [ObservableProperty] private string _idleScrollText = "";
+    [ObservableProperty] private bool _isIdleModeOff;
+    [ObservableProperty] private bool _isIdleModeClock = true;
+    [ObservableProperty] private bool _isIdleModeMessage;
+    [ObservableProperty] private bool _isIdleModeBoth;
+    [ObservableProperty] private ObservableCollection<string> _quickMessages = new();
+    [ObservableProperty] private bool _showIdleOnBeamer;
+    [ObservableProperty] private string _currentClock = "";
+    [ObservableProperty] private bool _showIdleClock;
+    [ObservableProperty] private bool _showIdleMessage;
+
+    // Clock timer for beamer idle display
+    private readonly DispatcherTimer _clockTimer;
+    private readonly string _clockFormat;
 
     // Beamer screen selection
     [ObservableProperty] private ObservableCollection<string> _availableScreens = new();
@@ -115,6 +135,17 @@ public partial class MainViewModel : ObservableObject, IDisposable
         _presetEngine.LoadPresets(config.PresetsDirectory);
         foreach (var p in _presetEngine.AvailablePresets)
             Presets.Add(p);
+
+        // Load quick messages from config
+        foreach (var msg in config.Idle.QuickMessages)
+            QuickMessages.Add(msg);
+
+        // Clock timer for beamer idle display
+        _clockFormat = config.Idle.ClockFormat;
+        _clockTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
+        _clockTimer.Tick += (_, _) => CurrentClock = DateTime.Now.ToString(_clockFormat);
+        _clockTimer.Start();
+        CurrentClock = DateTime.Now.ToString(_clockFormat);
 
         UpdateFromState(_stateService.CurrentState);
         RefreshComPorts();
@@ -193,6 +224,21 @@ public partial class MainViewModel : ObservableObject, IDisposable
         IsSkipEnabled = state.Status == Core.Models.TimerStatus.Running
                         && (state.Phase is MatchPhase.ShootingGroup1 or MatchPhase.ShootingGroup2);
         IsEmergencyStopped = state.Phase == MatchPhase.EmergencyStopped;
+        IsStopped = state.Status == Core.Models.TimerStatus.Stopped;
+
+        // Idle mode
+        IdleMode = state.IdleMode;
+        IdleMessageScroll = state.IdleMessageScroll;
+        IdleScrollText = state.IdleMessageScroll ? "← Scrollend" : (state.IdleMessage.Length > 0 ? "Statisch" : "");
+        IsIdleModeOff = state.IdleMode == IdleDisplayMode.Off;
+        IsIdleModeClock = state.IdleMode == IdleDisplayMode.Clock;
+        IsIdleModeMessage = state.IdleMode == IdleDisplayMode.Message;
+        IsIdleModeBoth = state.IdleMode == IdleDisplayMode.Both;
+
+        // Beamer idle overlay
+        ShowIdleOnBeamer = IsStopped && state.IdleMode != IdleDisplayMode.Off;
+        ShowIdleClock = state.IdleMode is IdleDisplayMode.Clock or IdleDisplayMode.Both;
+        ShowIdleMessage = state.IdleMode is IdleDisplayMode.Message or IdleDisplayMode.Both;
     }
 
     private static string FormatTime(int seconds) => $"{seconds / 60:D2}:{seconds % 60:D2}";
@@ -330,6 +376,47 @@ public partial class MainViewModel : ObservableObject, IDisposable
         _config.Display2Side = _stateService.Display2Side;
     }
 
+    // Idle display
+    [RelayCommand]
+    private void SetIdleModeOff() => _stateService.SetIdleMode(IdleDisplayMode.Off);
+
+    [RelayCommand]
+    private void SetIdleModeClock() => _stateService.SetIdleMode(IdleDisplayMode.Clock);
+
+    [RelayCommand]
+    private void SetIdleModeMessage() => _stateService.SetIdleMode(IdleDisplayMode.Message);
+
+    [RelayCommand]
+    private void SetIdleModeBoth() => _stateService.SetIdleMode(IdleDisplayMode.Both);
+
+    [RelayCommand]
+    private void CycleIdleMode()
+    {
+        var next = _stateService.CurrentState.IdleMode switch
+        {
+            IdleDisplayMode.Clock => IdleDisplayMode.Message,
+            IdleDisplayMode.Message => IdleDisplayMode.Both,
+            IdleDisplayMode.Both => IdleDisplayMode.Off,
+            IdleDisplayMode.Off => IdleDisplayMode.Clock,
+            _ => IdleDisplayMode.Clock
+        };
+        _stateService.SetIdleMode(next);
+    }
+
+    [RelayCommand]
+    private void ClearIdleMessage()
+    {
+        IdleMessage = "";
+        _stateService.ClearIdleMessage();
+    }
+
+    [RelayCommand]
+    private void SetQuickMessage(string message)
+    {
+        IdleMessage = message;
+        _stateService.SetIdleMessage(message);
+    }
+
     // Presets
     [RelayCommand]
     private void ApplyPreset()
@@ -377,6 +464,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
     partial void OnPreparationTimeChanged(int value) => _stateService.SetPreparationTime(value);
     partial void OnTotalEndsChanged(int value) => _stateService.SetTotalEnds(value);
     partial void OnSoundEnabledChanged(bool value) => _soundService.IsEnabled = value;
+    partial void OnIdleMessageChanged(string value) => _stateService.SetIdleMessage(value);
 
     public void SaveConfiguration()
     {
@@ -391,6 +479,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
     public void Dispose()
     {
+        _clockTimer.Stop();
         _stateService.StateChanged -= OnStateChanged;
         _serialService.ConnectionChanged -= OnConnectionChanged;
         _presetEngine.StatusChanged -= OnPresetStatusChanged;

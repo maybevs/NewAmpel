@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Preset Einstellungen</title>
+    <link rel="stylesheet" href="https://developer.elgato.com/documentation/stream-deck/css/sdpi.css">
+    <style>
+        .sdpi-wrapper { margin: 0 8px; }
+        .sdpi-heading { font-size: 11px; margin-top: 12px; color: #999; }
+        .preset-info { font-size: 10px; color: #777; margin: 4px 0 0 110px; }
+    </style>
+</head>
+<body>
+    <div class="sdpi-wrapper">
+        <div class="sdpi-heading">PRESET-EINSTELLUNGEN</div>
+        
+        <div type="select" class="sdpi-item">
+            <div class="sdpi-item-label">Preset</div>
+            <select class="sdpi-item-value" id="presetName">
+                <option value="">-- Preset wählen --</option>
+            </select>
+        </div>
+
+        <div id="presetDetails" class="preset-info"></div>
+
+        <div class="sdpi-heading" style="margin-top: 16px;">ODER MANUELL</div>
+        <div type="textarea" class="sdpi-item">
+            <div class="sdpi-item-label">Preset Name</div>
+            <input class="sdpi-item-value" id="presetNameManual" type="text" placeholder="Exakter Preset-Name" />
+        </div>
+    </div>
+
+    <script>
+        let websocket = null;
+        let uuid = null;
+        let actionInfo = null;
+        let settings = {};
+        let presets = [];
+
+        function connectElgatoStreamDeckSocket(port, propertyInspectorUUID, registerEvent, info, actionInfoStr) {
+            uuid = propertyInspectorUUID;
+            actionInfo = JSON.parse(actionInfoStr);
+            settings = actionInfo.payload?.settings || {};
+
+            if (settings.presetName) {
+                document.getElementById('presetNameManual').value = settings.presetName;
+            }
+
+            websocket = new WebSocket('ws://localhost:' + port);
+            websocket.onopen = function() {
+                websocket.send(JSON.stringify({ event: registerEvent, uuid: propertyInspectorUUID }));
+            };
+            websocket.onmessage = function(evt) {
+                var data = JSON.parse(evt.data);
+                if (data.event === 'sendToPropertyInspector' && data.payload?.type === 'presets') {
+                    presets = data.payload.presets || [];
+                    populatePresets();
+                }
+                if (data.event === 'didReceiveSettings') {
+                    settings = data.payload?.settings || {};
+                    if (settings.presetName) {
+                        document.getElementById('presetName').value = settings.presetName;
+                        document.getElementById('presetNameManual').value = settings.presetName;
+                    }
+                }
+            };
+        }
+
+        function populatePresets() {
+            var select = document.getElementById('presetName');
+            select.innerHTML = '<option value="">-- Preset wählen --</option>';
+            presets.forEach(function(p) {
+                var opt = document.createElement('option');
+                opt.value = p.name;
+                opt.textContent = p.name + ' (' + p.type + ')';
+                select.appendChild(opt);
+            });
+            if (settings.presetName) {
+                select.value = settings.presetName;
+                showPresetDetails(settings.presetName);
+            }
+        }
+
+        function showPresetDetails(name) {
+            var detailsEl = document.getElementById('presetDetails');
+            var preset = presets.find(function(p) { return p.name === name; });
+            if (preset) {
+                detailsEl.textContent = preset.type.toUpperCase() + ' | ' + 
+                    preset.shootingTime + 's Schießzeit | ' + 
+                    preset.preparationTime + 's Vorbereitung | ' + 
+                    preset.totalEnds + ' Passen';
+            } else {
+                detailsEl.textContent = '';
+            }
+        }
+
+        function saveSettings() {
+            if (websocket && websocket.readyState === 1) {
+                websocket.send(JSON.stringify({
+                    event: 'setSettings',
+                    context: uuid,
+                    payload: settings
+                }));
+            }
+        }
+
+        document.getElementById('presetName').addEventListener('change', function() {
+            settings.presetName = this.value;
+            document.getElementById('presetNameManual').value = this.value;
+            showPresetDetails(this.value);
+            saveSettings();
+        });
+
+        document.getElementById('presetNameManual').addEventListener('change', function() {
+            settings.presetName = this.value.trim();
+            document.getElementById('presetName').value = settings.presetName;
+            saveSettings();
+        });
+    </script>
+</body>
+</html>

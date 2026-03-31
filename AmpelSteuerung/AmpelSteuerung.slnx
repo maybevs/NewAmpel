@@ -3,6 +3,7 @@
     <Project Path="src/AmpelSteuerung.Api/AmpelSteuerung.Api.csproj" />
     <Project Path="src/AmpelSteuerung.App/AmpelSteuerung.App.csproj" />
     <Project Path="src/AmpelSteuerung.Core/AmpelSteuerung.Core.csproj" />
+    <Project Path="src/AmpelSteuerung.StreamDeck/AmpelSteuerung.StreamDeck.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/AmpelSteuerung.Core.Tests/AmpelSteuerung.Core.Tests.csproj" />

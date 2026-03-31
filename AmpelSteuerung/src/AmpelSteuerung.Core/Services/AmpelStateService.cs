@@ -23,6 +23,9 @@ public class AmpelStateService : IAmpelStateService, IDisposable
     private Preset? _activePreset;
     private int _currentRound; // current round within an end (final mode)
 
+    // Idle mode
+    private readonly int _maxStaticChars;
+
     public string Display1Side { get; set; } = "left";
     public string Display2Side { get; set; } = "right";
 
@@ -59,6 +62,7 @@ public class AmpelStateService : IAmpelStateService, IDisposable
     {
         _soundService = soundService;
         _logger = logger;
+        _maxStaticChars = configuration.Idle.MaxStaticChars;
 
         _config.ShootingTimeSeconds = configuration.DefaultShootingTime;
         _config.PreparationTimeSeconds = configuration.DefaultPreparationTime;
@@ -68,6 +72,16 @@ public class AmpelStateService : IAmpelStateService, IDisposable
 
         Display1Side = configuration.Display1Side;
         Display2Side = configuration.Display2Side;
+
+        // Set default idle mode from config
+        _state.IdleMode = configuration.Idle.DefaultMode.ToLowerInvariant() switch
+        {
+            "clock" => IdleDisplayMode.Clock,
+            "message" => IdleDisplayMode.Message,
+            "both" => IdleDisplayMode.Both,
+            "off" => IdleDisplayMode.Off,
+            _ => IdleDisplayMode.Clock
+        };
 
         var endStr = $"1/{_config.TotalEnds}";
         _state.SetBothDisplays(0, configuration.LastGroup, AmpelColor.Red, endStr);
@@ -740,6 +754,38 @@ public class AmpelStateService : IAmpelStateService, IDisposable
         {
             _state.Mode = mode;
             _logger.LogInformation("Mode set to {Mode}", mode);
+        }
+        RaiseStateChanged();
+    }
+
+    public void SetIdleMode(IdleDisplayMode mode)
+    {
+        lock (_lock)
+        {
+            _state.IdleMode = mode;
+            _logger.LogInformation("Idle mode set to {Mode}", mode);
+        }
+        RaiseStateChanged();
+    }
+
+    public void SetIdleMessage(string message)
+    {
+        lock (_lock)
+        {
+            _state.IdleMessage = message;
+            _state.IdleMessageScroll = message.Length > _maxStaticChars;
+            _logger.LogInformation("Idle message set: \"{Message}\" (scroll={Scroll})", message, _state.IdleMessageScroll);
+        }
+        RaiseStateChanged();
+    }
+
+    public void ClearIdleMessage()
+    {
+        lock (_lock)
+        {
+            _state.IdleMessage = "";
+            _state.IdleMessageScroll = false;
+            _logger.LogInformation("Idle message cleared");
         }
         RaiseStateChanged();
     }

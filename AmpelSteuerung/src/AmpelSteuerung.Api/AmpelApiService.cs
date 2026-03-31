@@ -3,6 +3,7 @@ using AmpelSteuerung.Core.Configuration;
 using AmpelSteuerung.Core.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
@@ -11,16 +12,19 @@ namespace AmpelSteuerung.Api;
 public class AmpelApiService : IHostedService
 {
     private readonly IAmpelStateService _stateService;
+    private readonly PresetEngine _presetEngine;
     private readonly AmpelConfiguration _config;
     private readonly ILogger<AmpelApiService> _logger;
     private WebApplication? _app;
 
     public AmpelApiService(
         IAmpelStateService stateService,
+        PresetEngine presetEngine,
         AmpelConfiguration config,
         ILogger<AmpelApiService> logger)
     {
         _stateService = stateService;
+        _presetEngine = presetEngine;
         _config = config;
         _logger = logger;
     }
@@ -38,6 +42,9 @@ public class AmpelApiService : IHostedService
             // Suppress ASP.NET Core startup logs in WPF context
             builder.Logging.SetMinimumLevel(LogLevel.Warning);
 
+            // Register CORS services
+            builder.Services.AddCors();
+
             _app = builder.Build();
 
             // CORS
@@ -47,7 +54,7 @@ public class AmpelApiService : IHostedService
                 .AllowAnyHeader());
 
             // Map API endpoints
-            _app.MapAmpelEndpoints(_stateService);
+            _app.MapAmpelEndpoints(_stateService, _config, _presetEngine);
 
             // Serve static HTML
             _app.MapGet("/", () => Results.Content(WebUiHtml.GetHtml(_config.ApiPort), "text/html"));
