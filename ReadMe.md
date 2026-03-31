@@ -246,13 +246,72 @@ bogensport-ampel/
 
 ---
 
+## Stream Deck Plugin
+
+Das Projekt enthält ein natives Stream Deck Plugin, das die Ampelsteuerung direkt vom Elgato Stream Deck aus ermöglicht — Timer-Anzeige, Start/Pause, Notfall-Stopp, Gruppenwahl, Passenwechsel und Presets.
+
+### Voraussetzungen
+
+- Elgato Stream Deck Software ≥ 6.0
+- .NET 8 Runtime auf dem PC
+- Die Ampel-App muss laufen (das Plugin steuert über die REST-API auf `localhost:5000`)
+
+### Installation
+
+Ein PowerShell-Installationsskript erledigt alles automatisch:
+
+```powershell
+cd AmpelSteuerung
+.\Install-StreamDeckPlugin.ps1
+```
+
+Das Skript führt vier Schritte aus:
+
+1. **Build** — Kompiliert das Plugin-Projekt (`Release`)
+2. **Icons generieren** — Erstellt die Action-Icons für das Stream Deck
+3. **Installieren** — Kopiert alle Dateien nach `%APPDATA%\Elgato\StreamDeck\Plugins\com.ampelsteuerung.sdPlugin`
+4. **Stream Deck neustarten** — Beendet und startet die Stream Deck Software, damit das Plugin erkannt wird
+
+### Optionen
+
+```powershell
+# Debug-Build statt Release
+.\Install-StreamDeckPlugin.ps1 -Configuration Debug
+
+# Ohne automatischen Stream Deck Neustart
+.\Install-StreamDeckPlugin.ps1 -SkipRestart
+```
+
+### Verfügbare Actions
+
+Nach der Installation findet sich in der Stream Deck Software die Kategorie **Ampel Steuerung** mit folgenden Actions:
+
+| Action | Beschreibung |
+|---|---|
+| **Timer-Anzeige** | Zeigt den aktuellen Timer mit Farbe, Gruppe und Passe an. Tippen = Start/Pause |
+| **Start / Pause** | Start, Pause oder Weiter — passt sich dem aktuellen Status an |
+| **Stop** | Timer stoppen |
+| **Notfall-Stopp** | 5× Signal + sofortiger Stopp |
+| **Skip** | Restzeit überspringen |
+| **Gruppe AB / CD** | Gruppe setzen |
+| **Nächste / Vorherige Passe** | Passenwechsel |
+| **Preset laden** | Ein konfiguriertes Preset anwenden |
+
+### Fehlerbehebung
+
+- **Plugin erscheint nicht**: Stream Deck Software manuell neustarten oder PC neu starten
+- **Actions zeigen "Keine Verbindung"**: Prüfen, ob die Ampel-App läuft und die REST-API auf Port 5000 erreichbar ist
+- **Erneute Installation**: Das Skript ersetzt automatisch eine vorhandene Installation
+
+---
+
 ## Roadmap
 
 - [x] Systemarchitektur & Hardware-Design
 - [x] Einkaufslisten & Aufbauanleitungen
 - [x] WPF-Steuerungsapp (Core, UI, API)
 - [ ] Raspberry Pi Display-Software
-- [ ] Streamdeck-Plugin (nativ)
+- [x] Streamdeck-Plugin (nativ)
 - [x] Beamer-Modus mit Split-Screen für Finals
 - [ ] Dark Mode
 - [ ] Wettkampf-Log (Export der Passenzeiten)
