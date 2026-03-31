@@ -21,22 +21,24 @@
                 <StackPanel HorizontalAlignment="Center">
                     <TextBlock Text="{Binding Display1Group}"
                                FontSize="120"
-                               FontWeight="Bold"
+                               FontWeight="SemiBold"
                                Foreground="White"
                                HorizontalAlignment="Center"
-                               Opacity="0.85"/>
+                               Opacity="0.8"
+                               FontFamily="Segoe UI, sans-serif"/>
                     <TextBlock Text="{Binding Display1Time}"
                                FontSize="500"
                                FontWeight="Bold"
                                Foreground="White"
                                HorizontalAlignment="Center"
-                               FontFamily="Consolas"/>
+                               FontFamily="Cascadia Mono, Consolas, monospace"/>
                     <TextBlock Text="{Binding CurrentEnd}"
                                FontSize="100"
-                               FontWeight="Bold"
+                               FontWeight="SemiBold"
                                Foreground="White"
                                HorizontalAlignment="Center"
-                               Opacity="0.7"/>
+                               Opacity="0.6"
+                               FontFamily="Segoe UI, sans-serif"/>
                 </StackPanel>
             </Viewbox>
         </Border>
@@ -45,7 +47,7 @@
         <Grid Visibility="{Binding IsFinalMode, Converter={StaticResource BoolToVis}}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="4"/>
+                <ColumnDefinition Width="3"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
@@ -55,27 +57,29 @@
                     <StackPanel HorizontalAlignment="Center">
                         <TextBlock Text="{Binding Display1Group}"
                                    FontSize="100"
-                                   FontWeight="Bold"
+                                   FontWeight="SemiBold"
                                    Foreground="White"
                                    HorizontalAlignment="Center"
-                                   Opacity="0.85"/>
+                                   Opacity="0.8"
+                                   FontFamily="Segoe UI, sans-serif"/>
                         <TextBlock Text="{Binding Display1Time}"
                                    FontSize="400"
                                    FontWeight="Bold"
                                    Foreground="White"
                                    HorizontalAlignment="Center"
-                                   FontFamily="Consolas"/>
+                                   FontFamily="Cascadia Mono, Consolas, monospace"/>
                         <TextBlock Text="{Binding CurrentEnd}"
                                    FontSize="80"
-                                   FontWeight="Bold"
+                                   FontWeight="SemiBold"
                                    Foreground="White"
                                    HorizontalAlignment="Center"
-                                   Opacity="0.7"/>
+                                   Opacity="0.6"
+                                   FontFamily="Segoe UI, sans-serif"/>
                     </StackPanel>
                 </Viewbox>
             </Border>
 
-            <Rectangle Grid.Column="1" Fill="Black"/>
+            <Rectangle Grid.Column="1" Fill="#111111"/>
 
             <Border Grid.Column="2"
                     Background="{Binding Display2ColorBrush, Converter={StaticResource HexToBrush}}">
@@ -83,22 +87,24 @@
                     <StackPanel HorizontalAlignment="Center">
                         <TextBlock Text="{Binding Display2Group}"
                                    FontSize="100"
-                                   FontWeight="Bold"
+                                   FontWeight="SemiBold"
                                    Foreground="White"
                                    HorizontalAlignment="Center"
-                                   Opacity="0.85"/>
+                                   Opacity="0.8"
+                                   FontFamily="Segoe UI, sans-serif"/>
                         <TextBlock Text="{Binding Display2Time}"
                                    FontSize="400"
                                    FontWeight="Bold"
                                    Foreground="White"
                                    HorizontalAlignment="Center"
-                                   FontFamily="Consolas"/>
+                                   FontFamily="Cascadia Mono, Consolas, monospace"/>
                         <TextBlock Text="{Binding CurrentEnd}"
                                    FontSize="80"
-                                   FontWeight="Bold"
+                                   FontWeight="SemiBold"
                                    Foreground="White"
                                    HorizontalAlignment="Center"
-                                   Opacity="0.7"/>
+                                   Opacity="0.6"
+                                   FontFamily="Segoe UI, sans-serif"/>
                     </StackPanel>
                 </Viewbox>
             </Border>

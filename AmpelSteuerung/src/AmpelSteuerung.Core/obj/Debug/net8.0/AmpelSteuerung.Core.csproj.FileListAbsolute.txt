@@ -10,3 +10,4 @@ C:\Users\bernd_\source\repos\NewAmpel\AmpelSteuerung\src\AmpelSteuerung.Core\obj
 C:\Users\bernd_\source\repos\NewAmpel\AmpelSteuerung\src\AmpelSteuerung.Core\obj\Debug\net8.0\refint\AmpelSteuerung.Core.dll
 C:\Users\bernd_\source\repos\NewAmpel\AmpelSteuerung\src\AmpelSteuerung.Core\obj\Debug\net8.0\AmpelSteuerung.Core.pdb
 C:\Users\bernd_\source\repos\NewAmpel\AmpelSteuerung\src\AmpelSteuerung.Core\obj\Debug\net8.0\ref\AmpelSteuerung.Core.dll
+c:\Users\bernd_\source\repos\NewAmpel\AmpelSteuerung\src\AmpelSteuerung.Core\obj\Debug\net8.0\AmpelSteuerung.Core.sourcelink.json

@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("AmpelSteuerung.App")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+0fed89eb34b55b154d614b85f25df80b25da1045")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+022bfe7f8c471f102e6c1d26a9e32b535254f671")]
 [assembly: System.Reflection.AssemblyProductAttribute("AmpelSteuerung.App")]
 [assembly: System.Reflection.AssemblyTitleAttribute("AmpelSteuerung.App")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

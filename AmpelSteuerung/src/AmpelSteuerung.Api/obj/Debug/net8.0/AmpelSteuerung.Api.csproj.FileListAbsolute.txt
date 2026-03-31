@@ -13,3 +13,4 @@ C:\Users\bernd_\source\repos\NewAmpel\AmpelSteuerung\src\AmpelSteuerung.Api\obj\
 C:\Users\bernd_\source\repos\NewAmpel\AmpelSteuerung\src\AmpelSteuerung.Api\obj\Debug\net8.0\refint\AmpelSteuerung.Api.dll
 C:\Users\bernd_\source\repos\NewAmpel\AmpelSteuerung\src\AmpelSteuerung.Api\obj\Debug\net8.0\AmpelSteuerung.Api.pdb
 C:\Users\bernd_\source\repos\NewAmpel\AmpelSteuerung\src\AmpelSteuerung.Api\obj\Debug\net8.0\ref\AmpelSteuerung.Api.dll
+c:\Users\bernd_\source\repos\NewAmpel\AmpelSteuerung\src\AmpelSteuerung.Api\obj\Debug\net8.0\AmpelSteuerung.Api.sourcelink.json

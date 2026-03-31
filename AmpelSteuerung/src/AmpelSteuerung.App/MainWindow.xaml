@@ -8,8 +8,9 @@
         Title="Bogensport Ampelsteuerung"
         Height="800" Width="1200"
         MinHeight="600" MinWidth="900"
-        Background="#1E1E2E"
-        Foreground="White"
+        Background="{StaticResource BgDeepBrush}"
+        Foreground="{StaticResource TextPrimaryBrush}"
+        FontFamily="Segoe UI, Segoe UI Variable, sans-serif"
         KeyDown="Window_KeyDown"
         Closing="Window_Closing"
         StateChanged="Window_StateChanged">
@@ -19,33 +20,42 @@
         <converters:BoolToVisibilityConverter x:Key="BoolToVis"/>
         <converters:InverseBoolConverter x:Key="InverseBool"/>
 
-        <!-- Button base style -->
-        <Style x:Key="BigButton" TargetType="Button">
-            <Setter Property="FontSize" Value="16"/>
-            <Setter Property="FontWeight" Value="Bold"/>
-            <Setter Property="Padding" Value="20,10"/>
+        <!-- ═══════════════════════════════════════════════════════════ -->
+        <!-- MODERN BUTTON BASE                                         -->
+        <!-- ═══════════════════════════════════════════════════════════ -->
+        <Style x:Key="ModernButton" TargetType="Button">
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="FontFamily" Value="Segoe UI, sans-serif"/>
+            <Setter Property="Padding" Value="18,10"/>
             <Setter Property="Margin" Value="4"/>
             <Setter Property="Cursor" Value="Hand"/>
-            <Setter Property="Background" Value="#3B3B5C"/>
-            <Setter Property="Foreground" Value="White"/>
-            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Background" Value="#1E1E35"/>
+            <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderBrush" Value="{StaticResource BorderSubtleBrush}"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
-                        <Border Background="{TemplateBinding Background}"
-                                CornerRadius="6"
-                                Padding="{TemplateBinding Padding}">
+                        <Border x:Name="Bd"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="8"
+                                Padding="{TemplateBinding Padding}"
+                                SnapsToDevicePixels="True">
                             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" Value="#4E4E7A"/>
+                                <Setter TargetName="Bd" Property="Background" Value="#282845"/>
+                                <Setter TargetName="Bd" Property="BorderBrush" Value="#3A3A58"/>
                             </Trigger>
                             <Trigger Property="IsPressed" Value="True">
-                                <Setter Property="Background" Value="#2A2A44"/>
+                                <Setter TargetName="Bd" Property="Background" Value="#14142A"/>
                             </Trigger>
                             <Trigger Property="IsEnabled" Value="False">
-                                <Setter Property="Opacity" Value="0.4"/>
+                                <Setter Property="Opacity" Value="0.35"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -53,25 +63,242 @@
             </Setter>
         </Style>
 
-        <Style x:Key="ColorButton" TargetType="Button" BasedOn="{StaticResource BigButton}">
-            <Setter Property="Width" Value="60"/>
-            <Setter Property="Height" Value="40"/>
-            <Setter Property="Padding" Value="8,4"/>
+        <!-- Primary action (green) -->
+        <Style x:Key="PrimaryButton" TargetType="Button" BasedOn="{StaticResource ModernButton}">
+            <Setter Property="Background" Value="#1A3D2A"/>
+            <Setter Property="BorderBrush" Value="#2ECC71"/>
+            <Setter Property="Foreground" Value="#2ECC71"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Bd"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="1"
+                                CornerRadius="8"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="#214D34"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="#132E1F"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Opacity" Value="0.35"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
         </Style>
 
-        <Style x:Key="SmallButton" TargetType="Button" BasedOn="{StaticResource BigButton}">
+        <!-- Danger action (red) -->
+        <Style x:Key="DangerButton" TargetType="Button" BasedOn="{StaticResource ModernButton}">
+            <Setter Property="Background" Value="#3D1A1A"/>
+            <Setter Property="BorderBrush" Value="#E74C3C"/>
+            <Setter Property="Foreground" Value="#E74C3C"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Bd"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="1"
+                                CornerRadius="8"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="#4D2222"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="#2E1212"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Opacity" Value="0.35"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Warning action (amber) -->
+        <Style x:Key="WarningButton" TargetType="Button" BasedOn="{StaticResource ModernButton}">
+            <Setter Property="Background" Value="#3D2E0A"/>
+            <Setter Property="BorderBrush" Value="#F1C40F"/>
+            <Setter Property="Foreground" Value="#F1C40F"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Bd"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="1"
+                                CornerRadius="8"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="#4D3A12"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="#2E2006"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Opacity" Value="0.35"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Info (blue) -->
+        <Style x:Key="InfoButton" TargetType="Button" BasedOn="{StaticResource ModernButton}">
+            <Setter Property="Background" Value="#152040"/>
+            <Setter Property="BorderBrush" Value="#5B6BF5"/>
+            <Setter Property="Foreground" Value="#8898FF"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Bd"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="1"
+                                CornerRadius="8"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="#1D2A50"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="#101830"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Opacity" Value="0.35"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Accent (purple) -->
+        <Style x:Key="AccentButton" TargetType="Button" BasedOn="{StaticResource ModernButton}">
+            <Setter Property="Background" Value="#251840"/>
+            <Setter Property="BorderBrush" Value="#8E6FD8"/>
+            <Setter Property="Foreground" Value="#A88CE8"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Bd"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="1"
+                                CornerRadius="8"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="#302050"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="#1A1030"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Opacity" Value="0.35"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Small neutral button -->
+        <Style x:Key="SmallButton" TargetType="Button" BasedOn="{StaticResource ModernButton}">
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Padding" Value="14,7"/>
+        </Style>
+
+        <!-- Color swatch button -->
+        <Style x:Key="ColorSwatchButton" TargetType="Button">
+            <Setter Property="Width" Value="72"/>
+            <Setter Property="Height" Value="38"/>
+            <Setter Property="Margin" Value="4"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Bd"
+                                Background="{TemplateBinding Background}"
+                                CornerRadius="8"
+                                Padding="8,4">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Opacity" Value="0.85"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="Bd" Property="Opacity" Value="0.7"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Emergency Stop button -->
+        <Style x:Key="EmergencyButton" TargetType="Button">
+            <Setter Property="FontSize" Value="15"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="FontFamily" Value="Segoe UI, sans-serif"/>
+            <Setter Property="Padding" Value="28,12"/>
+            <Setter Property="Margin" Value="4"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Background" Value="#B91C1C"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Bd"
+                                Background="{TemplateBinding Background}"
+                                CornerRadius="10"
+                                Padding="{TemplateBinding Padding}"
+                                BorderBrush="#FF4444"
+                                BorderThickness="2">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="#DC2626"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="#911111"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- BigButton alias for final mode data triggers -->
+        <Style x:Key="BigButton" TargetType="Button" BasedOn="{StaticResource ModernButton}">
             <Setter Property="FontSize" Value="13"/>
-            <Setter Property="Padding" Value="12,6"/>
-        </Style>
-
-        <Style x:Key="EmergencyButton" TargetType="Button" BasedOn="{StaticResource BigButton}">
-            <Setter Property="Background" Value="#CC0000"/>
-            <Setter Property="FontSize" Value="18"/>
-            <Setter Property="Padding" Value="24,12"/>
-        </Style>
-
-        <Style TargetType="TextBlock">
-            <Setter Property="Foreground" Value="#CCCCCC"/>
+            <Setter Property="Padding" Value="18,10"/>
         </Style>
     </Window.Resources>
 
@@ -82,26 +309,32 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <!-- TOP: Dual Display Preview -->
-        <Grid Grid.Row="0" Margin="12,12,12,6">
+        <!-- ═══════════════════════════════════════════════════════════ -->
+        <!-- TOP: Dual Display Preview                                  -->
+        <!-- ═══════════════════════════════════════════════════════════ -->
+        <Grid Grid.Row="0" Margin="16,16,16,8">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="140"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <!-- Display 1 -->
+            <!-- Display 1 (Left) -->
             <Border Grid.Column="0"
                     Background="{Binding Display1ColorBrush, Converter={StaticResource HexToBrush}}"
-                    CornerRadius="12"
-                    Padding="16"
-                    Margin="0,0,4,0">
+                    CornerRadius="16"
+                    Padding="20"
+                    Margin="0,0,6,0">
+                <Border.Effect>
+                    <DropShadowEffect ShadowDepth="0" BlurRadius="30" Opacity="0.4" Color="Black"/>
+                </Border.Effect>
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
-                    <TextBlock Grid.Row="0" FontSize="12" Foreground="White" Opacity="0.7" FontWeight="SemiBold">
+                    <TextBlock Grid.Row="0" FontSize="11" Foreground="White" Opacity="0.6" FontWeight="SemiBold"
+                               FontFamily="Segoe UI, sans-serif" Margin="2,0,0,0">
                         <Run Text="LINKS ("/>
                         <Run Text="{Binding Display1SideLabel, Mode=OneWay}"/>
                         <Run Text=")"/>
@@ -112,46 +345,58 @@
                                    FontWeight="Bold"
                                    Foreground="White"
                                    HorizontalAlignment="Center"
-                                   FontFamily="Consolas"/>
-                        <TextBlock Text="{Binding Display1Group}" FontSize="22" FontWeight="Bold" Foreground="White"
-                                   HorizontalAlignment="Center" Opacity="0.9"/>
+                                   FontFamily="Cascadia Mono, Consolas, monospace"/>
+                        <TextBlock Text="{Binding Display1Group}" FontSize="22" FontWeight="SemiBold" Foreground="White"
+                                   HorizontalAlignment="Center" Opacity="0.85"/>
                     </StackPanel>
                 </Grid>
             </Border>
 
-            <!-- Center Info -->
-            <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="8,0" Width="120">
-                <TextBlock Text="{Binding PhaseText}" FontSize="14" FontWeight="Bold" Foreground="#AAAAAA"
-                           HorizontalAlignment="Center" TextAlignment="Center" TextWrapping="Wrap" Margin="0,0,0,8"/>
-                <TextBlock Text="PASSE" FontSize="11" Foreground="#888" HorizontalAlignment="Center"/>
-                <TextBlock Text="{Binding CurrentEnd}" FontSize="28" FontWeight="Bold" Foreground="White"
-                           HorizontalAlignment="Center"/>
-                <TextBlock Text="{Binding TimerStatus}" FontSize="12" Foreground="#AAAAAA"
-                           HorizontalAlignment="Center" Margin="0,4,0,0"/>
-                <!-- Final mode arrow counts -->
-                <StackPanel Visibility="{Binding IsFinalMode, Converter={StaticResource BoolToVis}}" Margin="0,8,0,0">
-                    <TextBlock FontSize="11" Foreground="#888" HorizontalAlignment="Center" Text="Pfeile"/>
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                        <TextBlock Text="L:" FontSize="12" Foreground="#AAAAAA"/>
-                        <TextBlock Text="{Binding ArrowCountLeftText}" FontSize="14" FontWeight="Bold" Foreground="White" Margin="2,0,8,0"/>
-                        <TextBlock Text="R:" FontSize="12" Foreground="#AAAAAA"/>
-                        <TextBlock Text="{Binding ArrowCountRightText}" FontSize="14" FontWeight="Bold" Foreground="White" Margin="2,0,0,0"/>
+            <!-- Center Info Panel -->
+            <Border Grid.Column="1" Margin="4,0"
+                    Background="{StaticResource BgCardBrush}"
+                    CornerRadius="14"
+                    BorderBrush="{StaticResource BorderSubtleBrush}"
+                    BorderThickness="1"
+                    Padding="12">
+                <StackPanel VerticalAlignment="Center">
+                    <TextBlock Text="{Binding PhaseText}" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource TextSecondaryBrush}"
+                               HorizontalAlignment="Center" TextAlignment="Center" TextWrapping="Wrap" Margin="0,0,0,10"/>
+                    <TextBlock Text="PASSE" FontSize="10" Foreground="{StaticResource TextMutedBrush}" HorizontalAlignment="Center"
+                               FontWeight="SemiBold" Margin="0,0,0,2"/>
+                    <TextBlock Text="{Binding CurrentEnd}" FontSize="26" FontWeight="Bold" Foreground="{StaticResource TextPrimaryBrush}"
+                               HorizontalAlignment="Center"/>
+                    <TextBlock Text="{Binding TimerStatus}" FontSize="11" Foreground="{StaticResource TextMutedBrush}"
+                               HorizontalAlignment="Center" Margin="0,4,0,0"/>
+                    <!-- Final mode arrow counts -->
+                    <StackPanel Visibility="{Binding IsFinalMode, Converter={StaticResource BoolToVis}}" Margin="0,10,0,0">
+                        <TextBlock FontSize="10" Foreground="{StaticResource TextMutedBrush}" HorizontalAlignment="Center" Text="Pfeile" FontWeight="SemiBold"/>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,2,0,0">
+                            <TextBlock Text="L:" FontSize="11" Foreground="{StaticResource TextSecondaryBrush}"/>
+                            <TextBlock Text="{Binding ArrowCountLeftText}" FontSize="14" FontWeight="Bold" Foreground="{StaticResource TextPrimaryBrush}" Margin="2,0,10,0"/>
+                            <TextBlock Text="R:" FontSize="11" Foreground="{StaticResource TextSecondaryBrush}"/>
+                            <TextBlock Text="{Binding ArrowCountRightText}" FontSize="14" FontWeight="Bold" Foreground="{StaticResource TextPrimaryBrush}" Margin="2,0,0,0"/>
+                        </StackPanel>
                     </StackPanel>
                 </StackPanel>
-            </StackPanel>
+            </Border>
 
-            <!-- Display 2 -->
+            <!-- Display 2 (Right) -->
             <Border Grid.Column="2"
                     Background="{Binding Display2ColorBrush, Converter={StaticResource HexToBrush}}"
-                    CornerRadius="12"
-                    Padding="16"
-                    Margin="4,0,0,0">
+                    CornerRadius="16"
+                    Padding="20"
+                    Margin="6,0,0,0">
+                <Border.Effect>
+                    <DropShadowEffect ShadowDepth="0" BlurRadius="30" Opacity="0.4" Color="Black"/>
+                </Border.Effect>
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
-                    <TextBlock Grid.Row="0" FontSize="12" Foreground="White" Opacity="0.7" FontWeight="SemiBold">
+                    <TextBlock Grid.Row="0" FontSize="11" Foreground="White" Opacity="0.6" FontWeight="SemiBold"
+                               FontFamily="Segoe UI, sans-serif" Margin="2,0,0,0">
                         <Run Text="RECHTS ("/>
                         <Run Text="{Binding Display2SideLabel, Mode=OneWay}"/>
                         <Run Text=")"/>
@@ -162,148 +407,148 @@
                                    FontWeight="Bold"
                                    Foreground="White"
                                    HorizontalAlignment="Center"
-                                   FontFamily="Consolas"/>
-                        <TextBlock Text="{Binding Display2Group}" FontSize="22" FontWeight="Bold" Foreground="White"
-                                   HorizontalAlignment="Center" Opacity="0.9"/>
+                                   FontFamily="Cascadia Mono, Consolas, monospace"/>
+                        <TextBlock Text="{Binding Display2Group}" FontSize="22" FontWeight="SemiBold" Foreground="White"
+                                   HorizontalAlignment="Center" Opacity="0.85"/>
                     </StackPanel>
                 </Grid>
             </Border>
         </Grid>
 
-        <!-- MIDDLE: Controls -->
-        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Margin="12,6">
+        <!-- ═══════════════════════════════════════════════════════════ -->
+        <!-- MIDDLE: All Controls                                       -->
+        <!-- ═══════════════════════════════════════════════════════════ -->
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Margin="16,4,16,4"
+                      Padding="0,0,4,0">
             <StackPanel>
-                <!-- Timer Controls -->
-                <Border Background="#2B2B40" CornerRadius="8" Padding="16" Margin="0,0,0,8">
+                <!-- ── STEUERUNG ─────────────────────────────────────── -->
+                <Border Style="{StaticResource CardBorder}" Margin="0,0,0,10">
                     <StackPanel>
-                        <TextBlock Text="STEUERUNG" FontSize="13" FontWeight="Bold" Foreground="#888" Margin="0,0,0,10"/>
+                        <TextBlock Text="STEUERUNG" Style="{StaticResource SectionLabel}"/>
                         <WrapPanel HorizontalAlignment="Center">
-                            <Button Content="▶ START" Style="{StaticResource BigButton}"
+                            <Button Content="▶  START" Style="{StaticResource PrimaryButton}"
                                     Command="{Binding StartTimerCommand}"
-                                    IsEnabled="{Binding IsStartEnabled}"
-                                    Background="#2D7D2D" Width="130"/>
-                            <Button Content="⏸ PAUSE" Style="{StaticResource BigButton}"
+                                    IsEnabled="{Binding IsStartEnabled}" Width="128"/>
+                            <Button Content="⏸  PAUSE" Style="{StaticResource WarningButton}"
                                     Command="{Binding PauseTimerCommand}"
-                                    IsEnabled="{Binding IsPauseEnabled}"
-                                    Background="#B8860B" Width="130"/>
-                            <Button Content="▶ WEITER" Style="{StaticResource BigButton}"
+                                    IsEnabled="{Binding IsPauseEnabled}" Width="128"/>
+                            <Button Content="▶  WEITER" Style="{StaticResource InfoButton}"
                                     Command="{Binding ResumeTimerCommand}"
-                                    IsEnabled="{Binding IsResumeEnabled}"
-                                    Background="#2D6D9E" Width="130"/>
-                            <Button Content="⏹ STOP" Style="{StaticResource BigButton}"
-                                    Command="{Binding StopTimerCommand}"
-                                    Background="#8B2222" Width="130"/>
-                            <Button Content="↺ RESET" Style="{StaticResource BigButton}"
-                                    Command="{Binding ResetTimerCommand}"
-                                    Width="130"/>
-                            <Button Content="⏩ SKIP" Style="{StaticResource BigButton}"
+                                    IsEnabled="{Binding IsResumeEnabled}" Width="128"/>
+                            <Button Content="⏹  STOP" Style="{StaticResource DangerButton}"
+                                    Command="{Binding StopTimerCommand}" Width="128"/>
+                            <Button Content="↺  RESET" Style="{StaticResource ModernButton}"
+                                    Command="{Binding ResetTimerCommand}" Width="128"/>
+                            <Button Content="⏩  SKIP" Style="{StaticResource AccentButton}"
                                     Command="{Binding SkipTimerCommand}"
-                                    IsEnabled="{Binding IsSkipEnabled}"
-                                    Background="#6B4C9A" Width="130"/>
+                                    IsEnabled="{Binding IsSkipEnabled}" Width="128"/>
                         </WrapPanel>
-                        <!-- Emergency Stop -->
-                        <WrapPanel HorizontalAlignment="Center" Margin="0,8,0,0">
-                            <Button Content="⚠ NOTFALL-STOPP (F5)" Style="{StaticResource EmergencyButton}"
-                                    Command="{Binding EmergencyStopCommand}" Width="240"/>
+                        <WrapPanel HorizontalAlignment="Center" Margin="0,10,0,0">
+                            <Button Content="⚠  NOTFALL-STOPP (F5)" Style="{StaticResource EmergencyButton}"
+                                    Command="{Binding EmergencyStopCommand}" Width="260"/>
                         </WrapPanel>
                     </StackPanel>
                 </Border>
 
-                <!-- Group, Duration, End -->
+                <!-- ── GROUP / TIMES / PASSE ─────────────────────────── -->
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="10"/>
                         <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="10"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
 
-                    <!-- Group selection -->
-                    <Border Grid.Column="0" Background="#2B2B40" CornerRadius="8" Padding="16" Margin="0,0,4,8">
+                    <!-- Group Selection -->
+                    <Border Grid.Column="0" Style="{StaticResource CardBorder}" Margin="0,0,0,10">
                         <StackPanel>
-                            <TextBlock Text="GRUPPE / STARTGRUPPE" FontSize="13" FontWeight="Bold" Foreground="#888" Margin="0,0,0,10"/>
+                            <TextBlock Text="GRUPPE / STARTGRUPPE" Style="{StaticResource SectionLabel}"/>
                             <WrapPanel HorizontalAlignment="Center">
-                                <Button Content="AB" Style="{StaticResource BigButton}" Width="80"
-                                        Command="{Binding SetGroupABCommand}" Background="#3D5A80"/>
-                                <Button Content="CD" Style="{StaticResource BigButton}" Width="80"
-                                        Command="{Binding SetGroupCDCommand}" Background="#3D5A80"/>
+                                <Button Content="AB" Style="{StaticResource InfoButton}" Width="80"
+                                        Command="{Binding SetGroupABCommand}"/>
+                                <Button Content="CD" Style="{StaticResource InfoButton}" Width="80"
+                                        Command="{Binding SetGroupCDCommand}"/>
                             </WrapPanel>
-                            <TextBlock Text="Startgruppe:" FontSize="11" Foreground="#888" HorizontalAlignment="Center" Margin="0,8,0,2"/>
+                            <TextBlock Text="Startgruppe:" FontSize="11" Foreground="{StaticResource TextMutedBrush}"
+                                       HorizontalAlignment="Center" Margin="0,12,0,4"/>
                             <WrapPanel HorizontalAlignment="Center">
                                 <Button Content="AB zuerst" Style="{StaticResource SmallButton}"
-                                        Command="{Binding SetStartGroupABCommand}" Background="#2B4570"/>
+                                        Command="{Binding SetStartGroupABCommand}"/>
                                 <Button Content="CD zuerst" Style="{StaticResource SmallButton}"
-                                        Command="{Binding SetStartGroupCDCommand}" Background="#2B4570"/>
+                                        Command="{Binding SetStartGroupCDCommand}"/>
                             </WrapPanel>
                         </StackPanel>
                     </Border>
 
-                    <!-- Timer durations -->
-                    <Border Grid.Column="1" Background="#2B2B40" CornerRadius="8" Padding="16" Margin="4,0,4,8">
+                    <!-- Timer Durations -->
+                    <Border Grid.Column="2" Style="{StaticResource CardBorder}" Margin="0,0,0,10">
                         <StackPanel>
-                            <TextBlock Text="ZEITEN" FontSize="13" FontWeight="Bold" Foreground="#888" Margin="0,0,0,10"/>
-                            <TextBlock Text="Schießzeit (s):" FontSize="11" Foreground="#888" Margin="0,0,0,2"/>
+                            <TextBlock Text="ZEITEN" Style="{StaticResource SectionLabel}"/>
+                            <TextBlock Text="Schießzeit (s):" FontSize="11" Foreground="{StaticResource TextMutedBrush}" Margin="0,0,0,4"/>
                             <WrapPanel HorizontalAlignment="Center">
                                 <Button Content="60" Style="{StaticResource SmallButton}" Click="SetDuration_Click" Tag="60"/>
                                 <Button Content="90" Style="{StaticResource SmallButton}" Click="SetDuration_Click" Tag="90"/>
                                 <Button Content="120" Style="{StaticResource SmallButton}" Click="SetDuration_Click" Tag="120"/>
                                 <Button Content="240" Style="{StaticResource SmallButton}" Click="SetDuration_Click" Tag="240"/>
                             </WrapPanel>
-                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,4,0,0">
-                                <TextBox Text="{Binding TimerDuration, UpdateSourceTrigger=PropertyChanged}"
-                                         Width="60" FontSize="14" Background="#1E1E2E" Foreground="White"
-                                         BorderBrush="#555" Padding="4" HorizontalContentAlignment="Center"/>
-                                <TextBlock Text="s" FontSize="14" VerticalAlignment="Center" Margin="4,0,0,0"/>
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,8,0,0">
+                                <TextBox Text="{Binding TimerDuration, UpdateSourceTrigger=PropertyChanged}" Width="64"/>
+                                <TextBlock Text="s" FontSize="14" VerticalAlignment="Center" Margin="6,0,0,0"
+                                           Foreground="{StaticResource TextSecondaryBrush}"/>
                             </StackPanel>
-                            <TextBlock Text="Vorbereitungszeit (s):" FontSize="11" Foreground="#888" Margin="0,8,0,2"/>
+                            <TextBlock Text="Vorbereitungszeit (s):" FontSize="11" Foreground="{StaticResource TextMutedBrush}" Margin="0,12,0,4"/>
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                <TextBox Text="{Binding PreparationTime, UpdateSourceTrigger=PropertyChanged}"
-                                         Width="60" FontSize="14" Background="#1E1E2E" Foreground="White"
-                                         BorderBrush="#555" Padding="4" HorizontalContentAlignment="Center"/>
-                                <TextBlock Text="s" FontSize="14" VerticalAlignment="Center" Margin="4,0,0,0"/>
+                                <TextBox Text="{Binding PreparationTime, UpdateSourceTrigger=PropertyChanged}" Width="64"/>
+                                <TextBlock Text="s" FontSize="14" VerticalAlignment="Center" Margin="6,0,0,0"
+                                           Foreground="{StaticResource TextSecondaryBrush}"/>
                             </StackPanel>
                         </StackPanel>
                     </Border>
 
                     <!-- Passe -->
-                    <Border Grid.Column="2" Background="#2B2B40" CornerRadius="8" Padding="16" Margin="4,0,0,8">
+                    <Border Grid.Column="4" Style="{StaticResource CardBorder}" Margin="0,0,0,10">
                         <StackPanel>
-                            <TextBlock Text="PASSE" FontSize="13" FontWeight="Bold" Foreground="#888" Margin="0,0,0,10"/>
-                            <WrapPanel HorizontalAlignment="Center">
+                            <TextBlock Text="PASSE" Style="{StaticResource SectionLabel}"/>
+                            <WrapPanel HorizontalAlignment="Center" Margin="0,0,0,4">
                                 <Button Content="◀ Zurück" Style="{StaticResource SmallButton}"
                                         Command="{Binding PreviousEndCommand}"/>
                                 <TextBlock Text="{Binding CurrentEnd}" FontSize="24" FontWeight="Bold"
-                                           VerticalAlignment="Center" Margin="12,0" Foreground="White"/>
+                                           VerticalAlignment="Center" Margin="14,0"
+                                           Foreground="{StaticResource TextPrimaryBrush}"/>
                                 <Button Content="Vor ▶" Style="{StaticResource SmallButton}"
                                         Command="{Binding NextEndCommand}"/>
                             </WrapPanel>
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,8,0,0">
-                                <TextBlock Text="Gesamt: " FontSize="13" VerticalAlignment="Center"/>
-                                <TextBox Text="{Binding TotalEnds, UpdateSourceTrigger=PropertyChanged}"
-                                         Width="50" FontSize="14" Background="#1E1E2E" Foreground="White"
-                                         BorderBrush="#555" Padding="4" HorizontalContentAlignment="Center"/>
+                                <TextBlock Text="Gesamt:" FontSize="13" VerticalAlignment="Center" Margin="0,0,8,0"
+                                           Foreground="{StaticResource TextSecondaryBrush}"/>
+                                <TextBox Text="{Binding TotalEnds, UpdateSourceTrigger=PropertyChanged}" Width="56"/>
                             </StackPanel>
                         </StackPanel>
                     </Border>
                 </Grid>
 
-                <!-- Final Mode: Side Selection -->
-                <Border Background="#2B2B40" CornerRadius="8" Padding="16" Margin="0,0,0,8"
-                        Visibility="{Binding IsFinalMode, Converter={StaticResource BoolToVis}}">
+                <!-- ── FINAL MODE: SIDE SELECTION ────────────────────── -->
+                <Border Style="{StaticResource CardBorder}" Margin="0,0,0,10"
+                        Visibility="{Binding IsFinalMode, Converter={StaticResource BoolToVis}}"
+                        BorderBrush="#3D2E0A">
                     <StackPanel>
-                        <TextBlock Text="FINAL-MODUS: SEITE" FontSize="13" FontWeight="Bold" Foreground="#E8A030" Margin="0,0,0,10"/>
+                        <TextBlock Text="FINAL-MODUS: SEITE" FontSize="11" FontWeight="SemiBold"
+                                   Foreground="{StaticResource AccentOrangeBrush}" Margin="0,0,0,12"/>
                         <WrapPanel HorizontalAlignment="Center">
                             <Button Command="{Binding SetStartSideLeftCommand}" Width="180">
                                 <Button.Content>
-                                    <TextBlock Text="◀ Links starten (L)"/>
+                                    <TextBlock Text="◀ Links starten (L)" Foreground="{StaticResource TextPrimaryBrush}"/>
                                 </Button.Content>
                                 <Button.Style>
                                     <Style TargetType="Button" BasedOn="{StaticResource BigButton}">
-                                        <Setter Property="Background" Value="#3D5A80"/>
+                                        <Setter Property="Background" Value="#152040"/>
+                                        <Setter Property="BorderBrush" Value="#5B6BF5"/>
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding IsStartSideLeft}" Value="True">
-                                                <Setter Property="Background" Value="#2D7D2D"/>
-                                                <Setter Property="BorderBrush" Value="#44DD44"/>
-                                                <Setter Property="BorderThickness" Value="3"/>
+                                                <Setter Property="Background" Value="#1A3D2A"/>
+                                                <Setter Property="BorderBrush" Value="#2ECC71"/>
+                                                <Setter Property="BorderThickness" Value="2"/>
                                             </DataTrigger>
                                         </Style.Triggers>
                                     </Style>
@@ -311,70 +556,70 @@
                             </Button>
                             <Button Command="{Binding SetStartSideRightCommand}" Width="180">
                                 <Button.Content>
-                                    <TextBlock Text="Rechts starten (R) ▶"/>
+                                    <TextBlock Text="Rechts starten (R) ▶" Foreground="{StaticResource TextPrimaryBrush}"/>
                                 </Button.Content>
                                 <Button.Style>
                                     <Style TargetType="Button" BasedOn="{StaticResource BigButton}">
-                                        <Setter Property="Background" Value="#3D5A80"/>
+                                        <Setter Property="Background" Value="#152040"/>
+                                        <Setter Property="BorderBrush" Value="#5B6BF5"/>
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding IsStartSideRight}" Value="True">
-                                                <Setter Property="Background" Value="#2D7D2D"/>
-                                                <Setter Property="BorderBrush" Value="#44DD44"/>
-                                                <Setter Property="BorderThickness" Value="3"/>
+                                                <Setter Property="Background" Value="#1A3D2A"/>
+                                                <Setter Property="BorderBrush" Value="#2ECC71"/>
+                                                <Setter Property="BorderThickness" Value="2"/>
                                             </DataTrigger>
                                         </Style.Triggers>
                                     </Style>
                                 </Button.Style>
                             </Button>
-                            <Button Content="↔ Seitenwechsel" Style="{StaticResource BigButton}"
-                                    Command="{Binding SwitchSideCommand}" Background="#6B4C9A" Width="180"/>
+                            <Button Content="↔ Seitenwechsel" Style="{StaticResource AccentButton}"
+                                    Command="{Binding SwitchSideCommand}" Width="180"/>
                             <Button Content="⇄ Display tauschen" Style="{StaticResource SmallButton}"
-                                    Command="{Binding SwapDisplaySidesCommand}" Background="#555"/>
+                                    Command="{Binding SwapDisplaySidesCommand}"/>
                         </WrapPanel>
                     </StackPanel>
                 </Border>
 
-                <!-- Manual Color Override -->
-                <Border Background="#2B2B40" CornerRadius="8" Padding="16" Margin="0,0,0,8">
+                <!-- ── MANUAL COLOR OVERRIDE ─────────────────────────── -->
+                <Border Style="{StaticResource CardBorder}" Margin="0,0,0,10">
                     <StackPanel>
-                        <TextBlock Text="MANUELLE FARBÜBERSCHREIBUNG" FontSize="13" FontWeight="Bold" Foreground="#888" Margin="0,0,0,10"/>
+                        <TextBlock Text="MANUELLE FARBÜBERSCHREIBUNG" Style="{StaticResource SectionLabel}"/>
                         <WrapPanel HorizontalAlignment="Center">
-                            <Button Style="{StaticResource ColorButton}" Background="#CC0000" Content="ROT"
+                            <Button Style="{StaticResource ColorSwatchButton}" Background="#CC2020" Content="ROT"
                                     Command="{Binding SetColorRedCommand}"/>
-                            <Button Style="{StaticResource ColorButton}" Background="#00AA00" Content="GRÜN"
+                            <Button Style="{StaticResource ColorSwatchButton}" Background="#1DAA50" Content="GRÜN"
                                     Command="{Binding SetColorGreenCommand}"/>
-                            <Button Style="{StaticResource ColorButton}" Background="#DDAA00" Content="GELB"
+                            <Button Style="{StaticResource ColorSwatchButton}" Background="#D4A017" Content="GELB"
                                     Command="{Binding SetColorYellowCommand}"/>
                         </WrapPanel>
                     </StackPanel>
                 </Border>
 
-                <!-- Presets -->
-                <Border Background="#2B2B40" CornerRadius="8" Padding="16" Margin="0,0,0,8">
+                <!-- ── PRESETS ───────────────────────────────────────── -->
+                <Border Style="{StaticResource CardBorder}" Margin="0,0,0,10">
                     <StackPanel>
-                        <TextBlock Text="PRESETS" FontSize="13" FontWeight="Bold" Foreground="#888" Margin="0,0,0,10"/>
+                        <TextBlock Text="PRESETS" Style="{StaticResource SectionLabel}"/>
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                             <ComboBox ItemsSource="{Binding Presets}"
                                       SelectedItem="{Binding SelectedPreset}"
                                       DisplayMemberPath="Name"
                                       Width="280"
-                                      FontSize="14"
-                                      Background="#1E1E2E"
-                                      Foreground="Black"
                                       Margin="0,0,8,0"/>
-                            <Button Content="▶ Preset anwenden" Style="{StaticResource SmallButton}"
-                                    Command="{Binding ApplyPresetCommand}"
-                                    Background="#2D7D2D"/>
+                            <Button Content="▶ Preset anwenden" Style="{StaticResource PrimaryButton}"
+                                    Command="{Binding ApplyPresetCommand}"/>
                         </StackPanel>
-                        <TextBlock Text="{Binding PresetStatus}" FontSize="12" Margin="0,6,0,0"
-                                   HorizontalAlignment="Center" Foreground="#AAAAAA"/>
+                        <TextBlock Text="{Binding PresetStatus}" FontSize="11" Margin="0,8,0,0"
+                                   HorizontalAlignment="Center" Foreground="{StaticResource TextSecondaryBrush}"/>
                     </StackPanel>
                 </Border>
             </StackPanel>
         </ScrollViewer>
 
-        <!-- BOTTOM: Configuration -->
-        <Border Grid.Row="2" Background="#252538" Padding="12" Margin="12,6,12,12" CornerRadius="8">
+        <!-- ═══════════════════════════════════════════════════════════ -->
+        <!-- BOTTOM: Status Bar                                         -->
+        <!-- ═══════════════════════════════════════════════════════════ -->
+        <Border Grid.Row="2" Background="#0A0A16" Padding="14,10" Margin="0"
+                BorderBrush="{StaticResource BorderSubtleBrush}" BorderThickness="0,1,0,0">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
@@ -384,53 +629,56 @@
 
                 <!-- COM Port -->
                 <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
-                    <TextBlock Text="COM-Port:" FontSize="13" VerticalAlignment="Center" Margin="0,0,8,0" Foreground="#AAAAAA"/>
+                    <TextBlock Text="COM-Port:" FontSize="12" VerticalAlignment="Center" Margin="0,0,8,0"
+                               Foreground="{StaticResource TextMutedBrush}" FontWeight="SemiBold"/>
                     <ComboBox ItemsSource="{Binding AvailableComPorts}"
                               SelectedItem="{Binding SelectedComPort}"
-                              Width="100" FontSize="13" Background="#1E1E2E" Foreground="Black"/>
-                    <Button Content="⟳" Style="{StaticResource SmallButton}"
+                              Width="100" FontSize="12"/>
+                    <Button Style="{StaticResource SmallButton}"
                             Command="{Binding RefreshComPortsCommand}"
-                            Padding="8,4" FontSize="16" Margin="4,0"/>
-                    <Button Content="Verbinden" Style="{StaticResource SmallButton}"
+                            Padding="6,4" FontSize="14" Margin="4,0" Content="⟳"/>
+                    <Button Content="Verbinden" Style="{StaticResource PrimaryButton}"
                             Command="{Binding ConnectSerialCommand}"
-                            Background="#2D7D2D"/>
-                    <Button Content="Trennen" Style="{StaticResource SmallButton}"
+                            FontSize="12" Padding="12,6"/>
+                    <Button Content="Trennen" Style="{StaticResource DangerButton}"
                             Command="{Binding DisconnectSerialCommand}"
-                            Background="#8B2222"/>
+                            FontSize="12" Padding="12,6"/>
                 </StackPanel>
 
                 <!-- Connection Status -->
                 <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
-                    <Ellipse Width="12" Height="12" Margin="0,0,6,0">
+                    <Ellipse Width="10" Height="10" Margin="0,0,8,0">
                         <Ellipse.Style>
                             <Style TargetType="Ellipse">
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding IsSerialConnected}" Value="True">
-                                        <Setter Property="Fill" Value="#00CC00"/>
+                                        <Setter Property="Fill" Value="{StaticResource AccentGreenBrush}"/>
                                     </DataTrigger>
                                     <DataTrigger Binding="{Binding IsSerialConnected}" Value="False">
-                                        <Setter Property="Fill" Value="#CC0000"/>
+                                        <Setter Property="Fill" Value="{StaticResource AccentRedBrush}"/>
                                     </DataTrigger>
                                 </Style.Triggers>
                             </Style>
                         </Ellipse.Style>
                     </Ellipse>
-                    <TextBlock Text="{Binding ConnectionStatusText}" FontSize="13" VerticalAlignment="Center" Foreground="#AAAAAA"/>
+                    <TextBlock Text="{Binding ConnectionStatusText}" FontSize="12" VerticalAlignment="Center"
+                               Foreground="{StaticResource TextSecondaryBrush}"/>
                 </StackPanel>
 
-                <!-- Sound toggle + Beamer -->
+                <!-- Sound + Beamer -->
                 <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
-                    <TextBlock Text="Sound:" FontSize="13" VerticalAlignment="Center" Margin="0,0,6,0" Foreground="#AAAAAA"/>
-                    <CheckBox IsChecked="{Binding SoundEnabled}" VerticalAlignment="Center"/>
+                    <TextBlock Text="Sound:" FontSize="12" VerticalAlignment="Center" Margin="0,0,6,0"
+                               Foreground="{StaticResource TextMutedBrush}" FontWeight="SemiBold"/>
+                    <CheckBox IsChecked="{Binding SoundEnabled}" VerticalAlignment="Center" Margin="0,0,12,0"/>
                     <ComboBox ItemsSource="{Binding AvailableScreens}"
                               SelectedIndex="{Binding SelectedScreenIndex}"
-                              Width="200" FontSize="12"
-                              Background="#1E1E2E" Foreground="Black"
-                              Margin="12,0,4,0"/>
-                    <Button Content="Beamer (F11)" Style="{StaticResource SmallButton}"
-                            Command="{Binding ToggleBeamerCommand}"/>
+                              Width="200" FontSize="11"
+                              Margin="0,0,6,0"/>
+                    <Button Content="Beamer (F11)" Style="{StaticResource AccentButton}"
+                            Command="{Binding ToggleBeamerCommand}"
+                            FontSize="12" Padding="14,6"/>
                     <TextBlock Text="{Binding SerialError}" FontSize="11" Foreground="#FF6666"
-                               Margin="16,0,0,0" VerticalAlignment="Center" MaxWidth="200" TextTrimming="CharacterEllipsis"/>
+                               Margin="12,0,0,0" VerticalAlignment="Center" MaxWidth="200" TextTrimming="CharacterEllipsis"/>
                 </StackPanel>
             </Grid>
         </Border>

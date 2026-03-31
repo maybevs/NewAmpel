@@ -62,3 +62,5 @@ C:\Users\bernd_\source\repos\NewAmpel\AmpelSteuerung\src\AmpelSteuerung.App\obj\
 C:\Users\bernd_\source\repos\NewAmpel\AmpelSteuerung\src\AmpelSteuerung.App\bin\Debug\net8.0-windows\YamlDotNet.dll
 C:\Users\bernd_\source\repos\NewAmpel\AmpelSteuerung\src\AmpelSteuerung.App\obj\Debug\net8.0-windows\BeamerWindow.g.cs
 C:\Users\bernd_\source\repos\NewAmpel\AmpelSteuerung\src\AmpelSteuerung.App\obj\Debug\net8.0-windows\BeamerWindow.baml
+c:\Users\bernd_\source\repos\NewAmpel\AmpelSteuerung\src\AmpelSteuerung.App\obj\Debug\net8.0-windows\AmpelSteuerung.App.sourcelink.json
+C:\Users\bernd_\source\repos\NewAmpel\AmpelSteuerung\src\AmpelSteuerung.App\obj\Debug\net8.0-windows\App.baml
