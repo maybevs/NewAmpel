@@ -1,0 +1,13 @@
+[Unit]
+Description=Bogensport Ampel LED Display
+After=network.target
+
+[Service]
+ExecStart=/home/pi/ampel-display/run.sh 1 p4 bdf 80 waveshare
+WorkingDirectory=/home/pi/ampel-display
+Restart=always
+RestartSec=5
+User=root
+
+[Install]
+WantedBy=multi-user.target
