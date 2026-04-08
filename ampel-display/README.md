@@ -18,65 +18,146 @@ und zeigt Timer, Gruppenanzeige, Ampelfarbe und Ende/Passe auf der LED-Matrix an
 - Raspberry Pi 4 (Pi 5 wird **nicht** unterstützt)
 - Adafruit RGB Matrix HAT
 - RS485-Transceiver (Waveshare RS485 CAN HAT oder MAX485 Breadboard)
-- Python 3.9+
+- Raspberry Pi OS (Debian Trixie/Bookworm, 64-bit)
 
-### rpi-rgb-led-matrix installieren
+---
+
+## Installation (Schritt für Schritt)
+
+### 1. Projekt auf den Pi kopieren
+
+Vom Windows-PC:
 
 ```bash
+scp -r .\ampel-display\ pi@<PI-HOSTNAME>:/home/pi/ampel-display
+```
+
+### 2. System-Pakete installieren
+
+Auf dem Pi (SSH):
+
+```bash
+sudo apt-get update
+sudo apt-get install -y git build-essential python3-dev cython3 python3-venv
+```
+
+### 3. Python Virtual Environment erstellen
+
+Raspberry Pi OS (Debian Trixie) erlaubt keine system-weite pip-Installation.
+Alle Python-Pakete werden in einem venv installiert:
+
+```bash
+python3 -m venv ~/ampel-venv
+```
+
+### 4. rpi-rgb-led-matrix bauen & installieren
+
+```bash
+cd ~
 git clone https://github.com/hzeller/rpi-rgb-led-matrix.git
-cd rpi-rgb-led-matrix
-make build-python PYTHON=$(which python3)
-sudo make install-python PYTHON=$(which python3)
+cd ~/rpi-rgb-led-matrix/bindings/python
+~/ampel-venv/bin/pip install .
 ```
 
-### Python-Abhängigkeiten
+### 5. Python-Abhängigkeiten installieren
 
 ```bash
-cd ampel-display
-pip install -r requirements.txt
+~/ampel-venv/bin/pip install -r ~/ampel-display/requirements.txt
+~/ampel-venv/bin/pip install RPi.GPIO
 ```
 
-## Schnellstart
+### 6. BDF-Fonts kopieren
 
 ```bash
-# P4 Indoor, Display 1, BDF-Fonts, MAX485-Prototyp
-./run.sh 1 p4 bdf 80 max485
-
-# P8 Outdoor, Display 2, Waveshare HAT
-./run.sh 2 p8 bdf 80 waveshare
+cp ~/rpi-rgb-led-matrix/fonts/{10x20,9x18,7x13B,7x13,6x10,5x8,5x7}.bdf ~/ampel-display/fonts/
 ```
 
-Oder direkt:
+### 7. Startscript ausführbar machen
 
 ```bash
-sudo python3 -m ampel_display \
-    --display-id 1 \
-    --panel-type p4 \
-    --font-mode bdf \
-    --brightness 80 \
-    --rs485-mode waveshare
+chmod +x ~/ampel-display/run.sh
 ```
 
-## CLI-Parameter
+### 8. Testen
 
-| Parameter | Default | Beschreibung |
-|-----------|---------|--------------|
-| `--display-id` | *(Pflicht)* | 1 oder 2 — filtert das passende Display aus der Broadcast-Nachricht |
-| `--panel-type` | `p4` | `p4` (128×64) oder `p8` (64×32) |
-| `--serial-port` | `/dev/serial0` | Serieller Port |
-| `--baudrate` | `9600` | Baudrate |
-| `--rs485-mode` | `waveshare` | `waveshare` (auto DE/RE) oder `max485` (GPIO4 manuell) |
-| `--font-mode` | `bdf` | `bdf` (Pixel-Fonts) oder `ttf` (Pillow-Rendering) |
-| `--brightness` | `80` | Helligkeit 0–100 |
+```bash
+cd ~/ampel-display
+
+# 2 Panels (Prototyp): chain-length=2
+./run.sh 1 p4 bdf 80 max485 2
+
+# 4 Panels (Final): chain-length=4
+./run.sh 1 p4 bdf 80 max485 4
+```
+
+Wenn das Display "---" zeigt, läuft die Software korrekt im Standby-Modus
+(keine RS485-Daten empfangen). Sobald die WPF-App sendet, erscheint die Anzeige.
+
+---
+
+## run.sh Parameter
+
+```
+./run.sh <display-id> <panel-type> <font-mode> <brightness> <rs485-mode> <chain-length>
+```
+
+| # | Parameter | Default | Beschreibung |
+|---|-----------|---------|--------------|
+| 1 | display-id | `1` | 1 oder 2 — filtert aus der Broadcast-Nachricht |
+| 2 | panel-type | `p4` | `p4` (64×32 Panels) oder `p8` (32×16 Panels) |
+| 3 | font-mode | `bdf` | `bdf` (Pixel-Fonts) oder `ttf` (Pillow) |
+| 4 | brightness | `80` | Helligkeit 0–100 |
+| 5 | rs485-mode | `waveshare` | `waveshare` (auto DE/RE) oder `max485` (GPIO4) |
+| 6 | chain-length | `4` | Anzahl verketteter Panels (2 oder 4) |
+
+**Beispiele:**
+
+```bash
+# Prototyp: Display 1, P4, 2 Panels, MAX485
+./run.sh 1 p4 bdf 80 max485 2
+
+# Final: Display 2, P8 Outdoor, 4 Panels, Waveshare HAT
+./run.sh 2 p8 bdf 80 waveshare 4
+```
+
+---
+
+## Updates deployen
+
+Vom Windows-PC einzelne Dateien kopieren (nicht `scp -r src/` — das erzeugt
+verschachtelte Ordner):
+
+```bash
+# Alle Source-Dateien
+scp -r .\ampel-display\src\ampel_display\ pi@<PI-HOSTNAME>:/home/pi/ampel-display/src/ampel_display/
+
+# Oder einzelne Dateien
+scp .\ampel-display\src\ampel_display\renderer.py pi@<PI-HOSTNAME>:/home/pi/ampel-display/src/ampel_display/
+
+# run.sh separat
+scp .\ampel-display\run.sh pi@<PI-HOSTNAME>:/home/pi/ampel-display/run.sh
+```
+
+> **Wichtig:** Falls nach einem Update alte Fehler auftreten, Bytecode-Cache löschen:
+> ```bash
+> sudo find /home/pi/ampel-display -name __pycache__ -exec rm -rf {} +
+> ```
+
+---
 
 ## Autostart (systemd)
 
 ```bash
-sudo cp ampel-display.service /etc/systemd/system/
-# Ggf. Parameter in der .service-Datei anpassen
+sudo cp ~/ampel-display/ampel-display.service /etc/systemd/system/
+# Parameter in der .service-Datei anpassen (Display-ID, Panel-Typ, Chain-Length, etc.)
+sudo nano /etc/systemd/system/ampel-display.service
 sudo systemctl daemon-reload
 sudo systemctl enable ampel-display
 sudo systemctl start ampel-display
+
+# Status / Logs prüfen
+sudo systemctl status ampel-display
+sudo journalctl -u ampel-display -f
 ```
 
 ## Projektstruktur

@@ -6,7 +6,8 @@ from rgbmatrix import RGBMatrix, RGBMatrixOptions
 class MatrixDriver:
     """Configures and manages the RGB LED matrix hardware."""
 
-    def __init__(self, panel_type: str = "p4", brightness: int = 80):
+    def __init__(self, panel_type: str = "p4", brightness: int = 80,
+                 chain_length: int = 4):
         options = RGBMatrixOptions()
         options.hardware_mapping = "adafruit-hat"
         options.gpio_slowdown = 4
@@ -20,10 +21,17 @@ class MatrixDriver:
         else:
             raise ValueError(f"Unknown panel type: {panel_type}")
 
-        options.chain_length = 2
-        options.parallel = 2
+        # Adafruit HAT supports only 1 parallel chain.
+        # Use U-mapper with 4 panels to fold into 2-row grid.
+        # With 2 panels: simple horizontal strip, no U-mapper needed.
+        options.chain_length = chain_length
+        options.parallel = 1
+        if chain_length >= 4:
+            options.pixel_mapper_config = "U-mapper"
         options.brightness = max(0, min(100, brightness))
-        options.drop_privileges = True
+        # drop_privileges=False because RGBMatrix changes user to 'daemon'
+        # which can't read font files under /home/pi/
+        options.drop_privileges = False
 
         self.matrix = RGBMatrix(options=options)
         self.width: int = self.matrix.width   # 128 for P4, 64 for P8

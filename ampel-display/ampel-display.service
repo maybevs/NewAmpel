@@ -3,6 +3,8 @@ Description=Bogensport Ampel LED Display
 After=network.target
 
 [Service]
+Environment=AMPEL_PYTHON=/home/pi/ampel-venv/bin/python3
+Environment=PYTHONPATH=/home/pi/ampel-display/src
 ExecStart=/home/pi/ampel-display/run.sh 1 p4 bdf 80 waveshare
 WorkingDirectory=/home/pi/ampel-display
 Restart=always

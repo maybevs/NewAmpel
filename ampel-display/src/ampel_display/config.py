@@ -52,4 +52,10 @@ def parse_args(argv=None) -> argparse.Namespace:
         default=80,
         help="Initial brightness (0-100)",
     )
+    parser.add_argument(
+        "--chain-length",
+        type=int,
+        default=4,
+        help="Number of daisy-chained panels (2 or 4)",
+    )
     return parser.parse_args(argv)

@@ -8,10 +8,11 @@ from rgbmatrix import graphics
 
 # Font search paths (rpi-rgb-led-matrix default install + local fonts dir)
 _FONT_SEARCH_PATHS = [
-    os.path.join(os.path.dirname(__file__), "..", "..", "..", "fonts"),
+    os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "..", "fonts")),
+    "/home/pi/ampel-display/fonts",
+    "/home/pi/rpi-rgb-led-matrix/fonts",
     "/usr/share/fonts/misc",
     "/usr/local/share/fonts",
-    os.path.expanduser("~/rpi-rgb-led-matrix/fonts"),
 ]
 
 # Mapping from logical font name to preferred BDF files per resolution tier.
@@ -35,7 +36,7 @@ _FONT_MAP = {
 def _find_font_file(name: str) -> str:
     """Search for a BDF font file in known paths."""
     for base in _FONT_SEARCH_PATHS:
-        path = os.path.join(base, name)
+        path = os.path.normpath(os.path.join(base, name))
         if os.path.isfile(path):
             return path
     raise FileNotFoundError(f"BDF font '{name}' not found in search paths: {_FONT_SEARCH_PATHS}")
@@ -43,15 +44,20 @@ def _find_font_file(name: str) -> str:
 
 def _load_font(candidates: list[str]) -> graphics.Font:
     """Try loading the first available font from a list of candidates."""
+    errors = []
     for name in candidates:
         try:
             path = _find_font_file(name)
             font = graphics.Font()
             font.LoadFont(path)
             return font
-        except FileNotFoundError:
+        except Exception as e:
+            errors.append(f"{name}: {type(e).__name__}: {e}")
             continue
-    raise FileNotFoundError(f"No BDF font found from candidates: {candidates}")
+    raise FileNotFoundError(
+        f"No BDF font found from candidates: {candidates}\nDetails:\n" +
+        "\n".join(errors)
+    )
 
 
 class BdfFontRenderer:

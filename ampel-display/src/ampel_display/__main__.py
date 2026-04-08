@@ -21,7 +21,7 @@ def main() -> None:
     display_key = f"d{args.display_id}"
 
     # Initialise hardware
-    matrix_driver = MatrixDriver(args.panel_type, args.brightness)
+    matrix_driver = MatrixDriver(args.panel_type, args.brightness, args.chain_length)
     font_manager = FontManager(args.font_mode, matrix_driver.width, matrix_driver.height)
     layout = Layout()
     renderer = AmpelRenderer(matrix_driver.matrix, layout, font_manager)
