@@ -22,6 +22,7 @@ class DisplayState:
     group: str = ""  # "AB", "CD", "Links", "Rechts"
     color: str = "R"  # "R", "G", "Y", "I"
     end: str = ""  # "1/10", "2/5"
+    format: str = "m"  # "m" = minutes (M:SS), "s" = seconds (raw)
     idle: Optional[IdleState] = None
 
     @classmethod
@@ -33,13 +34,14 @@ class DisplayState:
                 mode=idle_data.get("mode", "clock"),
                 text=idle_data.get("text", ""),
                 scroll=idle_data.get("scroll", False),
-                clock=idle_data.get("clock", "00:00"),
+                clock=idle_data.get("clock", idle_data.get("text", "00:00")),
             )
         return cls(
             time=data.get("t", 0),
             group=data.get("g", ""),
             color=data.get("c", "R"),
             end=data.get("e", ""),
+            format=data.get("f", "m"),
             idle=idle,
         )
 

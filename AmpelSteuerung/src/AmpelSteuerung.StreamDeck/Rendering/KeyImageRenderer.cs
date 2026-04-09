@@ -32,7 +32,7 @@ public class KeyImageRenderer
     /// Renders the main timer display key with color background, countdown, group, and end info.
     /// </summary>
     public string RenderTimerDisplay(int timeRemaining, string color, string group, string end, 
-        string phase, string status, bool isFinalMode)
+        string phase, string status, bool isFinalMode, bool isSecondsFormat = false)
     {
         using var bmp = new Bitmap(Size, Size, PixelFormat.Format32bppArgb);
         using var g = CreateGraphics(bmp);
@@ -71,7 +71,7 @@ public class KeyImageRenderer
         DrawCenteredText(g, end, endFont, TextPrimary, 14);
 
         // Timer text (main)
-        var timeStr = $"{timeRemaining / 60:D2}:{timeRemaining % 60:D2}";
+        var timeStr = isSecondsFormat ? timeRemaining.ToString() : $"{timeRemaining / 60:D2}:{timeRemaining % 60:D2}";
         using var timerFont = new Font("Segoe UI", 34f, FontStyle.Bold);
         DrawCenteredText(g, timeStr, timerFont, Color.White, 40);
 

@@ -44,6 +44,9 @@ public interface IAmpelStateService
     void SetIdleMessage(string message);
     void ClearIdleMessage();
 
+    // Timer format
+    void SetTimeFormat(TimeDisplayFormat format);
+
     // Display mapping
     string Display1Side { get; set; }
     string Display2Side { get; set; }

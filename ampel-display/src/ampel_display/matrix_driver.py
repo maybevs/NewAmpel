@@ -22,8 +22,8 @@ class MatrixDriver:
             raise ValueError(f"Unknown panel type: {panel_type}")
 
         # Adafruit HAT supports only 1 parallel chain.
-        # Use U-mapper with 4 panels to fold into 2-row grid.
-        # With 2 panels: simple horizontal strip, no U-mapper needed.
+        # Physical panel wiring (front view): HAT→TR→BR(flipped)→BL(flipped)→TL
+        # U-mapper folds 4-panel horizontal chain into 2×2 grid (128×64).
         options.chain_length = chain_length
         options.parallel = 1
         if chain_length >= 4:

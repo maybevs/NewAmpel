@@ -7,7 +7,8 @@ _DEFAULT_TTF = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
 
 # Font size mapping per resolution tier
 _SIZE_MAP = {
-    "large": {"high": 26, "low": 14},
+    "large": {"high": 44, "low": 23},
+    "large_colon": {"high": 35, "low": 18},
     "medium": {"high": 14, "low": 8},
     "small": {"high": 10, "low": 6},
 }
@@ -22,6 +23,7 @@ class TtfFontRenderer:
         tier = "high" if canvas_height >= 64 else "low"
 
         self.font_large = ImageFont.truetype(ttf_path, size=_SIZE_MAP["large"][tier])
+        self.font_large_colon = ImageFont.truetype(ttf_path, size=_SIZE_MAP["large_colon"][tier])
         self.font_medium = ImageFont.truetype(ttf_path, size=_SIZE_MAP["medium"][tier])
         self.font_small = ImageFont.truetype(ttf_path, size=_SIZE_MAP["small"][tier])
 

@@ -137,9 +137,9 @@ public class SerialService : ISerialService
                 var state = _stateService.CurrentState;
                 string json;
 
-                if (state.Status == TimerStatus.Stopped && state.IdleMode != IdleDisplayMode.Off)
+                if (state.Status == TimerStatus.Stopped && state.Phase == MatchPhase.Idle && state.IdleMode != IdleDisplayMode.Off)
                 {
-                    // Idle mode: send message/clock JSON
+                    // Idle mode: send message/clock JSON (only when explicitly stopped, not between ends)
                     var clock = DateTime.Now.ToString(_clockFormat);
                     var idleJson = AmpelState.ToIdleSerialJson(state.IdleMode, state.IdleMessage, state.IdleMessageScroll, clock);
                     json = $"{{\"d1\":{idleJson},\"d2\":{idleJson}}}\n";
@@ -149,7 +149,7 @@ public class SerialService : ISerialService
                     // Normal mode: apply display swap for RS485 output
                     var d1 = _stateService.Display1Side == "left" ? state.Display1 : state.Display2;
                     var d2 = _stateService.Display1Side == "left" ? state.Display2 : state.Display1;
-                    json = $"{{\"d1\":{d1.ToSerialJson()},\"d2\":{d2.ToSerialJson()}}}\n";
+                    json = $"{{\"d1\":{d1.ToSerialJson(state.TimeFormat)},\"d2\":{d2.ToSerialJson(state.TimeFormat)}}}\n";
                 }
 
                 _serialPort.Write(json);

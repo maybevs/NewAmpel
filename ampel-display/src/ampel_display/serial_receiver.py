@@ -23,6 +23,7 @@ class SerialReceiver:
 
     def start(self) -> None:
         """Open serial port and start the reader thread."""
+        print(f"[Serial] Opening {self.port} at {self.baudrate} baud (mode: {self.rs485_mode})")
         self._serial = serial.Serial(self.port, self.baudrate, timeout=0.1)
 
         if self.rs485_mode == "max485":

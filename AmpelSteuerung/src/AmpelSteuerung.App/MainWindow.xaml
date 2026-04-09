@@ -503,6 +503,17 @@
                                 <TextBlock Text="s" FontSize="14" VerticalAlignment="Center" Margin="6,0,0,0"
                                            Foreground="{StaticResource TextSecondaryBrush}"/>
                             </StackPanel>
+                            <TextBlock Text="Anzeige-Format:" FontSize="11" Foreground="{StaticResource TextMutedBrush}" Margin="0,12,0,4"/>
+                            <WrapPanel HorizontalAlignment="Center">
+                                <RadioButton Content="Min:Sek" GroupName="TimeFormat"
+                                             IsChecked="{Binding IsTimeFormatMinutes}"
+                                             Command="{Binding SetTimeFormatToMinutesCommand}"
+                                             Foreground="{StaticResource TextPrimaryBrush}" Margin="0,0,12,0"/>
+                                <RadioButton Content="Sekunden" GroupName="TimeFormat"
+                                             IsChecked="{Binding IsTimeFormatSeconds}"
+                                             Command="{Binding SetTimeFormatToSecondsCommand}"
+                                             Foreground="{StaticResource TextPrimaryBrush}"/>
+                            </WrapPanel>
                         </StackPanel>
                     </Border>
 

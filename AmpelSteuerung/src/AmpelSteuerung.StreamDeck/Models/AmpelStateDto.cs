@@ -31,8 +31,12 @@ public class AmpelStateDto
     [JsonPropertyName("arrowCountRight")]
     public int ArrowCountRight { get; set; }
 
+    [JsonPropertyName("timeFormat")]
+    public string TimeFormat { get; set; } = "minutes";
+
     // Derived helpers
     public bool IsRunning => Status == "running";
+    public bool IsSecondsFormat => TimeFormat == "seconds";
     public bool IsPaused => Status == "paused";
     public bool IsStopped => Status == "stopped";
     public bool IsFinalMode => Mode == "final";

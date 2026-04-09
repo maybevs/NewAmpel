@@ -8,9 +8,25 @@ FONT_MODE=${3:-bdf}
 BRIGHTNESS=${4:-80}
 RS485_MODE=${5:-waveshare}
 CHAIN_LENGTH=${6:-4}
+SERIAL_PORT=${7:-auto}
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 cd "$SCRIPT_DIR"
+
+# Auto-detect serial port: prefer USB adapter (immune to matrix DMA),
+# fall back to GPIO UART only if no USB adapter found.
+if [ "$SERIAL_PORT" = "auto" ]; then
+    if [ -e /dev/ttyUSB0 ]; then
+        SERIAL_PORT=/dev/ttyUSB0
+    elif [ -e /dev/ttyACM0 ]; then
+        SERIAL_PORT=/dev/ttyACM0
+    else
+        SERIAL_PORT=/dev/serial0
+        echo "WARNING: No USB-to-RS485 adapter found, using GPIO UART ($SERIAL_PORT)."
+        echo "         LED matrix DMA will corrupt serial data. Plug in a USB adapter."
+    fi
+fi
+echo "Using serial port: $SERIAL_PORT"
 
 # Activate venv inside sudo so all packages are on sys.path
 VENV="${AMPEL_VENV:-/home/pi/ampel-venv}"
@@ -24,5 +40,6 @@ sudo bash -c "
         --font-mode $FONT_MODE \
         --brightness $BRIGHTNESS \
         --rs485-mode $RS485_MODE \
-        --chain-length $CHAIN_LENGTH
+        --chain-length $CHAIN_LENGTH \
+        --serial-port $SERIAL_PORT
 "

@@ -18,7 +18,7 @@ class IdleDisplay:
                    is_ttf: bool = False) -> None:
         """Draw the clock with blinking colon."""
         x, y, w, h = region
-        font_name = "large"
+        font_name = "large_colon"
 
         # Blink colon every second (even second = show, odd = hide)
         display_text = clock_text

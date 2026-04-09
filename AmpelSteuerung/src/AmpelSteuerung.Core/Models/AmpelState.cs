@@ -38,6 +38,15 @@ public enum OperatingMode
 }
 
 /// <summary>
+/// How to format the timer display (seconds-only or minutes:seconds).
+/// </summary>
+public enum TimeDisplayFormat
+{
+    Minutes,    // M:SS or MM:SS
+    Seconds     // Raw seconds (e.g. 120) — default
+}
+
+/// <summary>
 /// What to show on displays when the timer is stopped (idle).
 /// </summary>
 public enum IdleDisplayMode
@@ -66,7 +75,7 @@ public class DisplayState
         End = End
     };
 
-    public string ToSerialJson()
+    public string ToSerialJson(TimeDisplayFormat format = TimeDisplayFormat.Minutes)
     {
         var c = Color switch
         {
@@ -75,7 +84,8 @@ public class DisplayState
             AmpelColor.Yellow => "Y",
             _ => "R"
         };
-        return $"{{\"t\":{TimeRemaining},\"g\":\"{Group}\",\"c\":\"{c}\",\"e\":\"{End}\"}}";
+        var f = format == TimeDisplayFormat.Seconds ? "s" : "m";
+        return $"{{\"t\":{TimeRemaining},\"g\":\"{Group}\",\"c\":\"{c}\",\"e\":\"{End}\",\"f\":\"{f}\"}}";
     }
 }
 
@@ -107,6 +117,9 @@ public class AmpelState
     public int CurrentEnd { get; set; } = 1;
     public int TotalEnds { get; set; } = 10;
 
+    // Timer format
+    public TimeDisplayFormat TimeFormat { get; set; } = TimeDisplayFormat.Seconds;
+
     // Idle mode
     public IdleDisplayMode IdleMode { get; set; } = IdleDisplayMode.Clock;
     public string IdleMessage { get; set; } = "";
@@ -126,6 +139,7 @@ public class AmpelState
         StartingSide = StartingSide,
         CurrentEnd = CurrentEnd,
         TotalEnds = TotalEnds,
+        TimeFormat = TimeFormat,
         IdleMode = IdleMode,
         IdleMessage = IdleMessage,
         IdleMessageScroll = IdleMessageScroll
@@ -136,7 +150,7 @@ public class AmpelState
     /// </summary>
     public string ToDualSerialJson()
     {
-        return $"{{\"d1\":{Display1.ToSerialJson()},\"d2\":{Display2.ToSerialJson()}}}";
+        return $"{{\"d1\":{Display1.ToSerialJson(TimeFormat)},\"d2\":{Display2.ToSerialJson(TimeFormat)}}}";
     }
 
     /// <summary>
@@ -147,7 +161,7 @@ public class AmpelState
         return mode switch
         {
             IdleDisplayMode.Clock =>
-                $"{{\"c\":\"I\",\"idle\":{{\"mode\":\"clock\",\"text\":\"{EscapeJson(clock)}\"}}}}",
+                $"{{\"c\":\"I\",\"idle\":{{\"mode\":\"clock\",\"clock\":\"{EscapeJson(clock)}\"}}}}",
             IdleDisplayMode.Message =>
                 $"{{\"c\":\"I\",\"idle\":{{\"mode\":\"message\",\"text\":\"{EscapeJson(message)}\",\"scroll\":{(scroll ? "true" : "false")}}}}}",
             IdleDisplayMode.Both =>

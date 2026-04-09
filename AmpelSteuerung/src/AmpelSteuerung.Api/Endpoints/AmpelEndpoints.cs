@@ -42,7 +42,8 @@ public static class AmpelEndpoints
                     mode = state.IdleMode.ToString().ToLower(),
                     message = state.IdleMessage,
                     scroll = state.IdleMessageScroll
-                }
+                },
+                timeFormat = state.TimeFormat.ToString().ToLower()
             });
         });
 
@@ -192,6 +193,21 @@ public static class AmpelEndpoints
         {
             stateService.ClearIdleMessage();
             return Results.Ok(new { success = true });
+        });
+
+        app.MapPost("/api/time-format/{format}", (string format) =>
+        {
+            var timeFormat = format.ToLowerInvariant() switch
+            {
+                "minutes" => TimeDisplayFormat.Minutes,
+                "seconds" => TimeDisplayFormat.Seconds,
+                _ => (TimeDisplayFormat?)null
+            };
+
+            if (timeFormat == null) return Results.BadRequest("Invalid format. Use: minutes, seconds");
+
+            stateService.SetTimeFormat(timeFormat.Value);
+            return Results.Ok(new { success = true, format });
         });
 
         // Preset endpoints

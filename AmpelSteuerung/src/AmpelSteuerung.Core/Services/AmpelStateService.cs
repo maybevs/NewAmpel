@@ -31,7 +31,14 @@ public class AmpelStateService : IAmpelStateService, IDisposable
 
     public AmpelState CurrentState
     {
-        get { lock (_lock) return _state.Clone(); }
+        get
+        {
+            lock (_lock)
+            {
+                RefreshDisplayTime();
+                return _state.Clone();
+            }
+        }
     }
 
     public TimerConfig Config
@@ -790,6 +797,16 @@ public class AmpelStateService : IAmpelStateService, IDisposable
         RaiseStateChanged();
     }
 
+    public void SetTimeFormat(TimeDisplayFormat format)
+    {
+        lock (_lock)
+        {
+            _state.TimeFormat = format;
+            _logger.LogInformation("Time format set to {Format}", format);
+        }
+        RaiseStateChanged();
+    }
+
     #endregion
 
     private void UpdateEndDisplay()
@@ -802,8 +819,34 @@ public class AmpelStateService : IAmpelStateService, IDisposable
     private void RaiseStateChanged()
     {
         AmpelState snapshot;
-        lock (_lock) snapshot = _state.Clone();
+        lock (_lock)
+        {
+            RefreshDisplayTime();
+            snapshot = _state.Clone();
+        }
         StateChanged?.Invoke(this, snapshot);
+    }
+
+    /// <summary>
+    /// Recompute displayed time from the Stopwatch so that every state read
+    /// reflects the true elapsed time, independent of timer-tick jitter.
+    /// Must be called while holding _lock.
+    /// </summary>
+    private void RefreshDisplayTime()
+    {
+        if (_state.Status != TimerStatus.Running) return;
+
+        var freshTime = Math.Max(0, _countdownDuration - (int)_stopwatch.Elapsed.TotalSeconds);
+
+        if (_state.Mode == OperatingMode.Standard)
+        {
+            _state.Display1.TimeRemaining = freshTime;
+            _state.Display2.TimeRemaining = freshTime;
+        }
+        else
+        {
+            GetActiveDisplay().TimeRemaining = freshTime;
+        }
     }
 
     public void Dispose()

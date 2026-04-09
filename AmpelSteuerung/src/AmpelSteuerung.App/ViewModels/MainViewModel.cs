@@ -93,8 +93,13 @@ public partial class MainViewModel : ObservableObject, IDisposable
     [ObservableProperty] private bool _showIdleClock;
     [ObservableProperty] private bool _showIdleMessage;
 
+    // Timer format
+    [ObservableProperty] private bool _isTimeFormatMinutes;
+    [ObservableProperty] private bool _isTimeFormatSeconds = true;
+
     // Clock timer for beamer idle display
     private readonly DispatcherTimer _clockTimer;
+    private readonly DispatcherTimer _displayRefreshTimer;
     private readonly string _clockFormat;
 
     // Beamer screen selection
@@ -147,9 +152,23 @@ public partial class MainViewModel : ObservableObject, IDisposable
         _clockTimer.Start();
         CurrentClock = DateTime.Now.ToString(_clockFormat);
 
+        // High-frequency UI refresh for smooth timer display
+        _displayRefreshTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(50) };
+        _displayRefreshTimer.Tick += OnDisplayRefreshTick;
+        _displayRefreshTimer.Start();
+
         UpdateFromState(_stateService.CurrentState);
         RefreshComPorts();
         RefreshScreens();
+    }
+
+    private void OnDisplayRefreshTick(object? sender, EventArgs e)
+    {
+        if (TimerStatus != Core.Models.TimerStatus.Running) return;
+        var state = _stateService.CurrentState;
+        TimeDisplay = FormatTime(state.Display1.TimeRemaining);
+        Display1Time = FormatTime(state.Display1.TimeRemaining);
+        Display2Time = FormatTime(state.Display2.TimeRemaining);
     }
 
     private void OnStateChanged(object? sender, AmpelState state)
@@ -239,9 +258,18 @@ public partial class MainViewModel : ObservableObject, IDisposable
         ShowIdleOnBeamer = IsStopped && state.IdleMode != IdleDisplayMode.Off;
         ShowIdleClock = state.IdleMode is IdleDisplayMode.Clock or IdleDisplayMode.Both;
         ShowIdleMessage = state.IdleMode is IdleDisplayMode.Message or IdleDisplayMode.Both;
+
+        // Timer format
+        IsTimeFormatMinutes = state.TimeFormat == TimeDisplayFormat.Minutes;
+        IsTimeFormatSeconds = state.TimeFormat == TimeDisplayFormat.Seconds;
     }
 
-    private static string FormatTime(int seconds) => $"{seconds / 60:D2}:{seconds % 60:D2}";
+    private string FormatTime(int seconds)
+    {
+        if (IsTimeFormatSeconds)
+            return seconds.ToString();
+        return $"{seconds / 60:D2}:{seconds % 60:D2}";
+    }
 
     private static string ColorToHex(AmpelColor c) => c switch
     {
@@ -404,6 +432,12 @@ public partial class MainViewModel : ObservableObject, IDisposable
     }
 
     [RelayCommand]
+    private void SetTimeFormatToMinutes() => _stateService.SetTimeFormat(TimeDisplayFormat.Minutes);
+
+    [RelayCommand]
+    private void SetTimeFormatToSeconds() => _stateService.SetTimeFormat(TimeDisplayFormat.Seconds);
+
+    [RelayCommand]
     private void ClearIdleMessage()
     {
         IdleMessage = "";
@@ -480,6 +514,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
     public void Dispose()
     {
         _clockTimer.Stop();
+        _displayRefreshTimer.Stop();
         _stateService.StateChanged -= OnStateChanged;
         _serialService.ConnectionChanged -= OnConnectionChanged;
         _presetEngine.StatusChanged -= OnPresetStatusChanged;

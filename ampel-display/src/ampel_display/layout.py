@@ -17,12 +17,11 @@ class Layout:
     """Defines UI regions for all display modes."""
 
     # Active mode (timer running)
+    # 1px border drawn separately; timer fills most of the space,
+    # group label on the far right.
     ACTIVE = {
-        "timer": LayoutRegion(0.0, 0.0, 0.65, 0.55),
-        "group": LayoutRegion(0.65, 0.0, 0.35, 0.55),
-        "separator": LayoutRegion(0.0, 0.55, 1.0, 0.02),
-        "end_info": LayoutRegion(0.0, 0.57, 0.5, 0.18),
-        "color_bar": LayoutRegion(0.0, 0.75, 1.0, 0.25),
+        "timer": LayoutRegion(0.02, 0.02, 0.75, 0.96),
+        "group": LayoutRegion(0.77, 0.02, 0.21, 0.96),
     }
 
     # Idle modes

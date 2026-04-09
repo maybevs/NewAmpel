@@ -47,7 +47,8 @@ public class TimerDisplayAction : ActionBase
             end: display.End,
             phase: state.Phase,
             status: state.Status,
-            isFinalMode: state.IsFinalMode
+            isFinalMode: state.IsFinalMode,
+            isSecondsFormat: state.IsSecondsFormat
         );
 
         await SetImageAsync(image);
