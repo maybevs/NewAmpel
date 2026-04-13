@@ -58,4 +58,8 @@ public class AmpelConfiguration
 
     // Idle display
     public IdleConfiguration Idle { get; set; } = new();
+
+    // Display hardware config (RS485)
+    public int DisplayBrightness { get; set; } = 80;
+    public string DisplayFontMode { get; set; } = "bdf";
 }

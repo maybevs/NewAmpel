@@ -12,4 +12,5 @@ public interface ISerialService : IDisposable
     void Disconnect();
     void StartBroadcast();
     void StopBroadcast();
+    void SendRaw(string data);
 }

@@ -128,6 +128,22 @@ public class SerialService : ISerialService
         _logger.LogInformation("RS485 broadcast stopped");
     }
 
+    public void SendRaw(string data)
+    {
+        lock (_lock)
+        {
+            if (_serialPort is not { IsOpen: true }) return;
+            try
+            {
+                _serialPort.Write(data);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "RS485 SendRaw write error");
+            }
+        }
+    }
+
     private int _lastLoggedTime = -1;
 
     private void BroadcastLoop()

@@ -19,6 +19,8 @@
         <converters:HexToBrushConverter x:Key="HexToBrush"/>
         <converters:BoolToVisibilityConverter x:Key="BoolToVis"/>
         <converters:InverseBoolConverter x:Key="InverseBool"/>
+        <converters:StateToVisibilityConverter x:Key="StateToVis"/>
+        <converters:ModeStateToVisibilityConverter x:Key="ModeStateToVis"/>
 
         <!-- ═══════════════════════════════════════════════════════════ -->
         <!-- MODERN BUTTON BASE                                         -->
@@ -304,207 +306,528 @@
 
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" MinHeight="180"/>
+            <RowDefinition Height="Auto" MinHeight="280"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
         <!-- ═══════════════════════════════════════════════════════════ -->
-        <!-- TOP: Dual Display Preview                                  -->
+        <!-- LIVE-ZONE: Display Preview + Context Controls              -->
         <!-- ═══════════════════════════════════════════════════════════ -->
-        <Grid Grid.Row="0" Margin="16,16,16,8">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="140"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-
-            <!-- Display 1 (Left) -->
-            <Border Grid.Column="0"
-                    Background="{Binding Display1ColorBrush, Converter={StaticResource HexToBrush}}"
-                    CornerRadius="16"
-                    Padding="20"
-                    Margin="0,0,6,0">
-                <Border.Effect>
-                    <DropShadowEffect ShadowDepth="0" BlurRadius="30" Opacity="0.4" Color="Black"/>
-                </Border.Effect>
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="*"/>
-                    </Grid.RowDefinitions>
-                    <TextBlock Grid.Row="0" FontSize="11" Foreground="White" Opacity="0.6" FontWeight="SemiBold"
-                               FontFamily="Segoe UI, sans-serif" Margin="2,0,0,0">
-                        <Run Text="LINKS ("/>
-                        <Run Text="{Binding Display1SideLabel, Mode=OneWay}"/>
-                        <Run Text=")"/>
-                    </TextBlock>
-                    <StackPanel Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center">
-                        <TextBlock Text="{Binding Display1Time}"
-                                   FontSize="64"
-                                   FontWeight="Bold"
-                                   Foreground="White"
-                                   HorizontalAlignment="Center"
-                                   FontFamily="Cascadia Mono, Consolas, monospace"/>
-                        <TextBlock Text="{Binding Display1Group}" FontSize="22" FontWeight="SemiBold" Foreground="White"
-                                   HorizontalAlignment="Center" Opacity="0.85"/>
-                    </StackPanel>
-                </Grid>
-            </Border>
-
-            <!-- Center Info Panel -->
-            <Border Grid.Column="1" Margin="4,0"
-                    Background="{StaticResource BgCardBrush}"
-                    CornerRadius="14"
-                    BorderBrush="{StaticResource BorderSubtleBrush}"
-                    BorderThickness="1"
-                    Padding="12">
-                <StackPanel VerticalAlignment="Center">
-                    <TextBlock Text="{Binding PhaseText}" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource TextSecondaryBrush}"
-                               HorizontalAlignment="Center" TextAlignment="Center" TextWrapping="Wrap" Margin="0,0,0,10"/>
-                    <TextBlock Text="PASSE" FontSize="10" Foreground="{StaticResource TextMutedBrush}" HorizontalAlignment="Center"
-                               FontWeight="SemiBold" Margin="0,0,0,2"/>
-                    <TextBlock Text="{Binding CurrentEnd}" FontSize="26" FontWeight="Bold" Foreground="{StaticResource TextPrimaryBrush}"
-                               HorizontalAlignment="Center"/>
-                    <TextBlock Text="{Binding TimerStatus}" FontSize="11" Foreground="{StaticResource TextMutedBrush}"
-                               HorizontalAlignment="Center" Margin="0,4,0,0"/>
-                    <!-- Final mode arrow counts -->
-                    <StackPanel Visibility="{Binding IsFinalMode, Converter={StaticResource BoolToVis}}" Margin="0,10,0,0">
-                        <TextBlock FontSize="10" Foreground="{StaticResource TextMutedBrush}" HorizontalAlignment="Center" Text="Pfeile" FontWeight="SemiBold"/>
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,2,0,0">
-                            <TextBlock Text="L:" FontSize="11" Foreground="{StaticResource TextSecondaryBrush}"/>
-                            <TextBlock Text="{Binding ArrowCountLeftText}" FontSize="14" FontWeight="Bold" Foreground="{StaticResource TextPrimaryBrush}" Margin="2,0,10,0"/>
-                            <TextBlock Text="R:" FontSize="11" Foreground="{StaticResource TextSecondaryBrush}"/>
-                            <TextBlock Text="{Binding ArrowCountRightText}" FontSize="14" FontWeight="Bold" Foreground="{StaticResource TextPrimaryBrush}" Margin="2,0,0,0"/>
-                        </StackPanel>
-                    </StackPanel>
-                </StackPanel>
-            </Border>
-
-            <!-- Display 2 (Right) -->
-            <Border Grid.Column="2"
-                    Background="{Binding Display2ColorBrush, Converter={StaticResource HexToBrush}}"
-                    CornerRadius="16"
-                    Padding="20"
-                    Margin="6,0,0,0">
-                <Border.Effect>
-                    <DropShadowEffect ShadowDepth="0" BlurRadius="30" Opacity="0.4" Color="Black"/>
-                </Border.Effect>
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="*"/>
-                    </Grid.RowDefinitions>
-                    <TextBlock Grid.Row="0" FontSize="11" Foreground="White" Opacity="0.6" FontWeight="SemiBold"
-                               FontFamily="Segoe UI, sans-serif" Margin="2,0,0,0">
-                        <Run Text="RECHTS ("/>
-                        <Run Text="{Binding Display2SideLabel, Mode=OneWay}"/>
-                        <Run Text=")"/>
-                    </TextBlock>
-                    <StackPanel Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center">
-                        <TextBlock Text="{Binding Display2Time}"
-                                   FontSize="64"
-                                   FontWeight="Bold"
-                                   Foreground="White"
-                                   HorizontalAlignment="Center"
-                                   FontFamily="Cascadia Mono, Consolas, monospace"/>
-                        <TextBlock Text="{Binding Display2Group}" FontSize="22" FontWeight="SemiBold" Foreground="White"
-                                   HorizontalAlignment="Center" Opacity="0.85"/>
-                    </StackPanel>
-                </Grid>
-            </Border>
-        </Grid>
-
-        <!-- ═══════════════════════════════════════════════════════════ -->
-        <!-- MIDDLE: All Controls                                       -->
-        <!-- ═══════════════════════════════════════════════════════════ -->
-        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Margin="16,4,16,4"
-                      Padding="0,0,4,0">
+        <Border Grid.Row="0" Background="#0A0A16" Padding="16,16,16,12"
+                BorderBrush="{StaticResource BorderSubtleBrush}" BorderThickness="0,0,0,2">
             <StackPanel>
-                <!-- ── STEUERUNG ─────────────────────────────────────── -->
-                <Border Style="{StaticResource CardBorder}" Margin="0,0,0,10">
-                    <StackPanel>
-                        <TextBlock Text="STEUERUNG" Style="{StaticResource SectionLabel}"/>
-                        <WrapPanel HorizontalAlignment="Center">
-                            <Button Content="▶  START" Style="{StaticResource PrimaryButton}"
-                                    Command="{Binding StartTimerCommand}"
-                                    IsEnabled="{Binding IsStartEnabled}" Width="128"/>
-                            <Button Content="⏸  PAUSE" Style="{StaticResource WarningButton}"
-                                    Command="{Binding PauseTimerCommand}"
-                                    IsEnabled="{Binding IsPauseEnabled}" Width="128"/>
-                            <Button Content="▶  WEITER" Style="{StaticResource InfoButton}"
-                                    Command="{Binding ResumeTimerCommand}"
-                                    IsEnabled="{Binding IsResumeEnabled}" Width="128"/>
-                            <Button Content="⏹  STOP" Style="{StaticResource DangerButton}"
-                                    Command="{Binding StopTimerCommand}" Width="128"/>
-                            <Button Content="↺  RESET" Style="{StaticResource ModernButton}"
-                                    Command="{Binding ResetTimerCommand}" Width="128"/>
-                            <Button Content="⏩  SKIP" Style="{StaticResource AccentButton}"
-                                    Command="{Binding SkipTimerCommand}"
-                                    IsEnabled="{Binding IsSkipEnabled}" Width="128"/>
-                        </WrapPanel>
-                        <WrapPanel HorizontalAlignment="Center" Margin="0,10,0,0">
-                            <Button Content="⚠  NOTFALL-STOPP (F5)" Style="{StaticResource EmergencyButton}"
-                                    Command="{Binding EmergencyStopCommand}" Width="260"/>
-                        </WrapPanel>
-                    </StackPanel>
-                </Border>
-
-                <!-- ── GROUP / TIMES / PASSE ─────────────────────────── -->
+                <!-- ── DISPLAY PREVIEW (full width, no center block) ──── -->
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="10"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="10"/>
+                        <ColumnDefinition Width="12"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
 
-                    <!-- Group Selection -->
-                    <Border Grid.Column="0" Style="{StaticResource CardBorder}" Margin="0,0,0,10">
-                        <StackPanel>
-                            <TextBlock Text="GRUPPE / STARTGRUPPE" Style="{StaticResource SectionLabel}"/>
-                            <WrapPanel HorizontalAlignment="Center">
-                                <Button Content="AB" Style="{StaticResource InfoButton}" Width="80"
-                                        Command="{Binding SetGroupABCommand}"/>
-                                <Button Content="CD" Style="{StaticResource InfoButton}" Width="80"
-                                        Command="{Binding SetGroupCDCommand}"/>
-                            </WrapPanel>
-                            <TextBlock Text="Startgruppe:" FontSize="11" Foreground="{StaticResource TextMutedBrush}"
-                                       HorizontalAlignment="Center" Margin="0,12,0,4"/>
-                            <WrapPanel HorizontalAlignment="Center">
-                                <Button Content="AB zuerst" Style="{StaticResource SmallButton}"
-                                        Command="{Binding SetStartGroupABCommand}"/>
-                                <Button Content="CD zuerst" Style="{StaticResource SmallButton}"
-                                        Command="{Binding SetStartGroupCDCommand}"/>
-                            </WrapPanel>
-                        </StackPanel>
+                    <!-- Display 1 (Left) -->
+                    <Border Grid.Column="0"
+                            Background="{Binding Display1ColorBrush, Converter={StaticResource HexToBrush}}"
+                            CornerRadius="16"
+                            Padding="20"
+                            MinHeight="140">
+                        <Border.Effect>
+                            <DropShadowEffect ShadowDepth="0" BlurRadius="30" Opacity="0.4" Color="Black"/>
+                        </Border.Effect>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <TextBlock Grid.Row="0" FontSize="11" Foreground="White" Opacity="0.6" FontWeight="SemiBold"
+                                       FontFamily="Segoe UI, sans-serif" Margin="2,0,0,0">
+                                <Run Text="LINKS ("/>
+                                <Run Text="{Binding Display1SideLabel, Mode=OneWay}"/>
+                                <Run Text=")"/>
+                            </TextBlock>
+                            <StackPanel Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center">
+                                <TextBlock Text="{Binding Display1Time}"
+                                           FontSize="56"
+                                           FontWeight="Bold"
+                                           Foreground="White"
+                                           HorizontalAlignment="Center"
+                                           FontFamily="Cascadia Mono, Consolas, monospace"/>
+                                <TextBlock Text="{Binding Display1Group}" FontSize="20" FontWeight="SemiBold" Foreground="White"
+                                           HorizontalAlignment="Center" Opacity="0.85"/>
+                            </StackPanel>
+                        </Grid>
                     </Border>
 
-                    <!-- Timer Durations -->
-                    <Border Grid.Column="2" Style="{StaticResource CardBorder}" Margin="0,0,0,10">
-                        <StackPanel>
-                            <TextBlock Text="ZEITEN" Style="{StaticResource SectionLabel}"/>
-                            <TextBlock Text="Schießzeit (s):" FontSize="11" Foreground="{StaticResource TextMutedBrush}" Margin="0,0,0,4"/>
-                            <WrapPanel HorizontalAlignment="Center">
-                                <Button Content="60" Style="{StaticResource SmallButton}" Click="SetDuration_Click" Tag="60"/>
-                                <Button Content="90" Style="{StaticResource SmallButton}" Click="SetDuration_Click" Tag="90"/>
-                                <Button Content="120" Style="{StaticResource SmallButton}" Click="SetDuration_Click" Tag="120"/>
-                                <Button Content="240" Style="{StaticResource SmallButton}" Click="SetDuration_Click" Tag="240"/>
+                    <!-- Display 2 (Right) -->
+                    <Border Grid.Column="2"
+                            Background="{Binding Display2ColorBrush, Converter={StaticResource HexToBrush}}"
+                            CornerRadius="16"
+                            Padding="20"
+                            MinHeight="140">
+                        <Border.Effect>
+                            <DropShadowEffect ShadowDepth="0" BlurRadius="30" Opacity="0.4" Color="Black"/>
+                        </Border.Effect>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <TextBlock Grid.Row="0" FontSize="11" Foreground="White" Opacity="0.6" FontWeight="SemiBold"
+                                       FontFamily="Segoe UI, sans-serif" Margin="2,0,0,0">
+                                <Run Text="RECHTS ("/>
+                                <Run Text="{Binding Display2SideLabel, Mode=OneWay}"/>
+                                <Run Text=")"/>
+                            </TextBlock>
+                            <StackPanel Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center">
+                                <TextBlock Text="{Binding Display2Time}"
+                                           FontSize="56"
+                                           FontWeight="Bold"
+                                           Foreground="White"
+                                           HorizontalAlignment="Center"
+                                           FontFamily="Cascadia Mono, Consolas, monospace"/>
+                                <TextBlock Text="{Binding Display2Group}" FontSize="20" FontWeight="SemiBold" Foreground="White"
+                                           HorizontalAlignment="Center" Opacity="0.85"/>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+                </Grid>
+
+                <!-- ── STATUS BAR under displays ──────────────────────── -->
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,10,0,0">
+                    <TextBlock Text="{Binding PhaseText}" FontSize="13" FontWeight="SemiBold"
+                               Foreground="{StaticResource TextPrimaryBrush}"/>
+                    <TextBlock Text=" │ " Foreground="{StaticResource TextMutedBrush}" FontSize="13"/>
+                    <TextBlock Text="{Binding CurrentEnd}" FontSize="13" FontWeight="Bold"
+                               Foreground="{StaticResource TextPrimaryBrush}"/>
+                    <TextBlock Text=" │ " Foreground="{StaticResource TextMutedBrush}" FontSize="13"/>
+                    <TextBlock Text="{Binding CurrentGroup}" FontSize="13"
+                               Foreground="{StaticResource TextSecondaryBrush}" FontWeight="SemiBold"/>
+                    <!-- Final mode arrow counts -->
+                    <StackPanel Orientation="Horizontal"
+                                Visibility="{Binding IsFinalMode, Converter={StaticResource BoolToVis}}">
+                        <TextBlock Text=" │ " Foreground="{StaticResource TextMutedBrush}" FontSize="13"/>
+                        <TextBlock Text="L:" FontSize="13" Foreground="{StaticResource TextSecondaryBrush}"/>
+                        <TextBlock Text="{Binding ArrowCountLeftText}" FontSize="13" FontWeight="Bold"
+                                   Foreground="{StaticResource TextPrimaryBrush}" Margin="2,0,8,0"/>
+                        <TextBlock Text="R:" FontSize="13" Foreground="{StaticResource TextSecondaryBrush}"/>
+                        <TextBlock Text="{Binding ArrowCountRightText}" FontSize="13" FontWeight="Bold"
+                                   Foreground="{StaticResource TextPrimaryBrush}" Margin="2,0,0,0"/>
+                    </StackPanel>
+                </StackPanel>
+
+                <!-- ── CONTEXT-AWARE CONTROLS ─────────────────────────── -->
+                <Grid Margin="0,12,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Left: Context buttons -->
+                    <WrapPanel Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center">
+
+                        <!-- === STANDARD MODE BUTTONS === -->
+
+                        <!-- Idle: START -->
+                        <Button Content="▶  START" Style="{StaticResource PrimaryButton}" Width="140"
+                                Command="{Binding StartTimerCommand}" FontSize="15" Padding="18,12">
+                            <Button.Visibility>
+                                <MultiBinding Converter="{StaticResource ModeStateToVis}" ConverterParameter="standard:Idle|EndCompleted">
+                                    <Binding Path="IsFinalMode"/>
+                                    <Binding Path="MatchPhaseString"/>
+                                </MultiBinding>
+                            </Button.Visibility>
+                        </Button>
+
+                        <!-- Shooting: PAUSE, SKIP -->
+                        <Button Content="⏸  PAUSE" Style="{StaticResource WarningButton}" Width="128"
+                                Command="{Binding PauseTimerCommand}">
+                            <Button.Visibility>
+                                <MultiBinding Converter="{StaticResource ModeStateToVis}" ConverterParameter="standard:Shooting">
+                                    <Binding Path="IsFinalMode"/>
+                                    <Binding Path="MatchPhaseString"/>
+                                </MultiBinding>
+                            </Button.Visibility>
+                        </Button>
+
+                        <Button Content="⏩  SKIP" Style="{StaticResource AccentButton}" Width="128"
+                                Command="{Binding SkipTimerCommand}">
+                            <Button.Visibility>
+                                <MultiBinding Converter="{StaticResource ModeStateToVis}" ConverterParameter="standard:Shooting">
+                                    <Binding Path="IsFinalMode"/>
+                                    <Binding Path="MatchPhaseString"/>
+                                </MultiBinding>
+                            </Button.Visibility>
+                        </Button>
+
+                        <!-- Paused: WEITER, STOP -->
+                        <Button Content="▶  WEITER" Style="{StaticResource InfoButton}" Width="128"
+                                Command="{Binding ResumeTimerCommand}">
+                            <Button.Visibility>
+                                <MultiBinding Converter="{StaticResource ModeStateToVis}" ConverterParameter="both:Paused|EmergencyStopped">
+                                    <Binding Path="IsFinalMode"/>
+                                    <Binding Path="MatchPhaseString"/>
+                                </MultiBinding>
+                            </Button.Visibility>
+                        </Button>
+
+                        <Button Content="⏹  STOP" Style="{StaticResource DangerButton}" Width="128"
+                                Command="{Binding StopTimerCommand}"/>
+
+                        <!-- EndCompleted: NÄCHSTE PASSE (standard), RESET -->
+                        <Button Content="↺  RESET" Style="{StaticResource ModernButton}" Width="128"
+                                Command="{Binding ResetTimerCommand}"
+                                Visibility="{Binding MatchPhaseString, Converter={StaticResource StateToVis}, ConverterParameter=EndCompleted}"/>
+
+                        <!-- === FINAL MODE BUTTONS === -->
+
+                        <!-- Final Idle: START -->
+                        <Button Content="▶  START" Style="{StaticResource PrimaryButton}" Width="140"
+                                Command="{Binding StartTimerCommand}" FontSize="15" Padding="18,12">
+                            <Button.Visibility>
+                                <MultiBinding Converter="{StaticResource ModeStateToVis}" ConverterParameter="final:Idle|EndCompleted">
+                                    <Binding Path="IsFinalMode"/>
+                                    <Binding Path="MatchPhaseString"/>
+                                </MultiBinding>
+                            </Button.Visibility>
+                        </Button>
+
+                        <!-- Final Idle: LINKS/RECHTS -->
+                        <Button Command="{Binding SetStartSideLeftCommand}" Width="180">
+                            <Button.Visibility>
+                                <MultiBinding Converter="{StaticResource ModeStateToVis}" ConverterParameter="final:Idle|EndCompleted">
+                                    <Binding Path="IsFinalMode"/>
+                                    <Binding Path="MatchPhaseString"/>
+                                </MultiBinding>
+                            </Button.Visibility>
+                            <Button.Content>
+                                <TextBlock Text="◀ Links starten (L)" Foreground="{StaticResource TextPrimaryBrush}"/>
+                            </Button.Content>
+                            <Button.Style>
+                                <Style TargetType="Button" BasedOn="{StaticResource BigButton}">
+                                    <Setter Property="Background" Value="#152040"/>
+                                    <Setter Property="BorderBrush" Value="#5B6BF5"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsStartSideLeft}" Value="True">
+                                            <Setter Property="Background" Value="#1A3D2A"/>
+                                            <Setter Property="BorderBrush" Value="#2ECC71"/>
+                                            <Setter Property="BorderThickness" Value="2"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                        </Button>
+
+                        <Button Command="{Binding SetStartSideRightCommand}" Width="180">
+                            <Button.Visibility>
+                                <MultiBinding Converter="{StaticResource ModeStateToVis}" ConverterParameter="final:Idle|EndCompleted">
+                                    <Binding Path="IsFinalMode"/>
+                                    <Binding Path="MatchPhaseString"/>
+                                </MultiBinding>
+                            </Button.Visibility>
+                            <Button.Content>
+                                <TextBlock Text="Rechts starten (R) ▶" Foreground="{StaticResource TextPrimaryBrush}"/>
+                            </Button.Content>
+                            <Button.Style>
+                                <Style TargetType="Button" BasedOn="{StaticResource BigButton}">
+                                    <Setter Property="Background" Value="#152040"/>
+                                    <Setter Property="BorderBrush" Value="#5B6BF5"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsStartSideRight}" Value="True">
+                                            <Setter Property="Background" Value="#1A3D2A"/>
+                                            <Setter Property="BorderBrush" Value="#2ECC71"/>
+                                            <Setter Property="BorderThickness" Value="2"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                        </Button>
+
+                        <!-- Final Shooting: SKIP/WECHSEL -->
+                        <Button Content="↔  SKIP / WECHSEL" Style="{StaticResource AccentButton}" Width="180"
+                                Command="{Binding SkipTimerCommand}">
+                            <Button.Visibility>
+                                <MultiBinding Converter="{StaticResource ModeStateToVis}" ConverterParameter="final:Shooting">
+                                    <Binding Path="IsFinalMode"/>
+                                    <Binding Path="MatchPhaseString"/>
+                                </MultiBinding>
+                            </Button.Visibility>
+                        </Button>
+
+                        <!-- Final Idle: Seitenwechsel -->
+                        <Button Content="↔ Seitenwechsel" Style="{StaticResource AccentButton}" Width="160"
+                                Command="{Binding SwitchSideCommand}">
+                            <Button.Visibility>
+                                <MultiBinding Converter="{StaticResource ModeStateToVis}" ConverterParameter="final:Idle|EndCompleted">
+                                    <Binding Path="IsFinalMode"/>
+                                    <Binding Path="MatchPhaseString"/>
+                                </MultiBinding>
+                            </Button.Visibility>
+                        </Button>
+
+                    </WrapPanel>
+
+                    <!-- Right: EMERGENCY STOP (always visible) -->
+                    <Button Grid.Column="1" Content="⚠  NOTFALL-STOPP (F5)" Style="{StaticResource EmergencyButton}"
+                            Command="{Binding EmergencyStopCommand}" Width="220" VerticalAlignment="Center"
+                            Margin="16,0,0,0"/>
+                </Grid>
+            </StackPanel>
+        </Border>
+
+        <!-- ═══════════════════════════════════════════════════════════ -->
+        <!-- SETTINGS-ZONE: TabControl                                  -->
+        <!-- ═══════════════════════════════════════════════════════════ -->
+        <TabControl Grid.Row="1" Margin="16,12,16,4" Background="Transparent"
+                    BorderBrush="{StaticResource BorderSubtleBrush}" BorderThickness="0"
+                    Padding="0">
+            <TabControl.Resources>
+                <Style TargetType="TabItem">
+                    <Setter Property="Foreground" Value="{StaticResource TextSecondaryBrush}"/>
+                    <Setter Property="FontSize" Value="13"/>
+                    <Setter Property="FontWeight" Value="SemiBold"/>
+                    <Setter Property="Padding" Value="16,8"/>
+                    <Setter Property="Background" Value="Transparent"/>
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="TabItem">
+                                <Border x:Name="TabBd" Background="{TemplateBinding Background}"
+                                        CornerRadius="8,8,0,0" Padding="{TemplateBinding Padding}"
+                                        BorderBrush="Transparent" BorderThickness="1,1,1,0" Margin="2,0">
+                                    <ContentPresenter ContentSource="Header" HorizontalAlignment="Center"/>
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsSelected" Value="True">
+                                        <Setter TargetName="TabBd" Property="Background" Value="{StaticResource BgCardBrush}"/>
+                                        <Setter TargetName="TabBd" Property="BorderBrush" Value="{StaticResource BorderSubtleBrush}"/>
+                                        <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}"/>
+                                    </Trigger>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter TargetName="TabBd" Property="Background" Value="#1C1C30"/>
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </TabControl.Resources>
+
+            <!-- ══════════════════════════════════════════════════════ -->
+            <!-- TAB: Wettkampf                                        -->
+            <!-- ══════════════════════════════════════════════════════ -->
+            <TabItem Header="⚔ Wettkampf">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="0,0,4,0">
+                    <Border Style="{StaticResource CardBorder}" Margin="0,8,0,0">
+                        <Grid Margin="4">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="140"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/> <!-- Preset -->
+                                <RowDefinition Height="Auto"/> <!-- Sep -->
+                                <RowDefinition Height="Auto"/> <!-- Modus -->
+                                <RowDefinition Height="Auto"/> <!-- Sep -->
+                                <RowDefinition Height="Auto"/> <!-- Gruppen -->
+                                <RowDefinition Height="Auto"/> <!-- Sep -->
+                                <RowDefinition Height="Auto"/> <!-- Zeiten -->
+                                <RowDefinition Height="Auto"/> <!-- Sep -->
+                                <RowDefinition Height="Auto"/> <!-- Passe -->
+                            </Grid.RowDefinitions>
+
+                            <!-- Row 0: Preset -->
+                            <TextBlock Grid.Row="0" Grid.Column="0" Text="PRESET" Style="{StaticResource SectionLabel}"
+                                       VerticalAlignment="Center"/>
+                            <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal">
+                                <ComboBox ItemsSource="{Binding Presets}"
+                                          SelectedItem="{Binding SelectedPreset}"
+                                          DisplayMemberPath="Name"
+                                          Width="260" Margin="0,0,8,0"/>
+                                <Button Content="▶ Anwenden" Style="{StaticResource PrimaryButton}"
+                                        Command="{Binding ApplyPresetCommand}"/>
+                                <TextBlock Text="{Binding PresetStatus}" FontSize="11" Margin="12,0,0,0"
+                                           VerticalAlignment="Center" Foreground="{StaticResource TextSecondaryBrush}"/>
+                            </StackPanel>
+
+                            <!-- Sep -->
+                            <Separator Grid.Row="1" Grid.ColumnSpan="2" Margin="0,10"
+                                       Background="{StaticResource BorderSubtleBrush}"/>
+
+                            <!-- Row 2: Modus -->
+                            <TextBlock Grid.Row="2" Grid.Column="0" Text="MODUS" Style="{StaticResource SectionLabel}"
+                                       VerticalAlignment="Center"/>
+                            <StackPanel Grid.Row="2" Grid.Column="1">
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                                    <RadioButton Content="Standard" GroupName="Mode"
+                                                 IsChecked="{Binding IsFinalMode, Converter={StaticResource InverseBool}}"
+                                                 Command="{Binding SetModeStandardCommand}"
+                                                 Foreground="{StaticResource TextPrimaryBrush}" Margin="0,0,20,0"/>
+                                    <RadioButton Content="Final" GroupName="Mode"
+                                                 IsChecked="{Binding IsFinalMode}"
+                                                 Command="{Binding SetModeFinalCommand}"
+                                                 Foreground="{StaticResource TextPrimaryBrush}"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal"
+                                            Visibility="{Binding IsFinalMode, Converter={StaticResource BoolToVis}}">
+                                    <CheckBox IsChecked="{Binding FinalsSingleDisplay}" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                                    <TextBlock Text="Einzel-Display (Split-Ansicht)" FontSize="12" VerticalAlignment="Center"
+                                               Foreground="{StaticResource TextSecondaryBrush}"/>
+                                </StackPanel>
+                            </StackPanel>
+
+                            <!-- Sep -->
+                            <Separator Grid.Row="3" Grid.ColumnSpan="2" Margin="0,10"
+                                       Background="{StaticResource BorderSubtleBrush}"/>
+
+                            <!-- Row 4: Gruppen -->
+                            <TextBlock Grid.Row="4" Grid.Column="0" Text="GRUPPEN" Style="{StaticResource SectionLabel}"
+                                       VerticalAlignment="Center"/>
+                            <StackPanel Grid.Row="4" Grid.Column="1">
+                                <WrapPanel Margin="0,0,0,8">
+                                    <Button Content="AB" Style="{StaticResource InfoButton}" Width="80"
+                                            Command="{Binding SetGroupABCommand}"/>
+                                    <Button Content="CD" Style="{StaticResource InfoButton}" Width="80"
+                                            Command="{Binding SetGroupCDCommand}"/>
+                                </WrapPanel>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="Startgruppe:" FontSize="11" Foreground="{StaticResource TextMutedBrush}"
+                                               VerticalAlignment="Center" Margin="0,0,8,0"/>
+                                    <Button Content="AB zuerst" Style="{StaticResource SmallButton}"
+                                            Command="{Binding SetStartGroupABCommand}"/>
+                                    <Button Content="CD zuerst" Style="{StaticResource SmallButton}"
+                                            Command="{Binding SetStartGroupCDCommand}"/>
+                                </StackPanel>
+                            </StackPanel>
+
+                            <!-- Sep -->
+                            <Separator Grid.Row="5" Grid.ColumnSpan="2" Margin="0,10"
+                                       Background="{StaticResource BorderSubtleBrush}"/>
+
+                            <!-- Row 6: Zeiten -->
+                            <TextBlock Grid.Row="6" Grid.Column="0" Text="ZEITEN" Style="{StaticResource SectionLabel}"
+                                       VerticalAlignment="Top" Margin="0,4,0,0"/>
+                            <StackPanel Grid.Row="6" Grid.Column="1">
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                                    <TextBlock Text="Schießzeit:" FontSize="12" VerticalAlignment="Center"
+                                               Foreground="{StaticResource TextSecondaryBrush}" Width="120"/>
+                                    <TextBox Text="{Binding TimerDuration, UpdateSourceTrigger=PropertyChanged}" Width="64"/>
+                                    <TextBlock Text="s" FontSize="14" VerticalAlignment="Center" Margin="6,0,0,0"
+                                               Foreground="{StaticResource TextSecondaryBrush}"/>
+                                    <TextBlock Text="Schnellwahl:" FontSize="11" VerticalAlignment="Center"
+                                               Foreground="{StaticResource TextMutedBrush}" Margin="20,0,8,0"/>
+                                    <Button Content="60" Style="{StaticResource SmallButton}" Click="SetDuration_Click" Tag="60"/>
+                                    <Button Content="90" Style="{StaticResource SmallButton}" Click="SetDuration_Click" Tag="90"/>
+                                    <Button Content="120" Style="{StaticResource SmallButton}" Click="SetDuration_Click" Tag="120"/>
+                                    <Button Content="240" Style="{StaticResource SmallButton}" Click="SetDuration_Click" Tag="240"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="Vorbereitungszeit:" FontSize="12" VerticalAlignment="Center"
+                                               Foreground="{StaticResource TextSecondaryBrush}" Width="120"/>
+                                    <TextBox Text="{Binding PreparationTime, UpdateSourceTrigger=PropertyChanged}" Width="64"/>
+                                    <TextBlock Text="s" FontSize="14" VerticalAlignment="Center" Margin="6,0,0,0"
+                                               Foreground="{StaticResource TextSecondaryBrush}"/>
+                                </StackPanel>
+                            </StackPanel>
+
+                            <!-- Sep -->
+                            <Separator Grid.Row="7" Grid.ColumnSpan="2" Margin="0,10"
+                                       Background="{StaticResource BorderSubtleBrush}"/>
+
+                            <!-- Row 8: Passe -->
+                            <TextBlock Grid.Row="8" Grid.Column="0" Text="PASSE" Style="{StaticResource SectionLabel}"
+                                       VerticalAlignment="Center"/>
+                            <StackPanel Grid.Row="8" Grid.Column="1">
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                                    <Button Content="◀ Zurück" Style="{StaticResource SmallButton}"
+                                            Command="{Binding PreviousEndCommand}"/>
+                                    <TextBlock Text="{Binding CurrentEnd}" FontSize="22" FontWeight="Bold"
+                                               VerticalAlignment="Center" Margin="14,0"
+                                               Foreground="{StaticResource TextPrimaryBrush}"/>
+                                    <Button Content="Vor ▶" Style="{StaticResource SmallButton}"
+                                            Command="{Binding NextEndCommand}"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="Gesamt:" FontSize="13" VerticalAlignment="Center" Margin="0,0,8,0"
+                                               Foreground="{StaticResource TextSecondaryBrush}"/>
+                                    <TextBox Text="{Binding TotalEnds, UpdateSourceTrigger=PropertyChanged}" Width="56"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+                </ScrollViewer>
+            </TabItem>
+
+            <!-- ══════════════════════════════════════════════════════ -->
+            <!-- TAB: Anzeige                                          -->
+            <!-- ══════════════════════════════════════════════════════ -->
+            <TabItem Header="📺 Anzeige">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="0,0,4,0">
+                    <Border Style="{StaticResource CardBorder}" Margin="0,8,0,0">
+                        <StackPanel Margin="4">
+
+                            <!-- Leerlauf-Modus -->
+                            <TextBlock Text="LEERLAUF-MODUS" Style="{StaticResource SectionLabel}"/>
+                            <WrapPanel HorizontalAlignment="Left" Margin="0,0,0,10">
+                                <RadioButton GroupName="IdleMode" Content="🕐 Uhrzeit"
+                                             IsChecked="{Binding IsIdleModeClock}"
+                                             Command="{Binding SetIdleModeClockCommand}"
+                                             Foreground="{StaticResource TextPrimaryBrush}" Margin="0,0,14,0"/>
+                                <RadioButton GroupName="IdleMode" Content="💬 Nachricht"
+                                             IsChecked="{Binding IsIdleModeMessage}"
+                                             Command="{Binding SetIdleModeMessageCommand}"
+                                             Foreground="{StaticResource TextPrimaryBrush}" Margin="0,0,14,0"/>
+                                <RadioButton GroupName="IdleMode" Content="🕐+💬 Beides"
+                                             IsChecked="{Binding IsIdleModeBoth}"
+                                             Command="{Binding SetIdleModeBothCommand}"
+                                             Foreground="{StaticResource TextPrimaryBrush}" Margin="0,0,14,0"/>
+                                <RadioButton GroupName="IdleMode" Content="✕ Aus"
+                                             IsChecked="{Binding IsIdleModeOff}"
+                                             Command="{Binding SetIdleModeOffCommand}"
+                                             Foreground="{StaticResource TextPrimaryBrush}"/>
                             </WrapPanel>
-                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,8,0,0">
-                                <TextBox Text="{Binding TimerDuration, UpdateSourceTrigger=PropertyChanged}" Width="64"/>
-                                <TextBlock Text="s" FontSize="14" VerticalAlignment="Center" Margin="6,0,0,0"
+
+                            <!-- Message input -->
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
+                                <TextBlock Text="Nachricht:" FontSize="12" VerticalAlignment="Center" Margin="0,0,8,0"
                                            Foreground="{StaticResource TextSecondaryBrush}"/>
+                                <TextBox x:Name="IdleMessageTextBox"
+                                         Text="{Binding IdleMessage, UpdateSourceTrigger=PropertyChanged}"
+                                         Width="340" MaxLength="200"
+                                         HorizontalContentAlignment="Left"/>
+                                <Button Content="Senden" Style="{StaticResource SmallButton}"
+                                        Command="{Binding SetQuickMessageCommand}"
+                                        CommandParameter="{Binding IdleMessage}"
+                                        Margin="4,0,0,0"/>
+                                <Button Content="✕" Style="{StaticResource SmallButton}"
+                                        Command="{Binding ClearIdleMessageCommand}"
+                                        Padding="8,6" Margin="4,0,0,0"/>
                             </StackPanel>
-                            <TextBlock Text="Vorbereitungszeit (s):" FontSize="11" Foreground="{StaticResource TextMutedBrush}" Margin="0,12,0,4"/>
-                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                <TextBox Text="{Binding PreparationTime, UpdateSourceTrigger=PropertyChanged}" Width="64"/>
-                                <TextBlock Text="s" FontSize="14" VerticalAlignment="Center" Margin="6,0,0,0"
-                                           Foreground="{StaticResource TextSecondaryBrush}"/>
-                            </StackPanel>
-                            <TextBlock Text="Anzeige-Format:" FontSize="11" Foreground="{StaticResource TextMutedBrush}" Margin="0,12,0,4"/>
-                            <WrapPanel HorizontalAlignment="Center">
+
+                            <TextBlock Text="{Binding IdleScrollText}" FontSize="11"
+                                       Foreground="{StaticResource TextMutedBrush}" Margin="0,2,0,8"/>
+
+                            <!-- Quick messages -->
+                            <TextBlock Text="Schnellnachrichten:" FontSize="11" Foreground="{StaticResource TextMutedBrush}" Margin="0,0,0,6"/>
+                            <ItemsControl ItemsSource="{Binding QuickMessages}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <WrapPanel/>
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Button Content="{Binding}" Style="{StaticResource SmallButton}"
+                                                Command="{Binding DataContext.SetQuickMessageCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                CommandParameter="{Binding}"
+                                                FontSize="11" Padding="10,6"/>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+
+                            <Separator Margin="0,14" Background="{StaticResource BorderSubtleBrush}"/>
+
+                            <!-- Anzeige-Format -->
+                            <TextBlock Text="ANZEIGE-FORMAT" Style="{StaticResource SectionLabel}"/>
+                            <WrapPanel Margin="0,0,0,10">
                                 <RadioButton Content="Min:Sek" GroupName="TimeFormat"
                                              IsChecked="{Binding IsTimeFormatMinutes}"
                                              Command="{Binding SetTimeFormatToMinutesCommand}"
@@ -514,254 +837,186 @@
                                              Command="{Binding SetTimeFormatToSecondsCommand}"
                                              Foreground="{StaticResource TextPrimaryBrush}"/>
                             </WrapPanel>
-                        </StackPanel>
-                    </Border>
 
-                    <!-- Passe -->
-                    <Border Grid.Column="4" Style="{StaticResource CardBorder}" Margin="0,0,0,10">
-                        <StackPanel>
-                            <TextBlock Text="PASSE" Style="{StaticResource SectionLabel}"/>
-                            <WrapPanel HorizontalAlignment="Center" Margin="0,0,0,4">
-                                <Button Content="◀ Zurück" Style="{StaticResource SmallButton}"
-                                        Command="{Binding PreviousEndCommand}"/>
-                                <TextBlock Text="{Binding CurrentEnd}" FontSize="24" FontWeight="Bold"
-                                           VerticalAlignment="Center" Margin="14,0"
-                                           Foreground="{StaticResource TextPrimaryBrush}"/>
-                                <Button Content="Vor ▶" Style="{StaticResource SmallButton}"
-                                        Command="{Binding NextEndCommand}"/>
+                            <Separator Margin="0,4,0,14" Background="{StaticResource BorderSubtleBrush}"/>
+
+                            <!-- Manuelle Farbe -->
+                            <TextBlock Text="MANUELLE FARBÜBERSCHREIBUNG" Style="{StaticResource SectionLabel}"/>
+                            <WrapPanel Margin="0,0,0,10">
+                                <Button Style="{StaticResource ColorSwatchButton}" Background="#CC2020" Content="ROT"
+                                        Command="{Binding SetColorRedCommand}"/>
+                                <Button Style="{StaticResource ColorSwatchButton}" Background="#1DAA50" Content="GRÜN"
+                                        Command="{Binding SetColorGreenCommand}"/>
+                                <Button Style="{StaticResource ColorSwatchButton}" Background="#D4A017" Content="GELB"
+                                        Command="{Binding SetColorYellowCommand}"/>
                             </WrapPanel>
-                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,8,0,0">
-                                <TextBlock Text="Gesamt:" FontSize="13" VerticalAlignment="Center" Margin="0,0,8,0"
-                                           Foreground="{StaticResource TextSecondaryBrush}"/>
-                                <TextBox Text="{Binding TotalEnds, UpdateSourceTrigger=PropertyChanged}" Width="56"/>
+
+                            <Separator Margin="0,4,0,14" Background="{StaticResource BorderSubtleBrush}"/>
+
+                            <!-- Display-Zuordnung -->
+                            <TextBlock Text="DISPLAY-ZUORDNUNG" Style="{StaticResource SectionLabel}"/>
+                            <StackPanel Orientation="Horizontal">
+                                <Button Content="⇄ Display tauschen" Style="{StaticResource SmallButton}"
+                                        Command="{Binding SwapDisplaySidesCommand}"/>
+                                <TextBlock FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0"
+                                           Foreground="{StaticResource TextMutedBrush}">
+                                    <Run Text="Display 1 = "/>
+                                    <Run Text="{Binding Display1SideLabel, Mode=OneWay}"/>
+                                    <Run Text=", Display 2 = "/>
+                                    <Run Text="{Binding Display2SideLabel, Mode=OneWay}"/>
+                                </TextBlock>
                             </StackPanel>
+
                         </StackPanel>
                     </Border>
-                </Grid>
+                </ScrollViewer>
+            </TabItem>
 
-                <!-- ── FINAL MODE: SIDE SELECTION ────────────────────── -->
-                <Border Style="{StaticResource CardBorder}" Margin="0,0,0,10"
-                        Visibility="{Binding IsFinalMode, Converter={StaticResource BoolToVis}}"
-                        BorderBrush="#3D2E0A">
-                    <StackPanel>
-                        <TextBlock Text="FINAL-MODUS: SEITE" FontSize="11" FontWeight="SemiBold"
-                                   Foreground="{StaticResource AccentOrangeBrush}" Margin="0,0,0,12"/>
-                        <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
-                            <CheckBox IsChecked="{Binding FinalsSingleDisplay}" VerticalAlignment="Center" Margin="0,0,6,0"/>
-                            <TextBlock Text="Einzel-Display (Split-Ansicht)" FontSize="12" VerticalAlignment="Center"
-                                       Foreground="{StaticResource TextSecondaryBrush}"/>
+            <!-- ══════════════════════════════════════════════════════ -->
+            <!-- TAB: Verbindung                                       -->
+            <!-- ══════════════════════════════════════════════════════ -->
+            <TabItem Header="🔌 Verbindung">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="0,0,4,0">
+                    <Border Style="{StaticResource CardBorder}" Margin="0,8,0,0">
+                        <StackPanel Margin="4">
+
+                            <!-- Seriell -->
+                            <TextBlock Text="SERIELL (RS485)" Style="{StaticResource SectionLabel}"/>
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                                <TextBlock Text="COM-Port:" FontSize="12" VerticalAlignment="Center" Margin="0,0,8,0"
+                                           Foreground="{StaticResource TextSecondaryBrush}"/>
+                                <ComboBox ItemsSource="{Binding AvailableComPorts}"
+                                          SelectedItem="{Binding SelectedComPort}"
+                                          Width="100" FontSize="12"/>
+                                <Button Style="{StaticResource SmallButton}"
+                                        Command="{Binding RefreshComPortsCommand}"
+                                        Padding="6,4" FontSize="14" Margin="4,0" Content="⟳"/>
+                                <Button Content="Verbinden" Style="{StaticResource PrimaryButton}"
+                                        Command="{Binding ConnectSerialCommand}"
+                                        FontSize="12" Padding="12,6"/>
+                                <Button Content="Trennen" Style="{StaticResource DangerButton}"
+                                        Command="{Binding DisconnectSerialCommand}"
+                                        FontSize="12" Padding="12,6"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+                                <Ellipse Width="10" Height="10" Margin="0,0,8,0">
+                                    <Ellipse.Style>
+                                        <Style TargetType="Ellipse">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsSerialConnected}" Value="True">
+                                                    <Setter Property="Fill" Value="{StaticResource AccentGreenBrush}"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding IsSerialConnected}" Value="False">
+                                                    <Setter Property="Fill" Value="{StaticResource AccentRedBrush}"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Ellipse.Style>
+                                </Ellipse>
+                                <TextBlock Text="{Binding ConnectionStatusText}" FontSize="12" VerticalAlignment="Center"
+                                           Foreground="{StaticResource TextSecondaryBrush}"/>
+                                <TextBlock Text="{Binding SerialError}" FontSize="11" Foreground="#FF6666"
+                                           Margin="12,0,0,0" VerticalAlignment="Center" MaxWidth="300" TextTrimming="CharacterEllipsis"/>
+                            </StackPanel>
+
+                            <Separator Margin="0,10" Background="{StaticResource BorderSubtleBrush}"/>
+
+                            <!-- Sound -->
+                            <TextBlock Text="SOUND" Style="{StaticResource SectionLabel}"/>
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                                <CheckBox IsChecked="{Binding SoundEnabled}" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                                <TextBlock Text="Sound aktiv" FontSize="12" VerticalAlignment="Center"
+                                           Foreground="{StaticResource TextSecondaryBrush}"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+                                <TextBlock Text="Lautstärke:" FontSize="12" VerticalAlignment="Center" Margin="0,0,8,0"
+                                           Foreground="{StaticResource TextSecondaryBrush}" Width="90"/>
+                                <Slider Minimum="0" Maximum="100" Value="{Binding SoundVolume}" Width="200"
+                                        VerticalAlignment="Center"/>
+                                <TextBlock Text="{Binding SoundVolume, StringFormat={}{0}%}" FontSize="12" Margin="8,0"
+                                           VerticalAlignment="Center" Foreground="{StaticResource TextPrimaryBrush}"/>
+                            </StackPanel>
+
+                            <Separator Margin="0,10" Background="{StaticResource BorderSubtleBrush}"/>
+
+                            <!-- Beamer -->
+                            <TextBlock Text="BEAMER" Style="{StaticResource SectionLabel}"/>
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                                <ComboBox ItemsSource="{Binding AvailableScreens}"
+                                          SelectedIndex="{Binding SelectedScreenIndex}"
+                                          Width="260" FontSize="11" Margin="0,0,8,0"/>
+                                <Button Content="Beamer (F11)" Style="{StaticResource AccentButton}"
+                                        Command="{Binding ToggleBeamerCommand}"
+                                        FontSize="12" Padding="14,6"/>
+                            </StackPanel>
+
+                            <Separator Margin="0,10" Background="{StaticResource BorderSubtleBrush}"/>
+
+                            <!-- Font-Modus -->
+                            <TextBlock Text="FONT-MODUS" Style="{StaticResource SectionLabel}"/>
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                                <RadioButton Content="BDF (Pixel)" GroupName="FontMode"
+                                             IsChecked="{Binding IsBdfMode}"
+                                             Foreground="{StaticResource TextPrimaryBrush}" Margin="0,0,16,0"/>
+                                <RadioButton Content="TTF (Vektor)" GroupName="FontMode"
+                                             IsChecked="{Binding IsTtfMode}"
+                                             Foreground="{StaticResource TextPrimaryBrush}"/>
+                            </StackPanel>
+
+                            <!-- Helligkeit -->
+                            <TextBlock Text="HELLIGKEIT" Style="{StaticResource SectionLabel}"/>
+                            <StackPanel Orientation="Horizontal">
+                                <Slider Minimum="10" Maximum="100" Value="{Binding Brightness}" Width="200"
+                                        VerticalAlignment="Center"/>
+                                <TextBlock Text="{Binding Brightness, StringFormat={}{0}%}" FontSize="12" Margin="8,0"
+                                           VerticalAlignment="Center" Foreground="{StaticResource TextPrimaryBrush}"/>
+                            </StackPanel>
+
                         </StackPanel>
-                        <WrapPanel HorizontalAlignment="Center">
-                            <Button Command="{Binding SetStartSideLeftCommand}" Width="180">
-                                <Button.Content>
-                                    <TextBlock Text="◀ Links starten (L)" Foreground="{StaticResource TextPrimaryBrush}"/>
-                                </Button.Content>
-                                <Button.Style>
-                                    <Style TargetType="Button" BasedOn="{StaticResource BigButton}">
-                                        <Setter Property="Background" Value="#152040"/>
-                                        <Setter Property="BorderBrush" Value="#5B6BF5"/>
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding IsStartSideLeft}" Value="True">
-                                                <Setter Property="Background" Value="#1A3D2A"/>
-                                                <Setter Property="BorderBrush" Value="#2ECC71"/>
-                                                <Setter Property="BorderThickness" Value="2"/>
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </Button.Style>
-                            </Button>
-                            <Button Command="{Binding SetStartSideRightCommand}" Width="180">
-                                <Button.Content>
-                                    <TextBlock Text="Rechts starten (R) ▶" Foreground="{StaticResource TextPrimaryBrush}"/>
-                                </Button.Content>
-                                <Button.Style>
-                                    <Style TargetType="Button" BasedOn="{StaticResource BigButton}">
-                                        <Setter Property="Background" Value="#152040"/>
-                                        <Setter Property="BorderBrush" Value="#5B6BF5"/>
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding IsStartSideRight}" Value="True">
-                                                <Setter Property="Background" Value="#1A3D2A"/>
-                                                <Setter Property="BorderBrush" Value="#2ECC71"/>
-                                                <Setter Property="BorderThickness" Value="2"/>
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </Button.Style>
-                            </Button>
-                            <Button Content="↔ Seitenwechsel" Style="{StaticResource AccentButton}"
-                                    Command="{Binding SwitchSideCommand}" Width="180"/>
-                            <Button Content="⇄ Display tauschen" Style="{StaticResource SmallButton}"
-                                    Command="{Binding SwapDisplaySidesCommand}"/>
-                        </WrapPanel>
-                    </StackPanel>
-                </Border>
-
-                <!-- ── MANUAL COLOR OVERRIDE ─────────────────────────── -->
-                <Border Style="{StaticResource CardBorder}" Margin="0,0,0,10">
-                    <StackPanel>
-                        <TextBlock Text="MANUELLE FARBÜBERSCHREIBUNG" Style="{StaticResource SectionLabel}"/>
-                        <WrapPanel HorizontalAlignment="Center">
-                            <Button Style="{StaticResource ColorSwatchButton}" Background="#CC2020" Content="ROT"
-                                    Command="{Binding SetColorRedCommand}"/>
-                            <Button Style="{StaticResource ColorSwatchButton}" Background="#1DAA50" Content="GRÜN"
-                                    Command="{Binding SetColorGreenCommand}"/>
-                            <Button Style="{StaticResource ColorSwatchButton}" Background="#D4A017" Content="GELB"
-                                    Command="{Binding SetColorYellowCommand}"/>
-                        </WrapPanel>
-                    </StackPanel>
-                </Border>
-
-                <!-- ── IDLE DISPLAY (visible when stopped) ──────────────── -->
-                <Border Style="{StaticResource CardBorder}" Margin="0,0,0,10"
-                        Visibility="{Binding IsStopped, Converter={StaticResource BoolToVis}}"
-                        BorderBrush="#2A2A55">
-                    <StackPanel>
-                        <TextBlock Text="ANZEIGE IM LEERLAUF (M)" FontSize="11" FontWeight="SemiBold"
-                                   Foreground="{StaticResource AccentBlueBrush}" Margin="0,0,0,12"/>
-
-                        <!-- Mode selection -->
-                        <WrapPanel HorizontalAlignment="Center" Margin="0,0,0,10">
-                            <RadioButton GroupName="IdleMode" Content="🕐 Uhrzeit"
-                                         IsChecked="{Binding IsIdleModeClock}"
-                                         Command="{Binding SetIdleModeClockCommand}"
-                                         Foreground="{StaticResource TextPrimaryBrush}" Margin="0,0,14,0"/>
-                            <RadioButton GroupName="IdleMode" Content="💬 Nachricht"
-                                         IsChecked="{Binding IsIdleModeMessage}"
-                                         Command="{Binding SetIdleModeMessageCommand}"
-                                         Foreground="{StaticResource TextPrimaryBrush}" Margin="0,0,14,0"/>
-                            <RadioButton GroupName="IdleMode" Content="🕐+💬 Beides"
-                                         IsChecked="{Binding IsIdleModeBoth}"
-                                         Command="{Binding SetIdleModeBothCommand}"
-                                         Foreground="{StaticResource TextPrimaryBrush}" Margin="0,0,14,0"/>
-                            <RadioButton GroupName="IdleMode" Content="✕ Aus"
-                                         IsChecked="{Binding IsIdleModeOff}"
-                                         Command="{Binding SetIdleModeOffCommand}"
-                                         Foreground="{StaticResource TextPrimaryBrush}"/>
-                        </WrapPanel>
-
-                        <!-- Message input -->
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,4">
-                            <TextBlock Text="Nachricht:" FontSize="12" VerticalAlignment="Center" Margin="0,0,8,0"
-                                       Foreground="{StaticResource TextSecondaryBrush}"/>
-                            <TextBox x:Name="IdleMessageTextBox"
-                                     Text="{Binding IdleMessage, UpdateSourceTrigger=PropertyChanged}"
-                                     Width="340" MaxLength="200"
-                                     HorizontalContentAlignment="Left"/>
-                            <Button Content="✕" Style="{StaticResource SmallButton}"
-                                    Command="{Binding ClearIdleMessageCommand}"
-                                    Padding="8,6" Margin="4,0,0,0"/>
-                        </StackPanel>
-
-                        <!-- Scroll indicator -->
-                        <TextBlock Text="{Binding IdleScrollText}" FontSize="11" HorizontalAlignment="Center"
-                                   Foreground="{StaticResource TextMutedBrush}" Margin="0,2,0,8"/>
-
-                        <!-- Quick messages -->
-                        <TextBlock Text="Schnellnachrichten:" FontSize="11" Foreground="{StaticResource TextMutedBrush}" Margin="0,0,0,6"/>
-                        <ItemsControl ItemsSource="{Binding QuickMessages}">
-                            <ItemsControl.ItemsPanel>
-                                <ItemsPanelTemplate>
-                                    <WrapPanel HorizontalAlignment="Center"/>
-                                </ItemsPanelTemplate>
-                            </ItemsControl.ItemsPanel>
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate>
-                                    <Button Content="{Binding}" Style="{StaticResource SmallButton}"
-                                            Command="{Binding DataContext.SetQuickMessageCommand, RelativeSource={RelativeSource AncestorType=Border}}"
-                                            CommandParameter="{Binding}"
-                                            FontSize="11" Padding="10,6"/>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
-                    </StackPanel>
-                </Border>
-
-                <!-- ── PRESETS ───────────────────────────────────────── -->
-                <Border Style="{StaticResource CardBorder}" Margin="0,0,0,10">
-                    <StackPanel>
-                        <TextBlock Text="PRESETS" Style="{StaticResource SectionLabel}"/>
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                            <ComboBox ItemsSource="{Binding Presets}"
-                                      SelectedItem="{Binding SelectedPreset}"
-                                      DisplayMemberPath="Name"
-                                      Width="280"
-                                      Margin="0,0,8,0"/>
-                            <Button Content="▶ Preset anwenden" Style="{StaticResource PrimaryButton}"
-                                    Command="{Binding ApplyPresetCommand}"/>
-                        </StackPanel>
-                        <TextBlock Text="{Binding PresetStatus}" FontSize="11" Margin="0,8,0,0"
-                                   HorizontalAlignment="Center" Foreground="{StaticResource TextSecondaryBrush}"/>
-                    </StackPanel>
-                </Border>
-            </StackPanel>
-        </ScrollViewer>
+                    </Border>
+                </ScrollViewer>
+            </TabItem>
+        </TabControl>
 
         <!-- ═══════════════════════════════════════════════════════════ -->
         <!-- BOTTOM: Status Bar                                         -->
         <!-- ═══════════════════════════════════════════════════════════ -->
-        <Border Grid.Row="2" Background="#0A0A16" Padding="14,10" Margin="0"
+        <Border Grid.Row="2" Background="#0A0A16" Padding="14,8" Margin="0"
                 BorderBrush="{StaticResource BorderSubtleBrush}" BorderThickness="0,1,0,0">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <!-- COM Port status -->
+                <TextBlock Text="{Binding SelectedComPort}" FontSize="11" Foreground="{StaticResource TextMutedBrush}"
+                           VerticalAlignment="Center"/>
+                <Ellipse Width="8" Height="8" Margin="8,0,4,0" VerticalAlignment="Center">
+                    <Ellipse.Style>
+                        <Style TargetType="Ellipse">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsSerialConnected}" Value="True">
+                                    <Setter Property="Fill" Value="{StaticResource AccentGreenBrush}"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding IsSerialConnected}" Value="False">
+                                    <Setter Property="Fill" Value="{StaticResource AccentRedBrush}"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Ellipse.Style>
+                </Ellipse>
+                <TextBlock Text="{Binding ConnectionStatusText}" FontSize="11"
+                           Foreground="{StaticResource TextSecondaryBrush}" VerticalAlignment="Center"/>
 
-                <!-- COM Port -->
-                <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
-                    <TextBlock Text="COM-Port:" FontSize="12" VerticalAlignment="Center" Margin="0,0,8,0"
-                               Foreground="{StaticResource TextMutedBrush}" FontWeight="SemiBold"/>
-                    <ComboBox ItemsSource="{Binding AvailableComPorts}"
-                              SelectedItem="{Binding SelectedComPort}"
-                              Width="100" FontSize="12"/>
-                    <Button Style="{StaticResource SmallButton}"
-                            Command="{Binding RefreshComPortsCommand}"
-                            Padding="6,4" FontSize="14" Margin="4,0" Content="⟳"/>
-                    <Button Content="Verbinden" Style="{StaticResource PrimaryButton}"
-                            Command="{Binding ConnectSerialCommand}"
-                            FontSize="12" Padding="12,6"/>
-                    <Button Content="Trennen" Style="{StaticResource DangerButton}"
-                            Command="{Binding DisconnectSerialCommand}"
-                            FontSize="12" Padding="12,6"/>
-                </StackPanel>
+                <TextBlock Text=" │ " Foreground="{StaticResource TextMutedBrush}" FontSize="11" VerticalAlignment="Center"/>
+                <TextBlock Text="Sound" FontSize="11" Foreground="{StaticResource TextMutedBrush}" VerticalAlignment="Center" Margin="0,0,4,0"/>
+                <CheckBox IsChecked="{Binding SoundEnabled}" VerticalAlignment="Center"/>
 
-                <!-- Connection Status -->
-                <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
-                    <Ellipse Width="10" Height="10" Margin="0,0,8,0">
-                        <Ellipse.Style>
-                            <Style TargetType="Ellipse">
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding IsSerialConnected}" Value="True">
-                                        <Setter Property="Fill" Value="{StaticResource AccentGreenBrush}"/>
-                                    </DataTrigger>
-                                    <DataTrigger Binding="{Binding IsSerialConnected}" Value="False">
-                                        <Setter Property="Fill" Value="{StaticResource AccentRedBrush}"/>
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </Ellipse.Style>
-                    </Ellipse>
-                    <TextBlock Text="{Binding ConnectionStatusText}" FontSize="12" VerticalAlignment="Center"
-                               Foreground="{StaticResource TextSecondaryBrush}"/>
-                </StackPanel>
+                <TextBlock Text=" │ " Foreground="{StaticResource TextMutedBrush}" FontSize="11" VerticalAlignment="Center"/>
+                <TextBlock Text="{Binding CurrentEnd}" FontSize="11" FontWeight="SemiBold"
+                           Foreground="{StaticResource TextSecondaryBrush}" VerticalAlignment="Center"/>
 
-                <!-- Sound + Beamer -->
-                <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
-                    <TextBlock Text="Sound:" FontSize="12" VerticalAlignment="Center" Margin="0,0,6,0"
-                               Foreground="{StaticResource TextMutedBrush}" FontWeight="SemiBold"/>
-                    <CheckBox IsChecked="{Binding SoundEnabled}" VerticalAlignment="Center" Margin="0,0,12,0"/>
-                    <ComboBox ItemsSource="{Binding AvailableScreens}"
-                              SelectedIndex="{Binding SelectedScreenIndex}"
-                              Width="200" FontSize="11"
-                              Margin="0,0,6,0"/>
-                    <Button Content="Beamer (F11)" Style="{StaticResource AccentButton}"
-                            Command="{Binding ToggleBeamerCommand}"
-                            FontSize="12" Padding="14,6"/>
-                    <TextBlock Text="{Binding SerialError}" FontSize="11" Foreground="#FF6666"
-                               Margin="12,0,0,0" VerticalAlignment="Center" MaxWidth="200" TextTrimming="CharacterEllipsis"/>
-                </StackPanel>
-            </Grid>
+                <TextBlock Text=" │ " Foreground="{StaticResource TextMutedBrush}" FontSize="11" VerticalAlignment="Center"/>
+                <Button Content="Beamer (F11)" Style="{StaticResource AccentButton}"
+                        Command="{Binding ToggleBeamerCommand}"
+                        FontSize="11" Padding="10,4"/>
+            </StackPanel>
         </Border>
     </Grid>
 </Window>

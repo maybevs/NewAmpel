@@ -98,6 +98,17 @@ public partial class MainViewModel : ObservableObject, IDisposable
     [ObservableProperty] private bool _isTimeFormatMinutes;
     [ObservableProperty] private bool _isTimeFormatSeconds = true;
 
+    // State machine phase name for StateToVisibilityConverter
+    [ObservableProperty] private string _matchPhaseString = "Idle";
+
+    // Display config (RS485)
+    [ObservableProperty] private bool _isBdfMode = true;
+    [ObservableProperty] private bool _isTtfMode;
+    [ObservableProperty] private int _brightness = 80;
+
+    // Sound volume
+    [ObservableProperty] private int _soundVolume = 100;
+
     // Clock timer for beamer idle display
     private readonly DispatcherTimer _clockTimer;
     private readonly DispatcherTimer _displayRefreshTimer;
@@ -130,6 +141,11 @@ public partial class MainViewModel : ObservableObject, IDisposable
         _soundService.IsEnabled = config.SoundEnabled;
         _soundService.Volume = config.SoundVolume;
         _finalsSingleDisplay = config.FinalsSingleDisplay;
+
+        _brightness = config.DisplayBrightness;
+        _isBdfMode = config.DisplayFontMode == "bdf";
+        _isTtfMode = config.DisplayFontMode == "ttf";
+        _soundVolume = config.SoundVolume;
 
         var swapped = config.Display1Side == "right";
         _display1SideLabel = swapped ? "Display 2" : "Display 1";
@@ -242,6 +258,21 @@ public partial class MainViewModel : ObservableObject, IDisposable
             MatchPhase.EmergencyStopped => "⚠ NOTFALL-STOPP",
             _ => ""
         };
+
+        // State machine phase name for UI visibility converters
+        MatchPhaseString = state.Phase switch
+        {
+            MatchPhase.Idle when state.Status == Core.Models.TimerStatus.Stopped => "Idle",
+            MatchPhase.Idle => "Idle",
+            MatchPhase.PreparationGroup1 => "Preparation",
+            MatchPhase.ShootingGroup1 => "Shooting",
+            MatchPhase.PreparationGroup2 => "Preparation",
+            MatchPhase.ShootingGroup2 => "Shooting",
+            MatchPhase.EndCompleted => "EndCompleted",
+            MatchPhase.EmergencyStopped => "EmergencyStopped",
+            _ => "Idle"
+        };
+        // When Stopped+Idle, use "Idle"; when Stopped after stop command, also "Idle"
 
         // Final mode specifics
         CurrentSide = state.CurrentSide;
@@ -389,6 +420,12 @@ public partial class MainViewModel : ObservableObject, IDisposable
     [RelayCommand]
     private void SwitchSide() => _stateService.SwitchSide();
 
+    [RelayCommand]
+    private void SetModeStandard() => _stateService.SetMode(OperatingMode.Standard);
+
+    [RelayCommand]
+    private void SetModeFinal() => _stateService.SetMode(OperatingMode.Final);
+
     // Serial
     [RelayCommand]
     private void RefreshComPorts()
@@ -525,6 +562,26 @@ public partial class MainViewModel : ObservableObject, IDisposable
     partial void OnSoundEnabledChanged(bool value) => _soundService.IsEnabled = value;
     partial void OnFinalsSingleDisplayChanged(bool value) => _config.FinalsSingleDisplay = value;
     partial void OnIdleMessageChanged(string value) => _stateService.SetIdleMessage(value);
+    partial void OnSoundVolumeChanged(int value) => _soundService.Volume = value;
+    partial void OnBrightnessChanged(int value) => SendDisplayConfig();
+    partial void OnIsBdfModeChanged(bool value)
+    {
+        if (value) IsTtfMode = false;
+        SendDisplayConfig();
+    }
+    partial void OnIsTtfModeChanged(bool value)
+    {
+        if (value) IsBdfMode = false;
+        SendDisplayConfig();
+    }
+
+    private void SendDisplayConfig()
+    {
+        if (!_serialService.IsConnected) return;
+        var fontMode = IsBdfMode ? "bdf" : "ttf";
+        var json = $"{{\"cfg\":{{\"font_mode\":\"{fontMode}\",\"brightness\":{Brightness}}}}}\n";
+        _serialService.SendRaw(json);
+    }
 
     public void SaveConfiguration()
     {
@@ -536,6 +593,9 @@ public partial class MainViewModel : ObservableObject, IDisposable
         _config.ComPort = SelectedComPort;
         _config.BeamerMonitor = SelectedScreenIndex;
         _config.FinalsSingleDisplay = FinalsSingleDisplay;
+        _config.SoundVolume = (int)_soundService.Volume;
+        _config.DisplayBrightness = Brightness;
+        _config.DisplayFontMode = IsBdfMode ? "bdf" : "ttf";
     }
 
     public void Dispose()
