@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Threading;
 using AmpelSteuerung.Core.Configuration;
 using AmpelSteuerung.Core.Models;
 using Microsoft.Extensions.Logging;
@@ -12,8 +13,13 @@ public class AmpelStateService : IAmpelStateService, IDisposable
     private readonly TimerConfig _config = new();
     private readonly ISoundService _soundService;
     private readonly ILogger<AmpelStateService> _logger;
-    private readonly System.Timers.Timer _timer;
     private readonly Stopwatch _stopwatch = new();
+
+    // Dedicated tick thread — immune to ThreadPool starvation from
+    // serial broadcast callbacks and Console.Beep sound playback.
+    private readonly Thread _tickThread;
+    private readonly ManualResetEventSlim _tickEnabled = new(false);
+    private volatile bool _disposed;
 
     private int _countdownDuration; // current phase countdown total
     private int _startingGroupIndex; // 0 = first group starts, toggles per passe
@@ -35,8 +41,9 @@ public class AmpelStateService : IAmpelStateService, IDisposable
         {
             lock (_lock)
             {
-                RefreshDisplayTime();
-                return _state.Clone();
+                var snapshot = _state.Clone();
+                RefreshSnapshotTime(snapshot);
+                return snapshot;
             }
         }
     }
@@ -95,19 +102,51 @@ public class AmpelStateService : IAmpelStateService, IDisposable
         _state.CurrentEnd = 1;
         _state.TotalEnds = _config.TotalEnds;
 
-        _timer = new System.Timers.Timer(50);
-        _timer.Elapsed += OnTimerElapsed;
-        _timer.AutoReset = true;
+        _tickThread = new Thread(TickLoop)
+        {
+            IsBackground = true,
+            Name = "AmpelStateTick",
+            Priority = ThreadPriority.AboveNormal
+        };
+        _tickThread.Start();
     }
 
-    private void OnTimerElapsed(object? sender, System.Timers.ElapsedEventArgs e)
+    /// <summary>
+    /// Dedicated tick loop running on its own thread.
+    /// Sleeps 50 ms between iterations, checks _tickEnabled to know
+    /// whether the timer is "running".
+    /// </summary>
+    private void TickLoop()
+    {
+        while (!_disposed)
+        {
+            _tickEnabled.Wait();          // block until timer is started
+            if (_disposed) break;
+            Thread.Sleep(50);
+            if (!_tickEnabled.IsSet) continue; // was stopped while sleeping
+            OnTimerTick();
+        }
+    }
+
+    private int _prevTickTime = -1;
+
+    private void OnTimerTick()
     {
         lock (_lock)
         {
             if (_state.Status != TimerStatus.Running) return;
 
-            var elapsed = (int)_stopwatch.Elapsed.TotalSeconds;
-            var newTime = Math.Max(0, _countdownDuration - elapsed);
+            // Use integer ms arithmetic to avoid floating-point truncation artifacts
+            var elapsedSec = (int)(_stopwatch.ElapsedMilliseconds / 1000);
+            var newTime = Math.Max(0, _countdownDuration - elapsedSec);
+
+            // Detect skipped seconds
+            if (_prevTickTime >= 0 && _prevTickTime - newTime > 1)
+            {
+                _logger.LogWarning("[TICK SKIP] {Prev} -> {New} (elapsed={Elapsed}s, ms={Ms})",
+                    _prevTickTime, newTime, elapsedSec, _stopwatch.ElapsedMilliseconds);
+            }
+            _prevTickTime = newTime;
 
             if (_state.Mode == OperatingMode.Standard)
                 HandleStandardTick(newTime);
@@ -149,14 +188,14 @@ public class AmpelStateService : IAmpelStateService, IDisposable
     private void HandleFinalTick(int newTime)
     {
         var currentTime = GetActiveDisplay().TimeRemaining;
-        if (newTime == currentTime) return;
-
         var endStr = $"{_config.CurrentEnd}/{_config.TotalEnds}";
+        var remainingMs = (int)Math.Max(0, (long)_countdownDuration * 1000 - (long)_stopwatch.Elapsed.TotalMilliseconds);
 
         switch (_state.Phase)
         {
             case MatchPhase.PreparationGroup1: // Preparation for both sides
-                SetBothFinalDisplays(newTime, AmpelColor.Red, endStr);
+                // Always update ms for smooth centisecond display on both sides
+                SetBothFinalDisplays(newTime, AmpelColor.Red, endStr, remainingMs);
                 if (newTime == 0)
                     TransitionToFinalShooting();
                 break;
@@ -169,11 +208,17 @@ public class AmpelStateService : IAmpelStateService, IDisposable
 
                 var (activeDisp, inactiveDisp) = GetActiveSideDisplays();
                 activeDisp.TimeRemaining = newTime;
+                activeDisp.TimeRemainingMs = remainingMs;
                 activeDisp.Color = color;
                 activeDisp.End = endStr;
-                inactiveDisp.TimeRemaining = 0;
-                inactiveDisp.Color = AmpelColor.Red;
-                inactiveDisp.End = endStr;
+                // Only reset inactive side when seconds change
+                if (newTime != currentTime)
+                {
+                    inactiveDisp.TimeRemaining = 0;
+                    inactiveDisp.TimeRemainingMs = 0;
+                    inactiveDisp.Color = AmpelColor.Red;
+                    inactiveDisp.End = endStr;
+                }
 
                 if (newTime == 0)
                     TransitionFinalAfterShooting();
@@ -183,7 +228,7 @@ public class AmpelStateService : IAmpelStateService, IDisposable
 
     private void TransitionToShooting()
     {
-        _timer.Stop();
+        _tickEnabled.Reset();
         _stopwatch.Reset();
 
         // 1× horn — shooting begins
@@ -205,14 +250,14 @@ public class AmpelStateService : IAmpelStateService, IDisposable
 
         _state.ManualColorOverride = false;
         _stopwatch.Restart();
-        _timer.Start();
+        _tickEnabled.Set();
 
         _logger.LogInformation("Shooting started. Phase: {Phase}, Group: {Group}", _state.Phase, _state.Display1.Group);
     }
 
     private void TransitionAfterShooting()
     {
-        _timer.Stop();
+        _tickEnabled.Reset();
         _stopwatch.Reset();
 
         var endStr = $"{_config.CurrentEnd}/{_config.TotalEnds}";
@@ -231,7 +276,7 @@ public class AmpelStateService : IAmpelStateService, IDisposable
             _state.SetBothDisplays(_countdownDuration, group2Name, AmpelColor.Red, endStr);
 
             _stopwatch.Restart();
-            _timer.Start();
+            _tickEnabled.Set();
 
             _logger.LogInformation("Preparation for group 2: {Group}", group2Name);
         }
@@ -256,7 +301,7 @@ public class AmpelStateService : IAmpelStateService, IDisposable
 
     private void TransitionToFinalShooting()
     {
-        _timer.Stop();
+        _tickEnabled.Reset();
         _stopwatch.Reset();
 
         // 1× horn — shooting begins for the active side
@@ -270,22 +315,24 @@ public class AmpelStateService : IAmpelStateService, IDisposable
 
         var (activeDisp, inactiveDisp) = GetActiveSideDisplays();
         activeDisp.TimeRemaining = _countdownDuration;
+        activeDisp.TimeRemainingMs = _countdownDuration * 1000;
         activeDisp.Color = AmpelColor.Green;
         activeDisp.End = endStr;
         inactiveDisp.TimeRemaining = 0;
+        inactiveDisp.TimeRemainingMs = 0;
         inactiveDisp.Color = AmpelColor.Red;
         inactiveDisp.End = endStr;
 
         _state.ManualColorOverride = false;
         _stopwatch.Restart();
-        _timer.Start();
+        _tickEnabled.Set();
 
         _logger.LogInformation("Final shooting started. Side: {Side}, Round: 1", _state.CurrentSide);
     }
 
     private void TransitionFinalAfterShooting()
     {
-        _timer.Stop();
+        _tickEnabled.Reset();
         _stopwatch.Reset();
 
         if (_activePreset?.Final == null) return;
@@ -328,15 +375,17 @@ public class AmpelStateService : IAmpelStateService, IDisposable
 
             var (activeDisp, inactiveDisp) = GetActiveSideDisplays();
             activeDisp.TimeRemaining = _countdownDuration;
+            activeDisp.TimeRemainingMs = _countdownDuration * 1000;
             activeDisp.Color = AmpelColor.Green;
             activeDisp.End = endStr;
             inactiveDisp.TimeRemaining = 0;
+            inactiveDisp.TimeRemainingMs = 0;
             inactiveDisp.Color = AmpelColor.Red;
             inactiveDisp.End = endStr;
 
             _state.ManualColorOverride = false;
             _stopwatch.Restart();
-            _timer.Start();
+            _tickEnabled.Set();
 
             _logger.LogInformation("Final side switch to {Side}, round {Round}", _state.CurrentSide, _currentRound);
         }
@@ -359,15 +408,18 @@ public class AmpelStateService : IAmpelStateService, IDisposable
         return active;
     }
 
-    private void SetBothFinalDisplays(int time, AmpelColor color, string end)
+    private void SetBothFinalDisplays(int time, AmpelColor color, string end, int? preciseMs = null)
     {
         var sides = _activePreset?.Final?.Sides ?? ["1", "2"];
+        var ms = preciseMs ?? time * 1000;
         // Display1 is always left, Display2 is always right.
         _state.Display1.TimeRemaining = time;
+        _state.Display1.TimeRemainingMs = ms;
         _state.Display1.Group = sides[0];
         _state.Display1.Color = color;
         _state.Display1.End = end;
         _state.Display2.TimeRemaining = time;
+        _state.Display2.TimeRemainingMs = ms;
         _state.Display2.Group = sides.Length > 1 ? sides[1] : sides[0];
         _state.Display2.Color = color;
         _state.Display2.End = end;
@@ -412,7 +464,7 @@ public class AmpelStateService : IAmpelStateService, IDisposable
         _state.SetBothDisplays(_countdownDuration, group1Name, AmpelColor.Red, endStr);
 
         _stopwatch.Restart();
-        _timer.Start();
+        _tickEnabled.Set();
 
         _logger.LogInformation("Standard end started. Group 1: {Group}, Prep: {Prep}s, Shooting: {Shoot}s",
             group1Name, _config.PreparationTimeSeconds, _config.ShootingTimeSeconds);
@@ -436,7 +488,7 @@ public class AmpelStateService : IAmpelStateService, IDisposable
         SetBothFinalDisplays(_countdownDuration, AmpelColor.Red, endStr);
 
         _stopwatch.Restart();
-        _timer.Start();
+        _tickEnabled.Set();
 
         _logger.LogInformation("Final end started. Starting side: {Side}, Prep: {Prep}s",
             _state.CurrentSide, _config.PreparationTimeSeconds);
@@ -446,7 +498,7 @@ public class AmpelStateService : IAmpelStateService, IDisposable
     {
         lock (_lock)
         {
-            _timer.Stop();
+            _tickEnabled.Reset();
             _stopwatch.Stop();
             _state.Status = TimerStatus.Stopped;
             _state.Phase = MatchPhase.Idle;
@@ -470,7 +522,7 @@ public class AmpelStateService : IAmpelStateService, IDisposable
         {
             if (_state.Status != TimerStatus.Running) return;
 
-            _timer.Stop();
+            _tickEnabled.Reset();
             _stopwatch.Stop();
             _state.Status = TimerStatus.Paused;
             _logger.LogInformation("Timer paused at {Seconds}s", _state.Display1.TimeRemaining);
@@ -489,7 +541,7 @@ public class AmpelStateService : IAmpelStateService, IDisposable
             _countdownDuration = _state.Display1.TimeRemaining;
             _state.Status = TimerStatus.Running;
             _stopwatch.Restart();
-            _timer.Start();
+            _tickEnabled.Set();
 
             _logger.LogInformation("Timer resumed at {Seconds}s, Phase: {Phase}", _countdownDuration, _state.Phase);
         }
@@ -501,7 +553,7 @@ public class AmpelStateService : IAmpelStateService, IDisposable
     {
         lock (_lock)
         {
-            _timer.Stop();
+            _tickEnabled.Reset();
             _stopwatch.Reset();
             _state.Status = TimerStatus.Stopped;
             _state.Phase = MatchPhase.Idle;
@@ -556,7 +608,7 @@ public class AmpelStateService : IAmpelStateService, IDisposable
     {
         lock (_lock)
         {
-            _timer.Stop();
+            _tickEnabled.Reset();
             _stopwatch.Stop();
 
             _emergencyFrozenTime = _state.Display1.TimeRemaining;
@@ -730,6 +782,7 @@ public class AmpelStateService : IAmpelStateService, IDisposable
             if (preset.IsFinalMode)
             {
                 _state.Mode = OperatingMode.Final;
+                _state.TimeFormat = TimeDisplayFormat.Finals;
                 _config.SkipEnabled = preset.Final?.SkipEnabled ?? true;
                 var sides = preset.Final?.Sides ?? ["1", "2"];
                 _state.CurrentSide = "left";
@@ -738,6 +791,8 @@ public class AmpelStateService : IAmpelStateService, IDisposable
             else
             {
                 _state.Mode = OperatingMode.Standard;
+                if (_state.TimeFormat == TimeDisplayFormat.Finals)
+                    _state.TimeFormat = TimeDisplayFormat.Seconds;
             }
 
             // Reset displays
@@ -821,38 +876,49 @@ public class AmpelStateService : IAmpelStateService, IDisposable
         AmpelState snapshot;
         lock (_lock)
         {
-            RefreshDisplayTime();
             snapshot = _state.Clone();
+            RefreshSnapshotTime(snapshot);
         }
         StateChanged?.Invoke(this, snapshot);
     }
 
     /// <summary>
-    /// Recompute displayed time from the Stopwatch so that every state read
-    /// reflects the true elapsed time, independent of timer-tick jitter.
+    /// Recompute displayed time from the Stopwatch on a cloned snapshot.
+    /// This does NOT mutate _state — the canonical state is only updated
+    /// by the timer tick handler, preventing races between the 100 Hz
+    /// broadcast reads and the 50 ms tick transitions.
     /// Must be called while holding _lock.
     /// </summary>
-    private void RefreshDisplayTime()
+    private void RefreshSnapshotTime(AmpelState snapshot)
     {
-        if (_state.Status != TimerStatus.Running) return;
+        if (snapshot.Status != TimerStatus.Running) return;
 
-        var freshTime = Math.Max(0, _countdownDuration - (int)_stopwatch.Elapsed.TotalSeconds);
+        // Use integer ms arithmetic — avoids floating-point truncation artifacts
+        // that caused second-skipping with (int)TotalSeconds.
+        var ms = _stopwatch.ElapsedMilliseconds;
+        var elapsedSec = (int)(ms / 1000);
+        var freshTime = Math.Max(0, _countdownDuration - elapsedSec);
 
-        if (_state.Mode == OperatingMode.Standard)
+        if (snapshot.Mode == OperatingMode.Standard)
         {
-            _state.Display1.TimeRemaining = freshTime;
-            _state.Display2.TimeRemaining = freshTime;
+            snapshot.Display1.TimeRemaining = freshTime;
+            snapshot.Display2.TimeRemaining = freshTime;
         }
         else
         {
-            GetActiveDisplay().TimeRemaining = freshTime;
+            var freshMs = (int)Math.Max(0, (long)_countdownDuration * 1000 - ms);
+            var active = snapshot.CurrentSide == "left" ? snapshot.Display1 : snapshot.Display2;
+            active.TimeRemaining = freshTime;
+            active.TimeRemainingMs = freshMs;
         }
     }
 
     public void Dispose()
     {
-        _timer.Stop();
-        _timer.Dispose();
+        _disposed = true;
+        _tickEnabled.Set(); // unblock the Wait() so the thread can exit
+        _tickThread.Join(500);
+        _tickEnabled.Dispose();
         _stopwatch.Stop();
     }
 }

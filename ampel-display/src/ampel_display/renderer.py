@@ -60,6 +60,70 @@ class AmpelRenderer:
 
         self._copy_image_to_canvas(frame)
 
+    def render_split(self, left: DisplayState, right: DisplayState) -> None:
+        """Render split-screen finals: left half = display1, right half = display2."""
+        renderer = self._pil_renderer
+        frame = renderer.create_frame()
+        w, h = self.width, self.height
+        half_w = w // 2
+        pad = 2  # inner padding from border
+
+        # Left side: border + timer in the left half
+        color_l = _SIGNAL_COLORS.get(left.color, (255, 255, 255))
+        self._draw_half_border(frame, 0, 0, half_w, h, color_l)
+        left_region = (pad, pad, half_w - pad * 2 - 1, h - pad * 2)
+        self._draw_split_timer(frame, renderer, left_region, left, color_l)
+
+        # Right side: border + timer in the right half
+        color_r = _SIGNAL_COLORS.get(right.color, (255, 255, 255))
+        self._draw_half_border(frame, half_w, 0, half_w, h, color_r)
+        right_x = half_w + pad + 1
+        right_region = (right_x, pad, half_w - pad * 2 - 1, h - pad * 2)
+        self._draw_split_timer(frame, renderer, right_region, right, color_r)
+
+        # Small abbreviated side labels in bottom corners
+        label_color = (60, 60, 60)  # dim so it doesn't distract
+        if left.group:
+            label = left.group[0]  # "L" or "R" or "1" etc.
+            label_h = renderer.font_height("small")
+            renderer.draw_text(frame, "small", pad + 1, h - pad - label_h, label_color, label)
+        if right.group:
+            label = right.group[0]
+            label_w = renderer.measure_text(label, "small")
+            label_h = renderer.font_height("small")
+            renderer.draw_text(frame, "small", w - pad - 1 - label_w, h - pad - label_h, label_color, label)
+
+        # Center divider
+        for py in range(h):
+            frame.putpixel((half_w, py), (40, 40, 40))
+
+        self._copy_image_to_canvas(frame)
+
+    def _draw_split_timer(self, frame: Image.Image, renderer, region: tuple,
+                          state: DisplayState, color: tuple) -> None:
+        """Draw timer sized for a split-mode half-panel."""
+        x, y, w, h = region
+        if state.format == "f":
+            cs = max(0, state.time)
+            secs = cs // 100
+            frac = cs % 100
+            text = f"{secs:02d}.{frac:02d}"
+        else:
+            text = TimerDisplay.format_time(state.time, state.format)
+
+        # Choose the largest font that fits the half-panel width
+        font = "medium"
+        for candidate in ("large_colon", "finals_frac", "medium"):
+            if renderer.measure_text(text, candidate) <= w:
+                font = candidate
+                break
+
+        text_w = renderer.measure_text(text, font)
+        text_h = renderer.font_height(font)
+        draw_x = x + max(0, (w - text_w) // 2)
+        draw_y = y + max(0, (h - text_h) // 2)
+        renderer.draw_text(frame, font, draw_x, draw_y, color, text)
+
     def render_standby(self) -> None:
         """Render the standby screen (no RS485 data)."""
         renderer = self._pil_renderer
@@ -82,11 +146,16 @@ class AmpelRenderer:
         # 1px border in ampel color
         self._draw_border(frame, w, h, color)
 
-        region = self.layout.resolve(Layout.ACTIVE["timer"], w, h)
-        self.timer_display.draw(frame, renderer, region, state.time, color, is_ttf=True, fmt=state.format)
+        if state.format == "f":
+            # Finals mode: use full-width layout, no group label
+            region = self.layout.resolve(Layout.ACTIVE_FINALS["timer"], w, h)
+            self.timer_display.draw(frame, renderer, region, state.time, color, is_ttf=True, fmt=state.format)
+        else:
+            region = self.layout.resolve(Layout.ACTIVE["timer"], w, h)
+            self.timer_display.draw(frame, renderer, region, state.time, color, is_ttf=True, fmt=state.format)
 
-        region = self.layout.resolve(Layout.ACTIVE["group"], w, h)
-        self.group_display.draw(frame, renderer, region, state.group, color, is_ttf=True)
+            region = self.layout.resolve(Layout.ACTIVE["group"], w, h)
+            self.group_display.draw(frame, renderer, region, state.group, color, is_ttf=True)
 
     def _render_idle(self, frame: Image.Image, renderer, state: DisplayState) -> None:
         idle = state.idle
@@ -113,6 +182,16 @@ class AmpelRenderer:
         for py in range(h):
             frame.putpixel((0, py), color)
             frame.putpixel((w - 1, py), color)
+
+    @staticmethod
+    def _draw_half_border(frame: Image.Image, x: int, y: int, w: int, h: int, color: tuple) -> None:
+        """Draw a 1px border around a rectangular sub-region."""
+        for px in range(x, x + w):
+            frame.putpixel((px, y), color)
+            frame.putpixel((px, y + h - 1), color)
+        for py in range(y, y + h):
+            frame.putpixel((x, py), color)
+            frame.putpixel((x + w - 1, py), color)
 
     def _remap_quadrants(self, image: Image.Image) -> Image.Image:
         """Remap quadrants to compensate for physical panel wiring.

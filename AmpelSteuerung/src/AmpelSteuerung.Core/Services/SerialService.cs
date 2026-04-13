@@ -1,4 +1,5 @@
 using System.IO.Ports;
+using System.Threading;
 using AmpelSteuerung.Core.Configuration;
 using AmpelSteuerung.Core.Models;
 using Microsoft.Extensions.Logging;
@@ -10,10 +11,11 @@ public class SerialService : ISerialService
     private readonly IAmpelStateService _stateService;
     private readonly ILogger<SerialService> _logger;
     private readonly string _clockFormat;
+    private readonly AmpelConfiguration _config;
     private SerialPort? _serialPort;
-    private System.Timers.Timer? _broadcastTimer;
+    private Thread? _broadcastThread;
+    private volatile bool _broadcastRunning;
     private readonly object _lock = new();
-    private bool _broadcasting;
 
     public bool IsConnected
     {
@@ -40,6 +42,7 @@ public class SerialService : ISerialService
         _stateService = stateService;
         _logger = logger;
         _clockFormat = config.Idle.ClockFormat;
+        _config = config;
     }
 
     public string[] GetAvailablePorts()
@@ -47,7 +50,7 @@ public class SerialService : ISerialService
         return SerialPort.GetPortNames();
     }
 
-    public void Connect(string portName, int baudRate = 9600)
+    public void Connect(string portName, int baudRate = 115200)
     {
         lock (_lock)
         {
@@ -103,30 +106,40 @@ public class SerialService : ISerialService
     {
         lock (_lock)
         {
-            if (_broadcasting) return;
+            if (_broadcastRunning) return;
 
-            _broadcastTimer = new System.Timers.Timer(100); // 10x per second
-            _broadcastTimer.Elapsed += OnBroadcastTick;
-            _broadcastTimer.AutoReset = true;
-            _broadcastTimer.Start();
-            _broadcasting = true;
-            _logger.LogInformation("RS485 broadcast started (10 Hz)");
+            _broadcastRunning = true;
+            _broadcastThread = new Thread(BroadcastLoop)
+            {
+                IsBackground = true,
+                Name = "RS485Broadcast",
+                Priority = ThreadPriority.AboveNormal
+            };
+            _broadcastThread.Start();
+            _logger.LogInformation("RS485 broadcast started (50 Hz, dedicated thread)");
         }
     }
 
     public void StopBroadcast()
     {
-        lock (_lock)
+        _broadcastRunning = false;
+        _broadcastThread?.Join(500);
+        _broadcastThread = null;
+        _logger.LogInformation("RS485 broadcast stopped");
+    }
+
+    private int _lastLoggedTime = -1;
+
+    private void BroadcastLoop()
+    {
+        while (_broadcastRunning)
         {
-            _broadcastTimer?.Stop();
-            _broadcastTimer?.Dispose();
-            _broadcastTimer = null;
-            _broadcasting = false;
-            _logger.LogInformation("RS485 broadcast stopped");
+            BroadcastOnce();
+            Thread.Sleep(20); // ~50 Hz
         }
     }
 
-    private void OnBroadcastTick(object? sender, System.Timers.ElapsedEventArgs e)
+    private void BroadcastOnce()
     {
         lock (_lock)
         {
@@ -149,7 +162,18 @@ public class SerialService : ISerialService
                     // Normal mode: apply display swap for RS485 output
                     var d1 = _stateService.Display1Side == "left" ? state.Display1 : state.Display2;
                     var d2 = _stateService.Display1Side == "left" ? state.Display2 : state.Display1;
-                    json = $"{{\"d1\":{d1.ToSerialJson(state.TimeFormat)},\"d2\":{d2.ToSerialJson(state.TimeFormat)}}}\n";
+                    var split = _config.FinalsSingleDisplay && state.Mode == OperatingMode.Final
+                        ? ",\"split\":true"
+                        : "";
+                    json = $"{{\"d1\":{d1.ToSerialJson(state.TimeFormat)},\"d2\":{d2.ToSerialJson(state.TimeFormat)}{split}}}\n";
+
+                    // Debug: log time value transitions
+                    var t = d1.TimeRemaining;
+                    if (t != _lastLoggedTime && state.Status == TimerStatus.Running)
+                    {
+                        _logger.LogInformation("[TX] t={Time} phase={Phase} fmt={Fmt}", t, state.Phase, state.TimeFormat);
+                        _lastLoggedTime = t;
+                    }
                 }
 
                 _serialPort.Write(json);

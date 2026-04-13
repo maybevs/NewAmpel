@@ -3,6 +3,7 @@
 import signal
 import sys
 import time
+import os
 
 from ampel_display.config import parse_args
 from ampel_display.protocol import DisplayState, ConfigMessage
@@ -14,6 +15,9 @@ from ampel_display.serial_receiver import SerialReceiver
 
 # Timeout threshold: show standby after this many seconds without data
 _TIMEOUT_SECONDS = 3.0
+
+# Debug: set AMPEL_DEBUG=1 to enable time-value transition logging
+_DEBUG = os.environ.get("AMPEL_DEBUG", "") == "1"
 
 
 def main() -> None:
@@ -29,11 +33,32 @@ def main() -> None:
 
     # Current display state (updated from serial thread)
     current_state = DisplayState()
+    split_state: tuple[DisplayState, DisplayState] | None = None
+    _dbg_last_t = -1
+    _dbg_last_c = ""
+    _dbg_rx_count = 0
+    _dbg_json_err = 0
 
     def on_display_message(msg: dict) -> None:
-        nonlocal current_state
-        if display_key in msg:
-            current_state = DisplayState.from_dict(msg[display_key])
+        nonlocal current_state, split_state, _dbg_last_t, _dbg_last_c, _dbg_rx_count
+        _dbg_rx_count += 1
+        if msg.get("split"):
+            # Single-display finals: both sides on one panel
+            d1 = DisplayState.from_dict(msg["d1"]) if "d1" in msg else DisplayState()
+            d2 = DisplayState.from_dict(msg["d2"]) if "d2" in msg else DisplayState()
+            split_state = (d1, d2)
+        else:
+            split_state = None
+            if display_key in msg:
+                current_state = DisplayState.from_dict(msg[display_key])
+
+        if _DEBUG:
+            t = current_state.time
+            c = current_state.color
+            if t != _dbg_last_t or c != _dbg_last_c:
+                print(f"[RX] t={t} c={c} f={current_state.format} rx#{_dbg_rx_count} @{time.time():.3f}")
+                _dbg_last_t = t
+                _dbg_last_c = c
 
     def on_config_message(cfg: dict) -> None:
         config = ConfigMessage.from_dict(cfg)
@@ -63,13 +88,21 @@ def main() -> None:
     )
 
     # Render loop (~30 FPS for smooth scrolling)
+    _dbg_render_t = -1
     try:
         while True:
             elapsed = time.time() - receiver.last_receive_time
             if elapsed > _TIMEOUT_SECONDS:
                 renderer.render_standby()
+            elif split_state is not None:
+                renderer.render_split(split_state[0], split_state[1])
             else:
                 renderer.render(current_state)
+                if _DEBUG:
+                    t = current_state.time
+                    if t != _dbg_render_t:
+                        print(f"[RENDER] t={t} c={current_state.color} @{time.time():.3f}")
+                        _dbg_render_t = t
             time.sleep(1 / 30)
     except KeyboardInterrupt:
         receiver.stop()

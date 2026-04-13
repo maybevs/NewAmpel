@@ -8,7 +8,7 @@ public interface ISerialService : IDisposable
     event EventHandler<bool>? ConnectionChanged;
 
     string[] GetAvailablePorts();
-    void Connect(string portName, int baudRate = 9600);
+    void Connect(string portName, int baudRate = 115200);
     void Disconnect();
     void StartBroadcast();
     void StopBroadcast();

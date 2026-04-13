@@ -24,6 +24,11 @@ class Layout:
         "group": LayoutRegion(0.77, 0.02, 0.21, 0.96),
     }
 
+    # Finals mode: timer uses full width, no group label
+    ACTIVE_FINALS = {
+        "timer": LayoutRegion(0.02, 0.02, 0.96, 0.96),
+    }
+
     # Idle modes
     IDLE_CLOCK = {
         "clock": LayoutRegion(0.0, 0.1, 1.0, 0.8),
@@ -42,6 +47,9 @@ class Layout:
     STANDBY = {
         "message": LayoutRegion(0.0, 0.1, 1.0, 0.8),
     }
+
+    # Split mode (single display, two shooters side by side)
+    # Regions computed directly in renderer for precise pixel control.
 
     @staticmethod
     def resolve(region: LayoutRegion, canvas_width: int, canvas_height: int) -> tuple[int, int, int, int]:

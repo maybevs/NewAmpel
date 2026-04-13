@@ -43,7 +43,8 @@ public enum OperatingMode
 public enum TimeDisplayFormat
 {
     Minutes,    // M:SS or MM:SS
-    Seconds     // Raw seconds (e.g. 120) — default
+    Seconds,    // Raw seconds (e.g. 120) — default
+    Finals      // SS:FF (seconds:centiseconds) — finals mode
 }
 
 /// <summary>
@@ -63,6 +64,7 @@ public enum IdleDisplayMode
 public class DisplayState
 {
     public int TimeRemaining { get; set; }
+    public int TimeRemainingMs { get; set; }
     public string Group { get; set; } = "AB";
     public AmpelColor Color { get; set; } = AmpelColor.Red;
     public string End { get; set; } = "1/10";
@@ -70,6 +72,7 @@ public class DisplayState
     public DisplayState Clone() => new()
     {
         TimeRemaining = TimeRemaining,
+        TimeRemainingMs = TimeRemainingMs,
         Group = Group,
         Color = Color,
         End = End
@@ -84,8 +87,17 @@ public class DisplayState
             AmpelColor.Yellow => "Y",
             _ => "R"
         };
-        var f = format == TimeDisplayFormat.Seconds ? "s" : "m";
-        return $"{{\"t\":{TimeRemaining},\"g\":\"{Group}\",\"c\":\"{c}\",\"e\":\"{End}\",\"f\":\"{f}\"}}";
+        var f = format switch
+        {
+            TimeDisplayFormat.Seconds => "s",
+            TimeDisplayFormat.Finals => "f",
+            _ => "m"
+        };
+        // For finals format, send centiseconds; otherwise send whole seconds
+        var t = format == TimeDisplayFormat.Finals
+            ? TimeRemainingMs / 10
+            : TimeRemaining;
+        return $"{{\"t\":{t},\"g\":\"{Group}\",\"c\":\"{c}\",\"e\":\"{End}\",\"f\":\"{f}\"}}";
     }
 }
 

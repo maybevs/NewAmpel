@@ -20,6 +20,8 @@ class SerialReceiver:
         self._thread: threading.Thread | None = None
         self._callbacks: dict[str, list[Callable]] = {"display": [], "config": []}
         self.last_receive_time: float = time.time()
+        self.json_error_count: int = 0
+        self.rx_count: int = 0
 
     def start(self) -> None:
         """Open serial port and start the reader thread."""
@@ -59,8 +61,10 @@ class SerialReceiver:
         try:
             msg = json.loads(line)
         except json.JSONDecodeError:
+            self.json_error_count += 1
             return
 
+        self.rx_count += 1
         self.last_receive_time = time.time()
 
         if "cfg" in msg:

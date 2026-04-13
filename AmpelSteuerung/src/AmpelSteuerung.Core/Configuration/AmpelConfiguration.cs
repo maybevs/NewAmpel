@@ -19,12 +19,13 @@ public class AmpelConfiguration
 {
     // Serial / RS485
     public string ComPort { get; set; } = "COM3";
-    public int BaudRate { get; set; } = 9600;
-    public int BroadcastIntervalMs { get; set; } = 100;
+    public int BaudRate { get; set; } = 115200;
+    public int BroadcastIntervalMs { get; set; } = 10;
 
     // Display mapping
     public string Display1Side { get; set; } = "left";   // "left" or "right"
     public string Display2Side { get; set; } = "right";
+    public bool FinalsSingleDisplay { get; set; } = false;
 
     // Sound
     public bool SoundEnabled { get; set; } = true;

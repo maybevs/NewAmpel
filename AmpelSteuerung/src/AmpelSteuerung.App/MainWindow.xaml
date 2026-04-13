@@ -546,6 +546,11 @@
                     <StackPanel>
                         <TextBlock Text="FINAL-MODUS: SEITE" FontSize="11" FontWeight="SemiBold"
                                    Foreground="{StaticResource AccentOrangeBrush}" Margin="0,0,0,12"/>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                            <CheckBox IsChecked="{Binding FinalsSingleDisplay}" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                            <TextBlock Text="Einzel-Display (Split-Ansicht)" FontSize="12" VerticalAlignment="Center"
+                                       Foreground="{StaticResource TextSecondaryBrush}"/>
+                        </StackPanel>
                         <WrapPanel HorizontalAlignment="Center">
                             <Button Command="{Binding SetStartSideLeftCommand}" Width="180">
                                 <Button.Content>

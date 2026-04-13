@@ -41,6 +41,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
     // Mode
     [ObservableProperty] private bool _isFinalMode;
+    [ObservableProperty] private bool _finalsSingleDisplay;
     [ObservableProperty] private string _currentSide = "left";
     [ObservableProperty] private bool _isStartSideLeft = true;
     [ObservableProperty] private bool _isStartSideRight;
@@ -128,6 +129,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         _soundEnabled = config.SoundEnabled;
         _soundService.IsEnabled = config.SoundEnabled;
         _soundService.Volume = config.SoundVolume;
+        _finalsSingleDisplay = config.FinalsSingleDisplay;
 
         var swapped = config.Display1Side == "right";
         _display1SideLabel = swapped ? "Display 2" : "Display 1";
@@ -166,9 +168,18 @@ public partial class MainViewModel : ObservableObject, IDisposable
     {
         if (TimerStatus != Core.Models.TimerStatus.Running) return;
         var state = _stateService.CurrentState;
-        TimeDisplay = FormatTime(state.Display1.TimeRemaining);
-        Display1Time = FormatTime(state.Display1.TimeRemaining);
-        Display2Time = FormatTime(state.Display2.TimeRemaining);
+        if (state.TimeFormat == TimeDisplayFormat.Finals)
+        {
+            TimeDisplay = FormatTimeMs(state.Display1.TimeRemainingMs);
+            Display1Time = FormatTimeMs(state.Display1.TimeRemainingMs);
+            Display2Time = FormatTimeMs(state.Display2.TimeRemainingMs);
+        }
+        else
+        {
+            TimeDisplay = FormatTime(state.Display1.TimeRemaining);
+            Display1Time = FormatTime(state.Display1.TimeRemaining);
+            Display2Time = FormatTime(state.Display2.TimeRemaining);
+        }
     }
 
     private void OnStateChanged(object? sender, AmpelState state)
@@ -198,17 +209,23 @@ public partial class MainViewModel : ObservableObject, IDisposable
         CurrentEnd = state.End;
 
         // Display 1
-        Display1Time = FormatTime(state.Display1.TimeRemaining);
+        Display1Time = state.TimeFormat == TimeDisplayFormat.Finals
+            ? FormatTimeMs(state.Display1.TimeRemainingMs)
+            : FormatTime(state.Display1.TimeRemaining);
         Display1Group = state.Display1.Group;
         Display1ColorBrush = ColorToHex(state.Display1.Color);
 
         // Display 2
-        Display2Time = FormatTime(state.Display2.TimeRemaining);
+        Display2Time = state.TimeFormat == TimeDisplayFormat.Finals
+            ? FormatTimeMs(state.Display2.TimeRemainingMs)
+            : FormatTime(state.Display2.TimeRemaining);
         Display2Group = state.Display2.Group;
         Display2ColorBrush = ColorToHex(state.Display2.Color);
 
         // Main display (standard = display1, final = active side)
-        TimeDisplay = FormatTime(state.Display1.TimeRemaining);
+        TimeDisplay = state.TimeFormat == TimeDisplayFormat.Finals
+            ? FormatTimeMs(state.Display1.TimeRemainingMs)
+            : FormatTime(state.Display1.TimeRemaining);
         CurrentGroup = state.Display1.Group;
         CurrentColor = state.Display1.Color;
         ColorBrush = Display1ColorBrush;
@@ -269,6 +286,14 @@ public partial class MainViewModel : ObservableObject, IDisposable
         if (IsTimeFormatSeconds)
             return seconds.ToString();
         return $"{seconds / 60:D2}:{seconds % 60:D2}";
+    }
+
+    private static string FormatTimeMs(int totalMs)
+    {
+        var totalCs = totalMs / 10;
+        var secs = totalCs / 100;
+        var cs = totalCs % 100;
+        return $"{secs:D2}:{cs:D2}";
     }
 
     private static string ColorToHex(AmpelColor c) => c switch
@@ -498,6 +523,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
     partial void OnPreparationTimeChanged(int value) => _stateService.SetPreparationTime(value);
     partial void OnTotalEndsChanged(int value) => _stateService.SetTotalEnds(value);
     partial void OnSoundEnabledChanged(bool value) => _soundService.IsEnabled = value;
+    partial void OnFinalsSingleDisplayChanged(bool value) => _config.FinalsSingleDisplay = value;
     partial void OnIdleMessageChanged(string value) => _stateService.SetIdleMessage(value);
 
     public void SaveConfiguration()
@@ -509,6 +535,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         _config.SoundEnabled = SoundEnabled;
         _config.ComPort = SelectedComPort;
         _config.BeamerMonitor = SelectedScreenIndex;
+        _config.FinalsSingleDisplay = FinalsSingleDisplay;
     }
 
     public void Dispose()
