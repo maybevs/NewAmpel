@@ -17,8 +17,8 @@ def parse_args(argv=None) -> argparse.Namespace:
         "--panel-type",
         type=str,
         default="p4",
-        choices=["p4", "p8"],
-        help="Panel type: p4 (128x64) or p8 (64x32)",
+        choices=["p4", "p5", "p8"],
+        help="Panel type: p4 (128x64), p5 (128x64) or p8 (64x32)",
     )
     parser.add_argument(
         "--serial-port",

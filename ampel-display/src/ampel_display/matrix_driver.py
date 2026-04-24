@@ -10,12 +10,20 @@ class MatrixDriver:
                  chain_length: int = 4):
         options = RGBMatrixOptions()
         options.hardware_mapping = "adafruit-hat"
-        options.gpio_slowdown = 4
 
         if panel_type == "p4":
+            options.gpio_slowdown = 4
             options.rows = 32
             options.cols = 64
+        elif panel_type == "p5":
+            options.gpio_slowdown = 5
+            options.rows = 32
+            options.cols = 64
+            options.multiplexing = 1  # 1/8 scan panels
+            options.pwm_lsb_nanoseconds = 300
+            options.pwm_bits = 7      # fewer bits = faster refresh, less flicker
         elif panel_type == "p8":
+            options.gpio_slowdown = 4
             options.rows = 16
             options.cols = 32
         else:

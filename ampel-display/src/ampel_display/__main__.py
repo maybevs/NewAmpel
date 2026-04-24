@@ -28,7 +28,7 @@ def main() -> None:
     matrix_driver = MatrixDriver(args.panel_type, args.brightness, args.chain_length)
     font_manager = FontManager(args.font_mode, matrix_driver.width, matrix_driver.height)
     layout = Layout()
-    renderer = AmpelRenderer(matrix_driver.matrix, layout, font_manager)
+    renderer = AmpelRenderer(matrix_driver.matrix, layout, font_manager, args.panel_type)
     receiver = SerialReceiver(args.serial_port, args.baudrate, args.rs485_mode)
 
     # Current display state (updated from serial thread)

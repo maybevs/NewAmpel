@@ -27,10 +27,12 @@ _STANDBY_COLOR = (100, 100, 100)
 class AmpelRenderer:
     """Renders the current DisplayState onto the LED matrix."""
 
-    def __init__(self, matrix, layout: Layout, font_manager: FontManager):
+    def __init__(self, matrix, layout: Layout, font_manager: FontManager,
+                 panel_type: str = "p4"):
         self.matrix = matrix
         self.layout = layout
         self.font_manager = font_manager
+        self.panel_type = panel_type
         self.canvas = matrix.CreateFrameCanvas()
         self.width: int = self.canvas.width
         self.height: int = self.canvas.height
@@ -196,14 +198,9 @@ class AmpelRenderer:
     def _remap_quadrants(self, image: Image.Image) -> Image.Image:
         """Remap quadrants to compensate for physical panel wiring.
 
-        With U-mapper, the library maps virtual quadrants to physical panels as:
-          V:TL → Phys BL (upside down)
-          V:TR → Phys TL (right-side up)
-          V:BL → Phys BR (right-side up)
-          V:BR → Phys TR (upside down)
-
-        This pre-shuffle places content into the correct V: slot so it ends
-        up at the intended physical panel with correct orientation.
+        The U-mapper mapping depends on how the panels are chained.
+        We pre-shuffle content so it ends up at the intended physical
+        panel with correct orientation.
         """
         w, h = image.size
         qw, qh = w // 2, h // 2
@@ -214,10 +211,24 @@ class AmpelRenderer:
         br = image.crop((qw, qh, w, h))
 
         remapped = Image.new("RGB", (w, h))
-        remapped.paste(bl.rotate(180), (0, 0))      # V:TL → Phys BL↕ → put BL rotated
-        remapped.paste(tl, (qw, 0))                  # V:TR → Phys TL✓ → put TL as-is
-        remapped.paste(br, (0, qh))                   # V:BL → Phys BR✓ → put BR as-is
-        remapped.paste(tr.rotate(180), (qw, qh))     # V:BR → Phys TR↕ → put TR rotated
+
+        if self.panel_type == "p5":
+            # P5 (1/8 scan, mux=1) U-mapper mapping:
+            #   V:TL → Phys BR ↕   V:TR → Phys BL ↕
+            #   V:BL → Phys TR ↕   V:BR → Phys TL ↕
+            remapped.paste(br.rotate(180), (0, 0))    # V:TL ← BR↕ → Phys BR right-side-up
+            remapped.paste(bl.rotate(180), (qw, 0))   # V:TR ← BL↕ → Phys BL right-side-up
+            remapped.paste(tr.rotate(180), (0, qh))   # V:BL ← TR↕ → Phys TR right-side-up
+            remapped.paste(tl.rotate(180), (qw, qh))  # V:BR ← TL↕ → Phys TL right-side-up
+        else:
+            # P4/P8 wiring: HAT→TR→BR(flipped)→BL(flipped)→TL
+            #   V:TL → Phys BL ↕   V:TR → Phys TL ✓
+            #   V:BL → Phys BR ✓   V:BR → Phys TR ↕
+            remapped.paste(bl.rotate(180), (0, 0))    # V:TL ← BL↕
+            remapped.paste(tl, (qw, 0))               # V:TR ← TL as-is
+            remapped.paste(br, (0, qh))               # V:BL ← BR as-is
+            remapped.paste(tr.rotate(180), (qw, qh))  # V:BR ← TR↕
+
         return remapped
 
     def _copy_image_to_canvas(self, image: Image.Image) -> None:

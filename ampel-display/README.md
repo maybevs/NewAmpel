@@ -11,6 +11,7 @@ und zeigt Timer, Gruppenanzeige, Ampelfarbe und Ende/Passe auf der LED-Matrix an
 | Typ | Auflösung | Panels | Grid |
 |-----|-----------|--------|------|
 | **P4 Indoor** | 128×64 px | 4× 64×32 | 2×2 |
+| **P5 Indoor/Outdoor** | 128×64 px | 4× 64×32 | 2×2 |
 | **P8 Outdoor** | 64×32 px | 4× 32×16 | 2×2 |
 
 ## Voraussetzungen
@@ -104,7 +105,7 @@ Wenn das Display "---" zeigt, läuft die Software korrekt im Standby-Modus
 | # | Parameter | Default | Beschreibung |
 |---|-----------|---------|--------------|
 | 1 | display-id | `1` | 1 oder 2 — filtert aus der Broadcast-Nachricht |
-| 2 | panel-type | `p4` | `p4` (64×32 Panels) oder `p8` (32×16 Panels) |
+| 2 | panel-type | `p4` | `p4` (64×32 Panels), `p5` (64×32 Panels) oder `p8` (32×16 Panels) |
 | 3 | font-mode | `bdf` | `bdf` (Pixel-Fonts) oder `ttf` (Pillow) |
 | 4 | brightness | `80` | Helligkeit 0–100 |
 | 5 | rs485-mode | `waveshare` | `waveshare` (auto DE/RE) oder `max485` (GPIO4) |
@@ -118,6 +119,9 @@ Wenn das Display "---" zeigt, läuft die Software korrekt im Standby-Modus
 
 # Final: Display 2, P8 Outdoor, 4 Panels, Waveshare HAT
 ./run.sh 2 p8 bdf 80 waveshare 4
+
+# P5 Outdoor: Display 1, 4 Panels, USB-RS485
+./run.sh 1 p5 bdf 80 waveshare 4
 ```
 
 ---
