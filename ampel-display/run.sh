@@ -16,10 +16,12 @@ cd "$SCRIPT_DIR"
 # Auto-detect serial port: prefer USB adapter (immune to matrix DMA),
 # fall back to GPIO UART only if no USB adapter found.
 if [ "$SERIAL_PORT" = "auto" ]; then
-    if [ -e /dev/ttyUSB0 ]; then
-        SERIAL_PORT=/dev/ttyUSB0
-    elif [ -e /dev/ttyACM0 ]; then
-        SERIAL_PORT=/dev/ttyACM0
+    USB_PORT=$(ls /dev/ttyUSB* 2>/dev/null | head -1)
+    ACM_PORT=$(ls /dev/ttyACM* 2>/dev/null | head -1)
+    if [ -n "$USB_PORT" ]; then
+        SERIAL_PORT=$USB_PORT
+    elif [ -n "$ACM_PORT" ]; then
+        SERIAL_PORT=$ACM_PORT
     else
         SERIAL_PORT=/dev/serial0
         echo "WARNING: No USB-to-RS485 adapter found, using GPIO UART ($SERIAL_PORT)."

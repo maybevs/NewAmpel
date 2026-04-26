@@ -29,7 +29,7 @@ def parse_args(argv=None) -> argparse.Namespace:
     parser.add_argument(
         "--baudrate",
         type=int,
-        default=9600,
+        default=115200,
         help="Serial baud rate",
     )
     parser.add_argument(

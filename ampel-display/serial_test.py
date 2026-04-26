@@ -5,8 +5,9 @@ import sys
 import time
 
 port = sys.argv[1] if len(sys.argv) > 1 else "/dev/ttyUSB0"
-ser = serial.Serial(port, 9600, timeout=1)
-print(f"Listening on {port} at 9600 baud...")
+baud = int(sys.argv[2]) if len(sys.argv) > 2 else 115200
+ser = serial.Serial(port, baud, timeout=1)
+print(f"Listening on {port} at {baud} baud...")
 print("Make sure the C# app is broadcasting. Press Ctrl+C to stop.\n")
 
 good = 0
