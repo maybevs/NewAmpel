@@ -26,6 +26,7 @@ Das System zeigt Schießzeit, Schützengruppe und Ampelfarbe auf zwei synchronis
 - Mixed Team Finale — 2 Pfeile pro Team, 20s
 - Team Finale — 3 Pfeile pro Team, 30s
 - Eigene Presets über einfache YAML-Dateien
+- Integrierter Preset-Editor zum Erstellen und Bearbeiten
 
 **Signale**
 - Automatische Signaltöne nach World Archery Reglement (2× Vorbereitung, 1× Start, 3× Ende)
@@ -33,10 +34,17 @@ Das System zeigt Schießzeit, Schützengruppe und Ampelfarbe auf zwei synchronis
 - "Weiter"-Taste zum Überspringen der Restzeit
 - Konfigurierbarer Passenablauf mit automatischem Gruppenwechsel
 
+**Idle-Anzeige**
+- Uhrzeit-Anzeige mit blinkender Doppelpunkt-Trennung
+- Lauftext-Nachrichten (scrollend oder statisch)
+- Kombinierter Modus: Uhr oben, Text unten
+- Steuerbar über REST-API und Tablet-UI
+
 **Hardware**
 - Zwei synchronisierte LED-Displays über RS485-Bus (50–100m Kabelstrecke)
 - Unabhängige Anzeigen im Finalmodus (Links/Rechts)
-- P4/P8 HUB75 LED-Panels, angesteuert über Raspberry Pi 4
+- Split-Modus: Beide Seiten auf einem einzigen Display (Finals mit einem Display)
+- P4/P5/P8 HUB75 LED-Panels, angesteuert über Raspberry Pi 4
 - Zuverlässige Kabelverbindung statt fehleranfälligem WLAN
 
 ---
@@ -61,20 +69,27 @@ Die Steuer-App sendet den aktuellen Zustand 10× pro Sekunde als JSON über RS48
 
 ### Voraussetzungen
 
-- Windows 10/11 mit [.NET 8 Runtime](https://dotnet.microsoft.com/download/dotnet/8.0)
+- Windows 10/11
 - USB-zu-RS485-Adapter
 - 1–2× Raspberry Pi 4 mit LED-Panels (siehe [Hardware-Dokumentation](docs/hardware.md))
 
-### Installation
+### Installation (Beta-Release)
+
+Die einfachste Methode: Das fertige Release (`AmpelSteuerung.App.exe`) herunterladen und starten — keine .NET-Installation nötig (self-contained).
+
+### Aus Quellcode bauen
 
 ```bash
 # Repository klonen
-git clone https://github.com/maybevs/bogensport-ampel.git
-cd bogensport-ampel
+git clone https://github.com/maybevs/NewAmpel.git
+cd NewAmpel/AmpelSteuerung
 
 # Bauen und starten
 dotnet build
 dotnet run --project src/AmpelSteuerung.App
+
+# Release-Build (self-contained EXE)
+dotnet publish src/AmpelSteuerung.App/AmpelSteuerung.App.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true
 ```
 
 ### Erster Test (ohne Hardware)
@@ -101,7 +116,7 @@ Die App startet auch ohne angeschlossenen RS485-Adapter. Der Timer, die UI und d
 
 | Komponente | Preis (ca.) |
 |---|---|
-| 2× Anzeigeeinheit (je 4× P8-Panels, Pi 4, Netzteil, Gehäuse) | 430–580€ |
+| 2× Anzeigeeinheit (je 4× P5/P8-Panels, Pi 4, Netzteil, Gehäuse) | 430–580€ |
 | Steuereinheit (USB-RS485-Adapter) | 10–15€ |
 | Verkabelung (150m RS485-Kabel, XLR-Stecker) | 170–230€ |
 | **Gesamt** | **610–825€** |
@@ -183,50 +198,84 @@ Die eingebaute REST-API läuft auf `http://0.0.0.0:5000` und ermöglicht die Ste
 | `POST` | `/api/pause` | Timer pausieren |
 | `POST` | `/api/resume` | Fortsetzen (auch nach Notfall) |
 | `POST` | `/api/reset` | Timer zurücksetzen |
-| `POST` | `/api/group/{group}` | Gruppe setzen (AB, CD) |
+| `POST` | `/api/skip` | Restzeit überspringen |
+| `POST` | `/api/group/{group}` | Gruppe setzen (AB, CD, Links, Rechts) |
+| `POST` | `/api/color/{color}` | Farbe setzen (red, green, yellow) |
 | `POST` | `/api/duration/{seconds}` | Timer-Dauer setzen |
+| `POST` | `/api/preparation/{seconds}` | Vorbereitungszeit setzen |
 | `POST` | `/api/next-end` | Nächste Passe |
-| `POST` | `/api/switch` | Seitenwechsel (Finalmodus) |
+| `POST` | `/api/prev-end` | Vorherige Passe |
+| `POST` | `/api/start-side/{side}` | Startseite setzen (Finalmodus) |
+| `POST` | `/api/switch-side` | Seitenwechsel (Finalmodus) |
 | `POST` | `/api/emergency-stop` | Notfall: 5× Signal + Stopp |
+| `POST` | `/api/time-format/{format}` | Zeitformat (minutes/seconds/finals) |
+| `GET` | `/api/idle` | Idle-Konfiguration |
+| `POST` | `/api/idle/mode/{mode}` | Idle-Modus (clock/message/both/off) |
+| `POST` | `/api/idle/message` | Idle-Nachricht setzen |
+| `DELETE` | `/api/idle/message` | Idle-Nachricht löschen |
+| `GET` | `/api/presets` | Verfügbare Presets |
+| `POST` | `/api/preset/{name}` | Preset anwenden |
 | `GET` | `/` | Tablet-Fernbedienungs-UI |
 
 ---
 
 ## RS485-Protokoll
 
-JSON über Seriell, 9600 Baud, `\n`-terminiert, 10× pro Sekunde:
+JSON über Seriell, 115200 Baud, `\n`-terminiert, 10× pro Sekunde:
 
 ```json
-{"d1":{"t":87,"g":"AB","c":"G","e":"1/10"},"d2":{"t":87,"g":"AB","c":"G","e":"1/10"}}
+{"d1":{"t":87,"g":"AB","c":"G","e":"1/10","f":"m"},"d2":{"t":87,"g":"AB","c":"G","e":"1/10","f":"m"}}
 ```
 
 | Feld | Beschreibung |
 |---|---|
 | `d1`, `d2` | State für Display 1 bzw. 2 |
-| `t` | Restzeit in Sekunden |
+| `t` | Restzeit in Sekunden (oder Hundertstel im Finalmodus) |
 | `g` | Gruppe / Seite |
-| `c` | Farbe: `R` (Rot), `G` (Grün), `Y` (Gelb) |
+| `c` | Farbe: `R` (Rot), `G` (Grün), `Y` (Gelb), `I` (Idle) |
 | `e` | Passe (z.B. "1/10") |
+| `f` | Zeitformat: `m` (M:SS), `s` (Sekunden), `f` (SS:FF Finals) |
 
 Im Standard-Modus sind `d1` und `d2` identisch. Im Finalmodus zeigen sie unterschiedliche Inhalte (z.B. eine Seite Grün mit Countdown, die andere Rot).
+
+### Idle-Nachricht
+
+Wenn der Timer gestoppt ist, sendet die App eine Idle-Nachricht:
+
+```json
+{"d1":{"c":"I","idle":{"mode":"clock","clock":"14:30"}},"d2":{...}}
+```
+
+| Modus | Beschreibung |
+|---|---|
+| `clock` | Uhrzeit-Anzeige (HH:mm) |
+| `message` | Lauftext oder statischer Text |
+| `both` | Uhr oben, Text unten |
+| `off` | Display aus |
+
+### Konfigurations-Nachricht
+
+```json
+{"cfg":{"font_mode":"bdf","brightness":80}}
+```
 
 ---
 
 ## Projektstruktur
 
 ```
-bogensport-ampel/
-├── src/
-│   ├── AmpelSteuerung.App/        # WPF-Hauptanwendung
-│   ├── AmpelSteuerung.Core/       # Geschäftslogik (State, Timer, Serial, Presets)
-│   └── AmpelSteuerung.Api/        # Eingebettete REST-API + Tablet-UI
-├── Presets/                        # YAML-Preset-Dateien
-├── docs/
-│   ├── hardware.md                # Einkaufslisten & Aufbauanleitungen
-│   ├── hardware-prototype.md      # Prototyp-Version
-│   └── display-software.md        # Raspberry Pi Display-Software
-└── tests/
-    └── AmpelSteuerung.Core.Tests/ # Unit Tests
+NewAmpel/
+├── AmpelSteuerung/
+│   ├── src/
+│   │   ├── AmpelSteuerung.App/        # WPF-Hauptanwendung
+│   │   ├── AmpelSteuerung.Core/       # Geschäftslogik (State, Timer, Serial, Presets)
+│   │   ├── AmpelSteuerung.Api/        # Eingebettete REST-API + Tablet-UI
+│   │   └── AmpelSteuerung.StreamDeck/ # Stream Deck Plugin
+│   └── tests/
+│       └── AmpelSteuerung.Core.Tests/ # Unit Tests
+├── ampel-display/                     # Raspberry Pi Display-Software (Python)
+│   └── src/ampel_display/             # LED-Matrix-Renderer
+└── Bogensport_Ampel_Bauanleitung.md   # Hardware-Aufbauanleitung
 ```
 
 ---
@@ -253,8 +302,9 @@ Das Projekt enthält ein natives Stream Deck Plugin, das die Ampelsteuerung dire
 ### Voraussetzungen
 
 - Elgato Stream Deck Software ≥ 6.0
-- .NET 8 Runtime auf dem PC
 - Die Ampel-App muss laufen (das Plugin steuert über die REST-API auf `localhost:5000`)
+
+> **Hinweis:** Das Plugin wird als self-contained EXE ausgeliefert — keine separate .NET-Installation nötig.
 
 ### Installation
 
@@ -310,9 +360,12 @@ Nach der Installation findet sich in der Stream Deck Software die Kategorie **Am
 - [x] Systemarchitektur & Hardware-Design
 - [x] Einkaufslisten & Aufbauanleitungen
 - [x] WPF-Steuerungsapp (Core, UI, API)
-- [ ] Raspberry Pi Display-Software
-- [x] Streamdeck-Plugin (nativ)
+- [x] Raspberry Pi Display-Software (P4/P5/P8)
+- [x] Streamdeck-Plugin (nativ, self-contained)
 - [x] Beamer-Modus mit Split-Screen für Finals
+- [x] Idle-Anzeige (Uhr, Lauftext, kombiniert)
+- [x] Preset-Editor in der App
+- [x] Redistributable Beta-Release (v1.0.0-beta1)
 - [ ] Dark Mode
 - [ ] Wettkampf-Log (Export der Passenzeiten)
 
