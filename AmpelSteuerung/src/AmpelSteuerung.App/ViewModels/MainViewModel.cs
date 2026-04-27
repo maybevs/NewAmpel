@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Threading;
+using AmpelSteuerung.App.Views;
 using AmpelSteuerung.Core.Configuration;
 using AmpelSteuerung.Core.Models;
 using AmpelSteuerung.Core.Services;
@@ -523,6 +524,64 @@ public partial class MainViewModel : ObservableObject, IDisposable
         TimerDuration = SelectedPreset.Timer.ShootingTime;
         PreparationTime = SelectedPreset.Timer.PreparationTime;
         TotalEnds = SelectedPreset.Match.TotalEnds;
+    }
+
+    [RelayCommand]
+    private void EditPreset()
+    {
+        if (SelectedPreset == null) return;
+        var editorVm = Views.PresetEditorViewModel.FromPreset(SelectedPreset);
+        var dialog = new Views.PresetEditorWindow(editorVm)
+        {
+            Owner = Application.Current.MainWindow,
+            Title = $"Preset bearbeiten: {SelectedPreset.Name}"
+        };
+        if (dialog.ShowDialog() == true)
+        {
+            var updated = editorVm.ToPreset();
+            _presetEngine.SavePreset(updated, _config.PresetsDirectory);
+            ReloadPresets();
+        }
+    }
+
+    [RelayCommand]
+    private void NewPreset()
+    {
+        var editorVm = new Views.PresetEditorViewModel();
+        var dialog = new Views.PresetEditorWindow(editorVm)
+        {
+            Owner = Application.Current.MainWindow,
+            Title = "Neues Preset erstellen"
+        };
+        if (dialog.ShowDialog() == true)
+        {
+            var preset = editorVm.ToPreset();
+            _presetEngine.SavePreset(preset, _config.PresetsDirectory);
+            ReloadPresets();
+        }
+    }
+
+    [RelayCommand]
+    private void DeletePreset()
+    {
+        if (SelectedPreset == null) return;
+        var result = System.Windows.MessageBox.Show(
+            $"Preset \"{SelectedPreset.Name}\" wirklich löschen?",
+            "Preset löschen",
+            MessageBoxButton.YesNo,
+            MessageBoxImage.Question);
+        if (result == MessageBoxResult.Yes)
+        {
+            _presetEngine.DeletePreset(SelectedPreset, _config.PresetsDirectory);
+            ReloadPresets();
+        }
+    }
+
+    private void ReloadPresets()
+    {
+        Presets.Clear();
+        foreach (var p in _presetEngine.AvailablePresets)
+            Presets.Add(p);
     }
 
     // Beamer

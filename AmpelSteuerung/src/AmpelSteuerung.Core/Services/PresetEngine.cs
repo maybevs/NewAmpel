@@ -71,6 +71,51 @@ public class PresetEngine
         _logger.LogInformation("Applied preset: {Name}", preset.Name);
     }
 
+    public void SavePreset(Preset preset, string directory)
+    {
+        var serializer = new SerializerBuilder()
+            .WithNamingConvention(CamelCaseNamingConvention.Instance)
+            .Build();
+
+        var safeName = string.Join("_", preset.Name.Split(Path.GetInvalidFileNameChars()));
+        var filename = safeName.ToLowerInvariant().Replace(" ", "_") + ".yaml";
+        var path = Path.Combine(directory, filename);
+
+        var yaml = serializer.Serialize(preset);
+        File.WriteAllText(path, yaml);
+        _logger.LogInformation("Saved preset: {Name} to {Path}", preset.Name, path);
+
+        // Reload to pick up changes
+        LoadPresets(directory);
+        StatusChanged?.Invoke(this, $"Preset gespeichert: {preset.Name}");
+    }
+
+    public bool DeletePreset(Preset preset, string directory)
+    {
+        // Find the file that contains this preset
+        foreach (var file in Directory.GetFiles(directory, "*.yaml").Concat(Directory.GetFiles(directory, "*.yml")))
+        {
+            try
+            {
+                var yaml = File.ReadAllText(file);
+                var loaded = _yamlDeserializer.Deserialize<Preset>(yaml);
+                if (loaded?.Name == preset.Name)
+                {
+                    File.Delete(file);
+                    _logger.LogInformation("Deleted preset file: {File}", file);
+                    LoadPresets(directory);
+                    StatusChanged?.Invoke(this, $"Preset gelöscht: {preset.Name}");
+                    return true;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error checking preset file {File}", file);
+            }
+        }
+        return false;
+    }
+
     private void CreateDefaultPresets(string directory)
     {
         var serializer = new SerializerBuilder()

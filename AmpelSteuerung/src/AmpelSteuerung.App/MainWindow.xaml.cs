@@ -104,12 +104,7 @@ public partial class MainWindow : Window
 
     private void Window_StateChanged(object sender, EventArgs e)
     {
-        if (WindowState == WindowState.Minimized && _notifyIcon != null)
-        {
-            Hide();
-            _notifyIcon.Visible = true;
-            _notifyIcon.ShowBalloonTip(1000, "Ampelsteuerung", "Läuft im Hintergrund weiter.", System.Windows.Forms.ToolTipIcon.Info);
-        }
+        // Minimize to taskbar (not tray) — no special handling needed
     }
 
     private void Window_KeyDown(object sender, KeyEventArgs e)

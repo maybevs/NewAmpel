@@ -1,0 +1,194 @@
+<Window x:Class="AmpelSteuerung.App.Views.PresetEditorWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:converters="clr-namespace:AmpelSteuerung.App.Converters"
+        Title="Preset bearbeiten"
+        Width="500" Height="560"
+        WindowStartupLocation="CenterOwner"
+        Background="{StaticResource BgDeepBrush}"
+        Foreground="{StaticResource TextPrimaryBrush}"
+        FontFamily="Segoe UI, sans-serif"
+        ResizeMode="NoResize">
+
+    <Window.Resources>
+        <converters:BoolToVisibilityConverter x:Key="BoolToVis"/>
+
+        <Style x:Key="SectionLabel" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Foreground" Value="{StaticResource TextMutedBrush}"/>
+            <Setter Property="FontFamily" Value="Segoe UI, sans-serif"/>
+            <Setter Property="Margin" Value="0,0,0,12"/>
+        </Style>
+
+        <Style x:Key="ModernButton" TargetType="Button">
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Padding" Value="18,10"/>
+            <Setter Property="Margin" Value="4"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Background" Value="#1E1E35"/>
+            <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderBrush" Value="{StaticResource BorderSubtleBrush}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Bd" Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="8" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="#282845"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="#14142A"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="PrimaryButton" TargetType="Button" BasedOn="{StaticResource ModernButton}">
+            <Setter Property="Background" Value="#1A3D2A"/>
+            <Setter Property="BorderBrush" Value="#2ECC71"/>
+            <Setter Property="Foreground" Value="#2ECC71"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Bd" Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="1" CornerRadius="8" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="#214D34"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="#132E1F"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Grid Margin="24">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <StackPanel>
+                <!-- Name -->
+                <TextBlock Text="NAME" Style="{StaticResource SectionLabel}"/>
+                <TextBox x:Name="NameBox" Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}"
+                         HorizontalContentAlignment="Left" Margin="0,0,0,16"/>
+
+                <!-- Description -->
+                <TextBlock Text="BESCHREIBUNG" Style="{StaticResource SectionLabel}"/>
+                <TextBox x:Name="DescBox" Text="{Binding Description, UpdateSourceTrigger=PropertyChanged}"
+                         HorizontalContentAlignment="Left" Margin="0,0,0,16"/>
+
+                <!-- Type -->
+                <TextBlock Text="TYP" Style="{StaticResource SectionLabel}"/>
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,16">
+                    <RadioButton Content="Standard" GroupName="PresetType"
+                                 IsChecked="{Binding IsStandard}"
+                                 Foreground="{StaticResource TextPrimaryBrush}" Margin="0,0,20,0"/>
+                    <RadioButton Content="Final" GroupName="PresetType"
+                                 IsChecked="{Binding IsFinal}"
+                                 Foreground="{StaticResource TextPrimaryBrush}"/>
+                </StackPanel>
+
+                <!-- Timer -->
+                <TextBlock Text="ZEITEN" Style="{StaticResource SectionLabel}"/>
+                <Grid Margin="0,0,0,16">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="140"/>
+                        <ColumnDefinition Width="80"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Grid.Row="0" Text="Schießzeit:" VerticalAlignment="Center" Foreground="{StaticResource TextSecondaryBrush}"/>
+                    <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding ShootingTime, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,6"/>
+                    <TextBlock Grid.Row="0" Grid.Column="2" Text="s" VerticalAlignment="Center" Margin="6,0"/>
+
+                    <TextBlock Grid.Row="1" Text="Vorbereitungszeit:" VerticalAlignment="Center" Foreground="{StaticResource TextSecondaryBrush}"/>
+                    <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding PreparationTime, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,6"/>
+                    <TextBlock Grid.Row="1" Grid.Column="2" Text="s" VerticalAlignment="Center" Margin="6,0"/>
+
+                    <TextBlock Grid.Row="2" Text="Warnzeit:" VerticalAlignment="Center" Foreground="{StaticResource TextSecondaryBrush}"/>
+                    <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding WarningTime, UpdateSourceTrigger=PropertyChanged}"/>
+                    <TextBlock Grid.Row="2" Grid.Column="2" Text="s" VerticalAlignment="Center" Margin="6,0"/>
+                </Grid>
+
+                <!-- Match -->
+                <TextBlock Text="WETTKAMPF" Style="{StaticResource SectionLabel}"/>
+                <Grid Margin="0,0,0,16">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="140"/>
+                        <ColumnDefinition Width="80"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Grid.Row="0" Text="Passen gesamt:" VerticalAlignment="Center" Foreground="{StaticResource TextSecondaryBrush}"/>
+                    <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding TotalEnds, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,6"/>
+
+                    <TextBlock Grid.Row="1" Text="Pfeile pro Passe:" VerticalAlignment="Center" Foreground="{StaticResource TextSecondaryBrush}"/>
+                    <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding ArrowsPerEnd, UpdateSourceTrigger=PropertyChanged}"/>
+                </Grid>
+
+                <!-- Groups (Standard) -->
+                <TextBlock Text="GRUPPEN" Style="{StaticResource SectionLabel}"/>
+                <StackPanel Margin="0,0,0,16">
+                    <CheckBox Content="Gruppenwechsel aktiv" IsChecked="{Binding GroupSwitchEnabled}"
+                              Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,0,6"/>
+                    <CheckBox Content="Startgruppe alternierend" IsChecked="{Binding AlternateStartOrder}"
+                              Foreground="{StaticResource TextSecondaryBrush}"/>
+                </StackPanel>
+
+                <!-- Final settings (visible only in final mode) -->
+                <StackPanel Visibility="{Binding IsFinal, Converter={StaticResource BoolToVis}}">
+                    <TextBlock Text="FINAL-EINSTELLUNGEN" Style="{StaticResource SectionLabel}"/>
+                    <Grid Margin="0,0,0,16">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="140"/>
+                            <ColumnDefinition Width="80"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <TextBlock Grid.Row="0" Text="Pfeile pro Seite:" VerticalAlignment="Center" Foreground="{StaticResource TextSecondaryBrush}"/>
+                        <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding ArrowsPerSide, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,6"/>
+
+                        <TextBlock Grid.Row="1" Text="Pfeile gesamt/Passe:" VerticalAlignment="Center" Foreground="{StaticResource TextSecondaryBrush}"/>
+                        <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding TotalArrowsPerEnd, UpdateSourceTrigger=PropertyChanged}"/>
+                    </Grid>
+                </StackPanel>
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- Buttons -->
+        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,16,0,0">
+            <Button Content="Abbrechen" Style="{StaticResource ModernButton}" Padding="20,10"
+                    Click="Cancel_Click"/>
+            <Button Content="Speichern" Style="{StaticResource PrimaryButton}" Padding="20,10"
+                    Click="Save_Click"/>
+        </StackPanel>
+    </Grid>
+</Window>
